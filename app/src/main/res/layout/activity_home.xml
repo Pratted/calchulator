@@ -46,5 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/headerRow"
-        android:stretchColumns="*"/>
+        android:stretchColumns="*">
+    </TableRow>
+
 </android.support.constraint.ConstraintLayout>
