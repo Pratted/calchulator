@@ -1,7 +1,10 @@
 package com.example.edp19.calchulator;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -27,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        System.out.println("Home on create Called!!!!!!");
         osrsItems = new HashMap<>();
 
         //initialize widgets on screen
@@ -34,34 +38,50 @@ public class HomeActivity extends AppCompatActivity {
         headerRow = findViewById(R.id.headerRow);
 
         loadOsrsItems("items.csv");
-        //String json = loadJsonFromFile(this, "items.json");
+        addTableHeaders();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        System.out.println("ON PAUSE CALLED!!!");
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+
+        System.out.println("ONRESTARTED CALLED!!!");
     }
 
     @Override
     protected void onStart(){
         super.onStart();
 
-        addTableHeaders();
-
-        /*
-        for(int i = 0; i < 5; i++){
-            TableRow tr = new TableRow(this);
-            TextView tv1 = new TextView(this);
-            TextView tv2 = new TextView(this);
-
-            tv1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-            tv2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-
-            tv1.setText("Eric");
-            tv2.setText("Pratt");
-
-            tr.addView(tv1);
-            tr.addView(tv2);
-
-            table.addView(tr);
-        }
-        */
+        System.out.println("ON HOMEACTIVITY_ONSTART CALLED!!!!");
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle state){
+        super.onSaveInstanceState(state);
+
+        System.out.println("ON HOMEACTIVITY_SAVEINSTANCESTATE CALLED!!!!");
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+
+        System.out.println("HOME ONSTOP CALLED!!!");
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        System.out.println("DESTROYEDDDD!!!!");
+    }
+
 
     public void loadOsrsItems(String filename){
 
@@ -76,7 +96,7 @@ public class HomeActivity extends AppCompatActivity {
                 boolean isMembers = Integer.valueOf(attributes[2]) != 0;
 
                 osrsItems.put(id, new OsrsItem(id, name, isMembers));
-                System.out.println(name);
+                //System.out.println(name);
             }
 
             System.out.println("Added all items");
@@ -84,8 +104,8 @@ public class HomeActivity extends AppCompatActivity {
 
             int i = 0;
 
-            for(Integer id: osrsItems.keySet()){
-                if(i > 10) break;
+            for(final Integer id: osrsItems.keySet()){
+                if(i > 100) break;
 
                 TableRow tr = new TableRow(this);
 
@@ -104,6 +124,18 @@ public class HomeActivity extends AppCompatActivity {
                 tr.addView(tvName);
                 tr.addView(tvBuy);
                 tr.addView(tvLimit);
+
+                tvName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        System.out.println(((TextView) view).getText().toString() + " clicked!");
+                        Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
+
+                        intent.putExtra("osrsItem", osrsItems.get(id));
+
+                        startActivity(intent);
+                    }
+                });
 
                 table.addView(tr);
                 i++;
