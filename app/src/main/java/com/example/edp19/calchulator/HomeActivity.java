@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.system.Os;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.TableLayout;
@@ -16,6 +18,11 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -37,8 +44,9 @@ public class HomeActivity extends AppCompatActivity {
         table = findViewById(R.id.tlGridTable);
         headerRow = findViewById(R.id.headerRow);
 
-        loadOsrsItems("items.csv");
         addTableHeaders();
+        loadOsrsItems("items.csv");
+
     }
 
     @Override
@@ -100,53 +108,134 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             System.out.println("Added all items");
-
-
             int i = 0;
 
             for(final Integer id: osrsItems.keySet()){
-                if(i > 100) break;
+                if(i++ > 100) break;
 
-                TableRow tr = new TableRow(this);
-
-                TextView tvName = new TextView(this);
-                TextView tvBuy = new TextView(this);
-                TextView tvLimit = new TextView(this);
-
-                tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-                tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-                tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-
-                tvName.setText(osrsItems.get(id).name);
-                tvBuy.setText(String.valueOf(osrsItems.get(id).id));
-                tvLimit.setText(osrsItems.get(id).isMembers ? "1" : "0");
-
-                tr.addView(tvName);
-                tr.addView(tvBuy);
-                tr.addView(tvLimit);
-
-                tvName.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        System.out.println(((TextView) view).getText().toString() + " clicked!");
-                        Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
-
-                        intent.putExtra("osrsItem", osrsItems.get(id));
-
-                        startActivity(intent);
-                    }
-                });
-
-                table.addView(tr);
-                i++;
+                addItemToTable(id);
             }
 
+            sortByHeader("Item");
+            sortByHeader("Item");
 
         } catch (IOException e){
             e.printStackTrace();
         }
     }
 
+
+    private void addItemToTable(final int id){
+        TableRow tr = new TableRow(this);
+
+        TextView tvName = new TextView(this);
+        TextView tvBuy = new TextView(this);
+        TextView tvLimit = new TextView(this);
+
+        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+
+        tvName.setText(osrsItems.get(id).name);
+        tvBuy.setText(String.valueOf(osrsItems.get(id).id));
+        tvLimit.setText(osrsItems.get(id).isMembers ? "1" : "0");
+
+        tr.addView(tvName);
+        tr.addView(tvBuy);
+        tr.addView(tvLimit);
+        tr.setId(id);
+
+        tvName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println(((TextView) view).getText().toString() + " clicked!");
+                Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
+
+                intent.putExtra("osrsItem", osrsItems.get(id));
+
+                startActivity(intent);
+            }
+        });
+
+        table.addView(tr);
+    }
+
+
+    public void sortByHeader(String header) {
+        System.out.println("HEADER CLICKED!!!!~~~~~~~~~~~~");
+
+        if(header.compareTo("Item") == 0){
+            ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
+
+            for(int i = 0; i < table.getChildCount(); i++){
+                int itemId = table.getChildAt(i).getId();
+
+                OsrsItem item = osrsItems.get(itemId);
+                strArr.add(new Pair(item.name, osrsItems.get(itemId)));
+            }
+
+            if(strArr.get(0).first.compareTo(strArr.get(strArr.size()-1).first) > 0 ){
+                Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
+                    @Override
+                    public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
+                        return o1.first.compareTo(o2.first);
+                    }
+                });
+            }
+            else{
+                Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
+                    @Override
+                    public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
+                        return o2.first.compareTo(o1.first);
+                    }
+                });
+            }
+
+            table.removeAllViewsInLayout();
+
+            for(int i = 0; i < strArr.size(); i++){
+                addItemToTable(strArr.get(i).second.id);
+            }
+        }
+        else{
+            ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
+
+            for(int i = 0; i < table.getChildCount(); i++){
+                int itemId = table.getChildAt(i).getId();
+
+                OsrsItem item = osrsItems.get(itemId);
+
+                if(header.compareTo("Buy") == 0)
+                    intArr.add(new Pair(item.id, osrsItems.get(itemId)));
+                if(header.compareTo("High Alch") == 0)
+                    intArr.add(new Pair(item.isMembers ? 1 : 0, osrsItems.get(itemId)));
+            }
+
+            if(intArr.get(0).first.compareTo(intArr.get(intArr.size()-1).first) > 0 ){
+                Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
+                    @Override
+                    public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
+                        return o1.first.compareTo(o2.first);
+                    }
+                });
+            }
+            else{
+                Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
+                    @Override
+                    public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
+                        return o2.first.compareTo(o1.first);
+                    }
+                });
+            }
+
+            table.removeAllViewsInLayout();
+
+            for(int i = 0; i < intArr.size(); i++){
+                addItemToTable(intArr.get(i).second.id);
+            }
+        }
+
+    }
 
     public void addTableHeaders(){
 
@@ -159,6 +248,27 @@ public class HomeActivity extends AppCompatActivity {
         tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
 
         tvItem.setText("Item");
+        tvItem.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                sortByHeader("Item");
+            }
+        });
+
+        tvBuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortByHeader("Buy");
+            }
+        });
+
+        tvHighAlch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortByHeader("High Alch");
+            }
+        });
+
         tvBuy.setText("Buy");
         tvHighAlch.setText("High Alch");
 

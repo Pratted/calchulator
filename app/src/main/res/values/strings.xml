@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">calchulator</string>
+    <string name="labelCurrentPrice">Current Price</string>
 </resources>
