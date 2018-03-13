@@ -47,6 +47,19 @@
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/headerRow"
         android:stretchColumns="*">
+
     </TableRow>
+
+    <Button
+        android:id="@+id/buttonSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="32dp"
+        android:text="Settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="48dp"
+        android:onClick="onButtonSettingsClick"/>
 
 </android.support.constraint.ConstraintLayout>

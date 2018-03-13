@@ -1,26 +1,27 @@
 package com.example.edp19.calchulator;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.Context;
+import android.app.ActionBar;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
-import android.system.Os;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        System.out.println("Home on create Called!!!!!!");
         osrsItems = new HashMap<>();
 
         //initialize widgets on screen
@@ -47,6 +47,36 @@ public class HomeActivity extends AppCompatActivity {
         addTableHeaders();
         loadOsrsItems("items.csv");
 
+    }
+
+    @SuppressLint("ValidFragment")
+    public static class SettingsDialog extends DialogFragment {
+
+        /******************** Interface ********************/
+        public interface SettingsDialogListener {
+            public void onPositiveClick();
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState){
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle("Are you sure you want to remove all favorites?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+
+            return builder.create();
+        }
     }
 
     @Override
@@ -125,6 +155,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void addItemToTable(final int id){
         TableRow tr = new TableRow(this);
 
@@ -132,14 +163,23 @@ public class HomeActivity extends AppCompatActivity {
         TextView tvBuy = new TextView(this);
         TextView tvLimit = new TextView(this);
 
-        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
+        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
 
         tvName.setText(osrsItems.get(id).name);
         tvBuy.setText(String.valueOf(osrsItems.get(id).id));
         tvLimit.setText(osrsItems.get(id).isMembers ? "1" : "0");
 
+        final ImageButton ibFavorite = new ImageButton(this);
+
+        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        //ibFavorite.setImageDrawable(n);
+        ibFavorite.setImageResource(android.R.drawable.star_off);
+        ibFavorite.setId((int)android.R.drawable.star_off);
+
+
+        tr.addView(ibFavorite);
         tr.addView(tvName);
         tr.addView(tvBuy);
         tr.addView(tvLimit);
@@ -157,13 +197,36 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        ibFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //if(ibFavorite.getResources().getResourceName(ibFavorite.getItemId()).split("\\/")
+
+                if(ibFavorite.getId() == (int) android.R.drawable.star_off){
+                    System.out.println("TURNING ON!!!!");
+                    ibFavorite.setImageResource(android.R.drawable.star_on);
+                    ibFavorite.setId((int) android.R.drawable.star_on);
+
+                    Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " added to favorites", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    System.out.println("TURNING OFF!!!!");
+                    ibFavorite.setImageResource(android.R.drawable.star_off);
+                    ibFavorite.setId((int) android.R.drawable.star_off);
+                    Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " removed from favorites", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         table.addView(tr);
     }
 
+    public void onButtonSettingsClick(View v){
+        startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void sortByHeader(String header) {
-        System.out.println("HEADER CLICKED!!!!~~~~~~~~~~~~");
-
         if(header.compareTo("Item") == 0){
             ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
 
@@ -242,10 +305,12 @@ public class HomeActivity extends AppCompatActivity {
         TextView tvItem = new TextView(this);
         TextView tvBuy = new TextView(this);
         TextView tvHighAlch = new TextView(this);
+        TextView temp = new TextView(this);
 
-        tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        temp.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
+        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
 
         tvItem.setText("Item");
         tvItem.setOnClickListener(new View.OnClickListener(){
