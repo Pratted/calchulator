@@ -14,15 +14,24 @@ import android.system.Os;
 public class OsrsItem implements Parcelable{
     public int id;
     public String name;
-    public int highAlch;
-    public int buy;
+    public int highAlch = 1;
+    public int buy = 1;
     public int limit;
     boolean isMembers;
+    public boolean isFavorite = false;
 
     public OsrsItem(int id, String name, boolean isMembers){
         this.id = id;
         this.name = name;
         this.isMembers = isMembers;
+    }
+
+    public OsrsItem(int id, String name, boolean isMembers, int alch, int qty){
+        this.id = id;
+        this.name = name;
+        this.isMembers = isMembers;
+        this.highAlch = alch;
+        this.limit = qty;
     }
 
     public OsrsItem(Parcel in){

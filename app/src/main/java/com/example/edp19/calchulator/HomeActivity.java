@@ -6,6 +6,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -32,11 +37,13 @@ public class HomeActivity extends AppCompatActivity {
     TableLayout table;
     TableRow headerRow;
     HashMap<Integer, OsrsItem> osrsItems;
+    Typeface typeface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        typeface = Typeface.createFromAsset(getAssets(), "fonts/osrs.ttf");
 
         osrsItems = new HashMap<>();
 
@@ -45,8 +52,7 @@ public class HomeActivity extends AppCompatActivity {
         headerRow = findViewById(R.id.headerRow);
 
         addTableHeaders();
-        loadOsrsItems("items.csv");
-
+        loadOsrsItems("items3.csv");
     }
 
     @SuppressLint("ValidFragment")
@@ -124,7 +130,7 @@ public class HomeActivity extends AppCompatActivity {
     public void loadOsrsItems(String filename){
 
         try {
-            Scanner s = new Scanner(getAssets().open("items.csv"));
+            Scanner s = new Scanner(getAssets().open(filename));
 
             while (s.hasNext()) {
                 String[] attributes = s.nextLine().split(",");
@@ -132,8 +138,11 @@ public class HomeActivity extends AppCompatActivity {
                 int id = Integer.valueOf(attributes[0]);
                 String name = attributes[1];
                 boolean isMembers = Integer.valueOf(attributes[2]) != 0;
+                int alch = Integer.valueOf(attributes[3].compareTo("NA") == 0 ? "0" : attributes[3]);
+                int qty = Integer.valueOf(attributes[4].compareTo("NA") == 0 ? "0" : attributes[4]);
 
-                osrsItems.put(id, new OsrsItem(id, name, isMembers));
+                osrsItems.put(id, new OsrsItem(id, name, isMembers, alch, qty));
+
                 //System.out.println(name);
             }
 
@@ -141,13 +150,18 @@ public class HomeActivity extends AppCompatActivity {
             int i = 0;
 
             for(final Integer id: osrsItems.keySet()){
-                if(i++ > 100) break;
+                if(osrsItems.get(id).highAlch < 200){
+                    continue;
+                }
+                //if(i++ > 100) break;
 
                 addItemToTable(id);
             }
 
-            sortByHeader("Item");
-            sortByHeader("Item");
+            sortItemName();
+            sortItemName();
+            //sortByHeader("Item");
+            //sortByHeader("Item");
 
         } catch (IOException e){
             e.printStackTrace();
@@ -163,21 +177,31 @@ public class HomeActivity extends AppCompatActivity {
         TextView tvBuy = new TextView(this);
         TextView tvLimit = new TextView(this);
 
+        tvName.setTypeface(typeface);
+        tvBuy.setTypeface(typeface);
+        tvLimit.setTypeface(typeface);
+
+        tvName.setTextSize(18);
+
+        tvName.setTextColor(Color.WHITE);
+        tvBuy.setTextColor(Color.WHITE);
+        tvLimit.setTextColor(Color.WHITE);
+
         tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
         tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
         tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
 
         tvName.setText(osrsItems.get(id).name);
-        tvBuy.setText(String.valueOf(osrsItems.get(id).id));
-        tvLimit.setText(osrsItems.get(id).isMembers ? "1" : "0");
+        tvBuy.setText(String.valueOf(osrsItems.get(id).highAlch));
+        tvLimit.setText(String.valueOf(osrsItems.get(id).limit).compareTo("0") == 0 ? "N/A" : String.valueOf(osrsItems.get(id).limit));
 
         final ImageButton ibFavorite = new ImageButton(this);
 
         ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        //ibFavorite.setImageDrawable(n);
         ibFavorite.setImageResource(android.R.drawable.star_off);
+        //ibFavorite.setImageResource(R.drawable.high_alch);
+        //ibFavorite.setAlpha((float) 0.05);
         ibFavorite.setId((int)android.R.drawable.star_off);
-
 
         tr.addView(ibFavorite);
         tr.addView(tvName);
@@ -197,10 +221,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+
+        ibFavorite.setPadding(0,-8,0,0);
+
+        ibFavorite.setBackgroundDrawable(null);
         ibFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //if(ibFavorite.getResources().getResourceName(ibFavorite.getItemId()).split("\\/")
 
                 if(ibFavorite.getId() == (int) android.R.drawable.star_off){
                     System.out.println("TURNING ON!!!!");
@@ -208,12 +235,14 @@ public class HomeActivity extends AppCompatActivity {
                     ibFavorite.setId((int) android.R.drawable.star_on);
 
                     Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " added to favorites", Toast.LENGTH_SHORT).show();
+                    osrsItems.get(id).isFavorite = true;
                 }
                 else{
                     System.out.println("TURNING OFF!!!!");
                     ibFavorite.setImageResource(android.R.drawable.star_off);
                     ibFavorite.setId((int) android.R.drawable.star_off);
                     Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " removed from favorites", Toast.LENGTH_SHORT).show();
+                    osrsItems.get(id).isFavorite = false;
                 }
             }
         });
@@ -225,98 +254,182 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void sortByHeader(String header) {
-        if(header.compareTo("Item") == 0){
-            ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
+    public void sortItemName(){
+        ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
 
-            for(int i = 0; i < table.getChildCount(); i++){
-                int itemId = table.getChildAt(i).getId();
+        for(int i = 0; i < table.getChildCount(); i++){
+            int itemId = table.getChildAt(i).getId();
 
-                OsrsItem item = osrsItems.get(itemId);
-                strArr.add(new Pair(item.name, osrsItems.get(itemId)));
-            }
+            OsrsItem item = osrsItems.get(itemId);
+            strArr.add(new Pair(item.name, osrsItems.get(itemId)));
+        }
 
-            if(strArr.get(0).first.compareTo(strArr.get(strArr.size()-1).first) > 0 ){
-                Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
-                    @Override
-                    public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
-                        return o1.first.compareTo(o2.first);
-                    }
-                });
-            }
-            else{
-                Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
-                    @Override
-                    public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
-                        return o2.first.compareTo(o1.first);
-                    }
-                });
-            }
-
-            table.removeAllViewsInLayout();
-
-            for(int i = 0; i < strArr.size(); i++){
-                addItemToTable(strArr.get(i).second.id);
-            }
+        if(strArr.get(0).first.compareTo(strArr.get(strArr.size()-1).first) < 0 ){
+            Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
+                @Override
+                public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
+                    return o2.first.compareTo(o1.first);
+                }
+            });
         }
         else{
-            ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
-
-            for(int i = 0; i < table.getChildCount(); i++){
-                int itemId = table.getChildAt(i).getId();
-
-                OsrsItem item = osrsItems.get(itemId);
-
-                if(header.compareTo("Buy") == 0)
-                    intArr.add(new Pair(item.id, osrsItems.get(itemId)));
-                if(header.compareTo("High Alch") == 0)
-                    intArr.add(new Pair(item.isMembers ? 1 : 0, osrsItems.get(itemId)));
-            }
-
-            if(intArr.get(0).first.compareTo(intArr.get(intArr.size()-1).first) > 0 ){
-                Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
-                    @Override
-                    public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
-                        return o1.first.compareTo(o2.first);
-                    }
-                });
-            }
-            else{
-                Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
-                    @Override
-                    public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
-                        return o2.first.compareTo(o1.first);
-                    }
-                });
-            }
-
-            table.removeAllViewsInLayout();
-
-            for(int i = 0; i < intArr.size(); i++){
-                addItemToTable(intArr.get(i).second.id);
-            }
+            Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
+                @Override
+                public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
+                    return o1.first.compareTo(o2.first);
+                }
+            });
         }
 
+        table.removeAllViewsInLayout();
+
+        for(int i = 0; i < strArr.size(); i++){
+            addItemToTable(strArr.get(i).second.id);
+        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void sortFavorite(){
+        ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
+
+        for(int i = 0; i < table.getChildCount(); i++){
+            int itemId = table.getChildAt(i).getId();
+
+            OsrsItem item = osrsItems.get(itemId);
+
+            if(item.isFavorite)
+                intArr.add(new Pair(item.isFavorite ? 1 : 0, osrsItems.get(itemId)));
+        }
+
+        if(intArr.get(0).first.compareTo(intArr.get(intArr.size()-1).first) > 0 ){
+            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
+                @Override
+                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
+                    return o1.first.compareTo(o2.first);
+                }
+            });
+        }
+        else{
+            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
+                @Override
+                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
+                    return o2.first.compareTo(o1.first);
+                }
+            });
+        }
+
+        table.removeAllViewsInLayout();
+
+        for(int i = 0; i < intArr.size(); i++){
+            addItemToTable(intArr.get(i).second.id);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void sortByHeader(String header) {
+        ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
+
+        for(int i = 0; i < table.getChildCount(); i++){
+            int itemId = table.getChildAt(i).getId();
+
+            OsrsItem item = osrsItems.get(itemId);
+
+            if(header.compareTo("Buy") == 0)
+                intArr.add(new Pair(item.highAlch, osrsItems.get(itemId)));
+            if(header.compareTo("High Alch") == 0)
+                intArr.add(new Pair(item.limit, osrsItems.get(itemId)));
+        }
+
+        if(intArr.get(0).first.compareTo(intArr.get(intArr.size()-1).first) > 0 ){
+            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
+                @Override
+                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
+                    return o1.first.compareTo(o2.first);
+                }
+            });
+        }
+        else{
+            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
+                @Override
+                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
+                    return o2.first.compareTo(o1.first);
+                }
+            });
+        }
+
+        table.removeAllViewsInLayout();
+
+        for(int i = 0; i < intArr.size(); i++){
+            addItemToTable(intArr.get(i).second.id);
+        }
+    }
+
+    @SuppressLint("ResourceAsColor")
     public void addTableHeaders(){
 
         TextView tvItem = new TextView(this);
         TextView tvBuy = new TextView(this);
         TextView tvHighAlch = new TextView(this);
-        TextView temp = new TextView(this);
 
-        temp.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        tvItem.setTextColor(getResources().getColor(R.color.osrsOrange));
+        tvItem.setTypeface(typeface);
+        tvItem.setTextSize(18);
+
+        tvBuy.setTextColor(getResources().getColor(R.color.osrsOrange));
+        tvBuy.setTypeface(typeface);
+        tvBuy.setTextSize(18);
+
+        tvHighAlch.setTextColor(getResources().getColor(R.color.osrsOrange));
+        tvHighAlch.setTypeface(typeface);
+        tvHighAlch.setTextSize(18);
+
+        //TextView temp = new TextView(this);
+
+        final ImageButton ibFavorite = new ImageButton(this);
+
+        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        ibFavorite.setImageResource(android.R.drawable.star_off);
+        //ibFavorite.setImageResource(R.drawable.high_alch);
+        ibFavorite.setId((int)android.R.drawable.star_off);
+        ibFavorite.setPadding(0,-5,0,0);
+        ibFavorite.setBackgroundDrawable(null);
+
+        ibFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(ibFavorite.getId() == (int) android.R.drawable.star_off){
+                    System.out.println("TURNING ON!!!!");
+                    ibFavorite.setImageResource(android.R.drawable.star_on);
+                    ibFavorite.setId((int) android.R.drawable.star_on);
+                }
+                else{
+                    System.out.println("TURNING OFF!!!!");
+                    ibFavorite.setImageResource(android.R.drawable.star_off);
+                    ibFavorite.setId((int) android.R.drawable.star_off);
+                }
+            }
+        });
+
+        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
         tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
         tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
         tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+
+        ibFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sortFavorite();
+            }
+        });
 
         tvItem.setText("Item");
         tvItem.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                sortByHeader("Item");
+                sortItemName();
             }
         });
 
@@ -337,6 +450,7 @@ public class HomeActivity extends AppCompatActivity {
         tvBuy.setText("Buy");
         tvHighAlch.setText("High Alch");
 
+        headerRow.addView(ibFavorite);
         headerRow.addView(tvItem);
         headerRow.addView(tvBuy);
         headerRow.addView(tvHighAlch);
