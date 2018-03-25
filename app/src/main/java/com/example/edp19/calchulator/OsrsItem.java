@@ -1,8 +1,9 @@
 package com.example.edp19.calchulator;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.system.Os;
+import android.widget.ImageButton;
 
 /**
  * Created by eric on 2/13/18.
@@ -19,6 +20,7 @@ public class OsrsItem implements Parcelable{
     public int limit;
     boolean isMembers;
     public boolean isFavorite = false;
+    public ImageButton buttonFavorite;
 
     public OsrsItem(int id, String name, boolean isMembers){
         this.id = id;
@@ -42,6 +44,15 @@ public class OsrsItem implements Parcelable{
         name = in.readString();
     }
 
+    public OsrsItem(Cursor c){
+        this.id = c.getInt(0);
+        this.name = c.getString(1);
+        this.highAlch = c.getInt(2);
+        this.isMembers = c.getInt(5) == 1;
+        this.isFavorite = c.getInt(6) == 1;
+        this.limit = c.getInt(4);
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -57,7 +68,6 @@ public class OsrsItem implements Parcelable{
     }
 
     public static final Parcelable.Creator<OsrsItem> CREATOR = new Parcelable.Creator<OsrsItem>(){
-
         @Override
         public OsrsItem createFromParcel(Parcel parcel) {
             return new OsrsItem(parcel);

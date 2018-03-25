@@ -1,20 +1,13 @@
 package com.example.edp19.calchulator;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.DialogInterface;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.View;
@@ -23,16 +16,14 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Scanner;
 
 public class HomeActivity extends AppCompatActivity {
+    SQLiteDatabase db;
 
     TableLayout table;
     TableRow headerRow;
@@ -52,42 +43,32 @@ public class HomeActivity extends AppCompatActivity {
         headerRow = findViewById(R.id.headerRow);
 
         addTableHeaders();
-        loadOsrsItems("items3.csv");
     }
 
-    @SuppressLint("ValidFragment")
-    public static class SettingsDialog extends DialogFragment {
+    @Override
+    public void onResume(){
+        super.onResume();
 
-        /******************** Interface ********************/
-        public interface SettingsDialogListener {
-            public void onPositiveClick();
-        }
+        OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
+            @Override
+            public void onDBReady(SQLiteDatabase db) {
+                HomeActivity.this.db = db;
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState){
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                Cursor c = db.rawQuery("Select count(*) from Item", null);
 
-            builder.setTitle("Are you sure you want to remove all favorites?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
+                if(c.moveToNext()){
+                    System.out.println("Loaded " + c.getString(0) + " items");
+                }
 
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-
-            return builder.create();
-        }
+                loadOsrsItems();
+            }
+        });
     }
 
     @Override
     public void onPause(){
         super.onPause();
+
         System.out.println("ON PAUSE CALLED!!!");
     }
 
@@ -127,49 +108,28 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    public void loadOsrsItems(String filename){
+    public void loadOsrsItems(){
+        osrsItems.clear();
+        table.removeAllViews();
 
-        try {
-            Scanner s = new Scanner(getAssets().open(filename));
+        Cursor c = db.rawQuery("select * from Item", null);
 
-            while (s.hasNext()) {
-                String[] attributes = s.nextLine().split(",");
+        while(c.moveToNext()){
+            OsrsItem item = new OsrsItem(c);
+            osrsItems.put(item.id, item);
 
-                int id = Integer.valueOf(attributes[0]);
-                String name = attributes[1];
-                boolean isMembers = Integer.valueOf(attributes[2]) != 0;
-                int alch = Integer.valueOf(attributes[3].compareTo("NA") == 0 ? "0" : attributes[3]);
-                int qty = Integer.valueOf(attributes[4].compareTo("NA") == 0 ? "0" : attributes[4]);
-
-                osrsItems.put(id, new OsrsItem(id, name, isMembers, alch, qty));
-
-                //System.out.println(name);
+            if(item.highAlch >= 200){
+                addItemToTable(item.id);
             }
-
-            System.out.println("Added all items");
-            int i = 0;
-
-            for(final Integer id: osrsItems.keySet()){
-                if(osrsItems.get(id).highAlch < 200){
-                    continue;
-                }
-                //if(i++ > 100) break;
-
-                addItemToTable(id);
-            }
-
-            sortItemName();
-            sortItemName();
-            //sortByHeader("Item");
-            //sortByHeader("Item");
-
-        } catch (IOException e){
-            e.printStackTrace();
         }
+
+        sortItemName();
+        sortItemName();
+
+        c.close();
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void addItemToTable(final int id){
         TableRow tr = new TableRow(this);
 
@@ -198,10 +158,15 @@ public class HomeActivity extends AppCompatActivity {
         final ImageButton ibFavorite = new ImageButton(this);
 
         ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        ibFavorite.setImageResource(android.R.drawable.star_off);
-        //ibFavorite.setImageResource(R.drawable.high_alch);
-        //ibFavorite.setAlpha((float) 0.05);
-        ibFavorite.setId((int)android.R.drawable.star_off);
+
+        if(osrsItems.get(id).isFavorite){
+            ibFavorite.setImageResource(android.R.drawable.star_on);
+            ibFavorite.setId((int)android.R.drawable.star_on);
+        }
+        else{
+            ibFavorite.setImageResource(android.R.drawable.star_off);
+            ibFavorite.setId((int)android.R.drawable.star_off);
+        }
 
         tr.addView(ibFavorite);
         tr.addView(tvName);
@@ -228,21 +193,28 @@ public class HomeActivity extends AppCompatActivity {
         ibFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ContentValues cv = new ContentValues();
 
                 if(ibFavorite.getId() == (int) android.R.drawable.star_off){
+                    cv.put("isFavorite", 1);
                     System.out.println("TURNING ON!!!!");
                     ibFavorite.setImageResource(android.R.drawable.star_on);
                     ibFavorite.setId((int) android.R.drawable.star_on);
 
                     Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " added to favorites", Toast.LENGTH_SHORT).show();
                     osrsItems.get(id).isFavorite = true;
+
+                    db.update("Item", cv, "id = ?", new String[]{String.valueOf(id)});
                 }
                 else{
+                    cv.put("isFavorite", 0);
                     System.out.println("TURNING OFF!!!!");
                     ibFavorite.setImageResource(android.R.drawable.star_off);
                     ibFavorite.setId((int) android.R.drawable.star_off);
                     Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " removed from favorites", Toast.LENGTH_SHORT).show();
                     osrsItems.get(id).isFavorite = false;
+
+                    db.update("Item", cv, "id = ?", new String[]{String.valueOf(id)});
                 }
             }
         });
@@ -251,11 +223,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void onButtonSettingsClick(View v){
-        startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
+        Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+        intent.putExtra("osrsItems", osrsItems);
+
+        startActivity(intent);
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void sortItemName(){
         ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
 
@@ -290,7 +264,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void sortFavorite(){
         ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
 
@@ -327,7 +300,6 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void sortByHeader(String header) {
         ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
 
@@ -384,8 +356,6 @@ public class HomeActivity extends AppCompatActivity {
         tvHighAlch.setTextColor(getResources().getColor(R.color.osrsOrange));
         tvHighAlch.setTypeface(typeface);
         tvHighAlch.setTextSize(18);
-
-        //TextView temp = new TextView(this);
 
         final ImageButton ibFavorite = new ImageButton(this);
 

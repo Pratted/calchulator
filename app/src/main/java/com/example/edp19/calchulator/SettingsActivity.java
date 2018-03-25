@@ -1,23 +1,21 @@
 package com.example.edp19.calchulator;
 
-import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.Set;
+import java.util.HashMap;
 
-public class SettingsActivity extends AppCompatActivity implements HomeActivity.SettingsDialog.SettingsDialogListener {
+public class SettingsActivity extends AppCompatActivity  {
     Button buttonRemoveFavs;
+    HashMap<Integer, OsrsItem> osrsItems;
+    SQLiteDatabase db;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,19 +23,54 @@ public class SettingsActivity extends AppCompatActivity implements HomeActivity.
 
         buttonRemoveFavs = findViewById(R.id.buttonRemoveFavs);
 
-        /******************** Callback ********************/
-        buttonRemoveFavs.setOnClickListener(new View.OnClickListener(){
+        osrsItems = (HashMap<Integer, OsrsItem> ) getIntent().getSerializableExtra("osrsItems");
+    }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
             @Override
-            public void onClick(View view) {
-                onPositiveClick();
+            public void onDBReady(SQLiteDatabase db) {
+                SettingsActivity.this.db = db;
+
+                /******************** Callback ********************/
+                buttonRemoveFavs.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                        builder.setCancelable(true)
+                        .setTitle("Are you sure you want to remove all favorites?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        removeAllFavorites();
+
+                                        Toast.makeText(SettingsActivity.this, "Removed all favorites", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
             }
         });
     }
 
-    /******************** Override interface method ********************/
-    @Override
-    public void onPositiveClick() {
-        HomeActivity.SettingsDialog d = new HomeActivity.SettingsDialog();
-        d.show(getFragmentManager(), "");
+    public void removeAllFavorites() {
+        for (Integer id : osrsItems.keySet()) {
+            osrsItems.get(id).isFavorite = false;
+        }
+
+        SettingsActivity.this.db.execSQL("update Item set isFavorite = 0;");
     }
 }
