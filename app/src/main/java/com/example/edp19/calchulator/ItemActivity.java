@@ -1,12 +1,12 @@
 package com.example.edp19.calchulator;
 
-import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,16 +23,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -63,62 +55,21 @@ public class ItemActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-
-        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
-        Network network = new BasicNetwork(new HurlStack());
-        requestQueue = new RequestQueue(cache, network);
-        requestQueue.start();
-
         if(intent != null){
             System.out.println("UPDATING THE ITEMNAME FIELD!");
 
             OsrsItem item = (OsrsItem) intent.getParcelableExtra("osrsItem");
 
-            tvItemName.setText(item.name);
+            tvItemName.setText(item.getName());
+            Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
 
-            try{
-                //String url = "https://rsbuddy.com/exchange/summary.json";
-                String url = "https://api.rsbuddy.com/grandExchange?a=guidePrice&i=" + String.valueOf(item.id);
+            ivItemImg.setImageDrawable(drawable);
 
-
-                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        System.out.println("GOT A RESPONSE!!!!");
-                        System.out.println(response.toString());
-                        try{
-                            tvCurrentPrice.setText("");
-                            tvCurrentPrice.setText("Current Price: " + String.valueOf(response.get("overall")));
-
-
-                        } catch (Exception e){
-                            System.out.println("fuck");
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println("Error response!!");
-                        System.out.println(error.toString());
-                        //
-                    }
-                });
-
-                requestQueue.add(jsObjRequest);
-                ivItemImg.setImageDrawable(loadImageFromWeb("https://services.runescape.com/m=itemdb_oldschool/obj_big.gif?id=" + String.valueOf(item.id)));
-
-            } catch (Exception e){
-                System.out.println("Something went wrong lol!");
-                System.out.println(e.toString());
-                e.printStackTrace();
-            }
+            //new FetchCurrentPricesTask().execute("https://api.rsbuddy.com/grandExchange?a=guidePrice&i=" + String.valueOf(item.getId()));
         }
         else{
             System.out.println("savedInstanceState is null!!");
         }
-
 
     }
 
@@ -138,7 +89,57 @@ public class ItemActivity extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
 
+    }
 
+    private class FetchCurrentPricesTask extends AsyncTask<String, Void, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            String url = urls[0];
+
+            Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
+            Network network = new BasicNetwork(new HurlStack());
+            requestQueue = new RequestQueue(cache, network);
+            requestQueue.start();
+
+            try{
+
+                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("GOT A RESPONSE!!!!");
+                        System.out.println(response.toString());
+                        try{
+                            tvCurrentPrice.setText("");
+                            tvCurrentPrice.setText("Current Price: " + String.valueOf(response.get("overall")));
+
+                            System.out.println("Finished gathering response");
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("Error response!!");
+                        System.out.println(error.toString());
+                    }
+                });
+
+                requestQueue.add(jsObjRequest);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            System.out.println("The background task is about to end!!!");
+            return new JSONObject();
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+
+        }
     }
 
 }

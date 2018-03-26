@@ -68,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity  {
 
     public void removeAllFavorites() {
         for (Integer id : osrsItems.keySet()) {
-            osrsItems.get(id).isFavorite = false;
+            osrsItems.get(id).setFavorite(false);
         }
 
         SettingsActivity.this.db.execSQL("update Item set isFavorite = 0;");

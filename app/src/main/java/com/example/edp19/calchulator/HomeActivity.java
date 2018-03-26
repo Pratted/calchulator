@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
@@ -17,18 +18,31 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
-    SQLiteDatabase db;
+    private SQLiteDatabase db;
 
-    TableLayout table;
-    TableRow headerRow;
-    HashMap<Integer, OsrsItem> osrsItems;
-    Typeface typeface;
+    private TableLayout table;
+    private TableRow headerRow;
+    private HashMap<Integer, OsrsItem> osrsItems;
+    private Typeface typeface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +56,9 @@ public class HomeActivity extends AppCompatActivity {
         table = findViewById(R.id.tlGridTable);
         headerRow = findViewById(R.id.headerRow);
 
-        addTableHeaders();
+        System.out.println("Summary: " + getString(R.string.summaryJson));
+
+        //addTableHeaders();
     }
 
     @Override
@@ -63,6 +79,10 @@ public class HomeActivity extends AppCompatActivity {
                 loadOsrsItems();
             }
         });
+
+
+
+        //new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
     }
 
     @Override
@@ -114,22 +134,49 @@ public class HomeActivity extends AppCompatActivity {
 
         Cursor c = db.rawQuery("select * from Item", null);
 
+        OsrsItem.CONTEXT = this;
+
         while(c.moveToNext()){
-            OsrsItem item = new OsrsItem(c);
-            osrsItems.put(item.id, item);
+            int id = c.getInt(0);
+            String name = c.getString(1);
+            int highAlch = c.getInt(2);
+            int currentPrice = c.getInt(3);
+            int buyLimit = c.getInt(4);
+            boolean isMembers = c.getInt(5) == 1;
+            boolean isFavorite = c.getInt(6) == 1;
 
-            if(item.highAlch >= 200){
-                addItemToTable(item.id);
+            System.out.println("About to create item..");
+            final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
+
+            osrsItems.put(item.getId(), item);
+
+            if(item.getHighAlch() >= 200){
+                table.addView(item.getTableRow());
+                //addItemToTable(item.getId());
             }
-        }
 
-        sortItemName();
-        sortItemName();
+            item.getTvName().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.out.println(((TextView) view).getText().toString() + " clicked!");
+                    Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
+
+                    intent.putExtra("osrsItem", osrsItems.get(item.getId()));
+
+                    startActivity(intent);
+                }
+            });
+        }
+        System.out.println("Finished loading items!");
+        //sortItemName();
+        //sortItemName();
 
         c.close();
+        System.out.println("Closed cursor!!");
     }
 
 
+    /*
     private void addItemToTable(final int id){
         TableRow tr = new TableRow(this);
 
@@ -221,6 +268,7 @@ public class HomeActivity extends AppCompatActivity {
 
         table.addView(tr);
     }
+    */
 
     public void onButtonSettingsClick(View v){
         Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
@@ -229,7 +277,7 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    /*
     public void sortItemName(){
         ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
 
@@ -337,6 +385,7 @@ public class HomeActivity extends AppCompatActivity {
             addItemToTable(intArr.get(i).second.id);
         }
     }
+    */
 
     @SuppressLint("ResourceAsColor")
     public void addTableHeaders(){
@@ -382,7 +431,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
-
         ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
         tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
         tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
@@ -391,7 +439,7 @@ public class HomeActivity extends AppCompatActivity {
         ibFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortFavorite();
+                //ortFavorite();
             }
         });
 
@@ -399,21 +447,21 @@ public class HomeActivity extends AppCompatActivity {
         tvItem.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                sortItemName();
+                //sortItemName();
             }
         });
 
         tvBuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortByHeader("Buy");
+                //sortByHeader("Buy");
             }
         });
 
         tvHighAlch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sortByHeader("High Alch");
+                //sortByHeader("High Alch");
             }
         });
 
@@ -424,6 +472,59 @@ public class HomeActivity extends AppCompatActivity {
         headerRow.addView(tvItem);
         headerRow.addView(tvBuy);
         headerRow.addView(tvHighAlch);
+    }
+
+    private class FetchCurrentPricesTask extends AsyncTask<String, Void, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            String url = urls[0];
+
+            Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
+            Network network = new BasicNetwork(new HurlStack());
+            RequestQueue requestQueue = new RequestQueue(cache, network);
+            requestQueue.start();
+
+            try {
+
+                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        System.out.println("GOT A RESPONSE!!!!");
+                        System.out.println(response.toString());
+                        try {
+                            System.out.println("Finished gathering response");
+
+                            for(Integer id: osrsItems.keySet()){
+                                //osrsItems.get(id). = ((JSONObject) response.get(String.valueOf(id))).getInt("overall_average");
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println("Error response!!");
+                        System.out.println(error.toString());
+                    }
+                });
+
+                requestQueue.add(jsObjRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("The background task is about to end!!!");
+            return new JSONObject();
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+
+        }
     }
 
 }

@@ -3104,4 +3104,8 @@ insert into Item (id, name, isMembers, highAlch, buyLimit) values (5632,'Mithril
 insert into Item (id, name, isMembers, highAlch, buyLimit) values (5633,'Adamant dart(p+)',1,39,-1);
 
 update Item 
-set isFavorite = 0;
+set isFavorite = 0,
+    currentPrice = 0,
+    isMembers = COALESCE(isMembers, 0),
+    highAlch = COALESCE(highAlch, 0),
+    buyLimit = COALESCE(buyLimit, 0);
