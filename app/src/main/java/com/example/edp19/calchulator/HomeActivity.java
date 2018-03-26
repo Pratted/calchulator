@@ -1,16 +1,13 @@
 package com.example.edp19.calchulator;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
@@ -31,9 +28,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -57,8 +51,9 @@ public class HomeActivity extends AppCompatActivity {
         headerRow = findViewById(R.id.headerRow);
 
         System.out.println("Summary: " + getString(R.string.summaryJson));
+        OsrsItem.TABLE = table;
 
-        //addTableHeaders();
+        addTableHeaders();
     }
 
     @Override
@@ -79,8 +74,6 @@ public class HomeActivity extends AppCompatActivity {
                 loadOsrsItems();
             }
         });
-
-
 
         //new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
     }
@@ -143,17 +136,14 @@ public class HomeActivity extends AppCompatActivity {
             int currentPrice = c.getInt(3);
             int buyLimit = c.getInt(4);
             boolean isMembers = c.getInt(5) == 1;
-            boolean isFavorite = c.getInt(6) == 1;
+            final boolean isFavorite = c.getInt(6) == 1;
 
             System.out.println("About to create item..");
             final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
 
             osrsItems.put(item.getId(), item);
 
-            if(item.getHighAlch() >= 200){
-                table.addView(item.getTableRow());
-                //addItemToTable(item.getId());
-            }
+            table.addView(item.getTableRow());
 
             item.getTvName().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -161,18 +151,31 @@ public class HomeActivity extends AppCompatActivity {
                     System.out.println(((TextView) view).getText().toString() + " clicked!");
                     Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
 
-                    intent.putExtra("osrsItem", osrsItems.get(item.getId()));
+                    //intent.putExtra("osrsItem", osrsItems.get(item.getId()));
 
                     startActivity(intent);
                 }
             });
+
+            item.getIbFavorite().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    item.toggleFavorite();
+
+                    db.execSQL("Update Item set isFavorite = " + (item.getFavorite() ? "1" : "0") + " where id = " + item.getId());
+                    Toast.makeText(HomeActivity.this,
+                            item.getName() + (item.getFavorite() ? " added" : " removed") + " to favorites",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
         }
-        System.out.println("Finished loading items!");
         //sortItemName();
         //sortItemName();
 
         c.close();
         System.out.println("Closed cursor!!");
+
+        osrsItems.get(6).setColumnWeights(1,9,0,0,0,0);
     }
 
 

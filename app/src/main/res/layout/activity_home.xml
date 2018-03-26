@@ -23,7 +23,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <TableLayout
+            android:id="@+id/tlGridTable"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/osrsBrown"
+            android:stretchColumns="*">
+        </TableLayout>
 
+        <!--
         <HorizontalScrollView
             android:id="@+id/horizontalView"
             android:layout_width="match_parent"
@@ -33,20 +45,18 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginVertical="10dp">
-            <!--
+
             android:background="@drawable/spellbook_border"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginVertical="8dp"
             -->
-            <TableLayout
-                android:id="@+id/tlGridTable"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/osrsBrown"
-                android:stretchColumns="*"></TableLayout>
+
+
+            <!--android:stretchColumns="*"
         </HorizontalScrollView>
+        -->
     </ScrollView>
 
     <TableRow

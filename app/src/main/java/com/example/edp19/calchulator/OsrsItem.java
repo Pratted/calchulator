@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class OsrsItem implements Parcelable{
 
     public static Integer PRICE_NAT;
     public static Context CONTEXT;
+    public static TableLayout TABLE;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         row = new TableRow(CONTEXT);
@@ -44,6 +46,10 @@ public class OsrsItem implements Parcelable{
         ibFavorite = new ImageButton(CONTEXT);
         tvProfit = new TextView(CONTEXT);
 
+        ibFavorite.setBackgroundDrawable(null);
+        ibFavorite.setPadding(0,-8,0,0);
+        tvName.setTextSize(18);
+
         setId(id);
         setName(name);
         setHighAlch(highAlch);
@@ -53,21 +59,13 @@ public class OsrsItem implements Parcelable{
         setFavorite(isFavorite);
 
         formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvPrice);
-        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
-        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
-        tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
-        tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
-        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
 
-        tvHighAlch.setVisibility(View.INVISIBLE);
-
-        row.addView(ibFavorite);
-        row.addView(tvHighAlch);
+        row.addView(ibFavorite);//, 0, TableRow.LayoutParams.WRAP_CONTENT);
+        row.addView(tvName);//, 200, TableRow.LayoutParams.WRAP_CONTENT);
+        row.addView(tvPrice);//, 50, TableRow.LayoutParams.WRAP_CONTENT);
+        row.addView(tvHighAlch);//, 50, TableRow.LayoutParams.WRAP_CONTENT);
         row.addView(tvProfit);
-        row.addView(tvName);
-        row.addView(tvPrice);
-        row.addView(tvLimit);
+        row.addView(tvLimit);//, 50, TableRow.LayoutParams.WRAP_CONTENT);
     }
 
     private TextView tvLimit;
@@ -88,6 +86,43 @@ public class OsrsItem implements Parcelable{
     }
 
     private TableRow row;
+
+    /*
+    Favorite
+    Name
+    Buy
+    High Alch
+    Profit
+    Buy Limit
+     */
+    public void setColumnWeights(float wIsFavorite, float wName, float wPrice, float wHighAlch, float wProfit, float wLimit){
+        float maxWidth = ((TableLayout) row.getParent()).getWidth();
+        float weight = wName + wHighAlch + wProfit+ wPrice + wLimit + wIsFavorite + 0.0000001f;
+
+        wIsFavorite = wIsFavorite / weight * maxWidth;
+        wName = wName / weight * maxWidth;
+        wPrice = wPrice / weight * maxWidth;
+        wHighAlch = wHighAlch / weight * maxWidth;
+        wProfit = wProfit / weight * maxWidth;
+        wLimit = wLimit / weight * maxWidth;
+
+        System.out.println(wIsFavorite);
+        System.out.println(wName);
+        System.out.println(wPrice);
+        System.out.println(wHighAlch);
+        System.out.println(wProfit);
+        System.out.println(wLimit);
+
+        row.getChildAt(0).setLayoutParams(new TableRow.LayoutParams((int) wIsFavorite, TableRow.LayoutParams.WRAP_CONTENT));
+        row.getChildAt(1).setLayoutParams(new TableRow.LayoutParams((int) wName, TableRow.LayoutParams.WRAP_CONTENT));
+        row.getChildAt(2).setLayoutParams(new TableRow.LayoutParams((int) wPrice, TableRow.LayoutParams.WRAP_CONTENT));
+        row.getChildAt(3).setLayoutParams(new TableRow.LayoutParams((int) wHighAlch, TableRow.LayoutParams.WRAP_CONTENT));
+        row.getChildAt(4).setLayoutParams(new TableRow.LayoutParams((int) wProfit, TableRow.LayoutParams.WRAP_CONTENT));
+        row.getChildAt(5).setLayoutParams(new TableRow.LayoutParams((int) wLimit, TableRow.LayoutParams.WRAP_CONTENT));
+
+        System.out.println("Parent " + row.getParent());
+        System.out.println("Width: " + maxWidth);
+    }
 
     private void formatTextViews(TextView... views){
         for(TextView view: views){
@@ -153,6 +188,10 @@ public class OsrsItem implements Parcelable{
     public void setIbFavorite(ImageButton ib){
         ibFavorite = ib;
         setFavorite(isFavorite);
+    }
+
+    public void toggleFavorite(){
+        setFavorite(!isFavorite);
     }
 
     public boolean getFavorite(){
