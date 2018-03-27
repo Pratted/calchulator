@@ -34,29 +34,6 @@
             android:background="@color/osrsBrown"
             android:stretchColumns="*">
         </TableLayout>
-
-        <!--
-        <HorizontalScrollView
-            android:id="@+id/horizontalView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="horizontal|vertical"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginVertical="10dp">
-
-            android:background="@drawable/spellbook_border"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginVertical="8dp"
-            -->
-
-
-            <!--android:stretchColumns="*"
-        </HorizontalScrollView>
-        -->
     </ScrollView>
 
     <TableRow
@@ -90,7 +67,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
+
     </TableRow>
+
+    <ImageButton
+        android:id="@+id/buttonSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="240dp"
+        android:layout_marginTop="32dp"
+        android:background="@android:color/transparent"
+        android:onClick="onButtonSearchClick"
+        app:layout_constraintStart_toStartOf="@+id/headerRow2"
+        app:layout_constraintTop_toTopOf="@+id/headerRow2"
+        app:srcCompat="@drawable/osrs_search" />
 
     <ImageButton
         android:id="@+id/buttonSettings"
@@ -102,5 +92,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/settings_wrench" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/p561"
+        tools:layout_editor_absoluteX="30dp"
+        tools:layout_editor_absoluteY="16dp" />
 
 </android.support.constraint.ConstraintLayout>

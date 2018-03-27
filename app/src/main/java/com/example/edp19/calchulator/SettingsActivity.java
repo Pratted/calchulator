@@ -23,6 +23,7 @@ public class SettingsActivity extends AppCompatActivity  {
 
         buttonRemoveFavs = findViewById(R.id.buttonRemoveFavs);
 
+        System.out.println("ABout to unpakc");
         osrsItems = (HashMap<Integer, OsrsItem> ) getIntent().getSerializableExtra("osrsItems");
     }
 

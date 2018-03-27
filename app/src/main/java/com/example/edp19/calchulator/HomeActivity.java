@@ -1,12 +1,16 @@
 package com.example.edp19.calchulator;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -28,16 +32,19 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class HomeActivity extends AppCompatActivity {
     private SQLiteDatabase db;
 
-    private TableLayout table;
-    private TableRow headerRow;
     private HashMap<Integer, OsrsItem> osrsItems;
     private Typeface typeface;
+    private OsrsTable table;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,13 +54,12 @@ public class HomeActivity extends AppCompatActivity {
         osrsItems = new HashMap<>();
 
         //initialize widgets on screen
-        table = findViewById(R.id.tlGridTable);
-        headerRow = findViewById(R.id.headerRow);
-
+        table = new OsrsTable(
+                (TableRow) findViewById(R.id.headerRow),
+                (TableLayout)findViewById(R.id.tlGridTable)
+        );
+        
         System.out.println("Summary: " + getString(R.string.summaryJson));
-        OsrsItem.TABLE = table;
-
-        addTableHeaders();
     }
 
     @Override
@@ -72,10 +78,11 @@ public class HomeActivity extends AppCompatActivity {
                 }
 
                 loadOsrsItems();
+                new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
             }
         });
 
-        //new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
+
     }
 
     @Override
@@ -123,10 +130,8 @@ public class HomeActivity extends AppCompatActivity {
 
     public void loadOsrsItems(){
         osrsItems.clear();
-        table.removeAllViews();
 
         Cursor c = db.rawQuery("select * from Item", null);
-
         OsrsItem.CONTEXT = this;
 
         while(c.moveToNext()){
@@ -138,12 +143,10 @@ public class HomeActivity extends AppCompatActivity {
             boolean isMembers = c.getInt(5) == 1;
             final boolean isFavorite = c.getInt(6) == 1;
 
-            System.out.println("About to create item..");
             final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
 
             osrsItems.put(item.getId(), item);
-
-            table.addView(item.getTableRow());
+            table.addItem(item);
 
             item.getTvName().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -153,7 +156,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     //intent.putExtra("osrsItem", osrsItems.get(item.getId()));
 
-                    startActivity(intent);
+                    //startActivity(intent);
                 }
             });
 
@@ -168,110 +171,14 @@ public class HomeActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
             });
+
+            item.setColumnWeights(1,4,2,3,0,0);
         }
-        //sortItemName();
-        //sortItemName();
 
         c.close();
         System.out.println("Closed cursor!!");
-
-        osrsItems.get(6).setColumnWeights(1,9,0,0,0,0);
     }
 
-
-    /*
-    private void addItemToTable(final int id){
-        TableRow tr = new TableRow(this);
-
-        TextView tvName = new TextView(this);
-        TextView tvBuy = new TextView(this);
-        TextView tvLimit = new TextView(this);
-
-        tvName.setTypeface(typeface);
-        tvBuy.setTypeface(typeface);
-        tvLimit.setTypeface(typeface);
-
-        tvName.setTextSize(18);
-
-        tvName.setTextColor(Color.WHITE);
-        tvBuy.setTextColor(Color.WHITE);
-        tvLimit.setTextColor(Color.WHITE);
-
-        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
-        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
-        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-
-        tvName.setText(osrsItems.get(id).name);
-        tvBuy.setText(String.valueOf(osrsItems.get(id).highAlch));
-        tvLimit.setText(String.valueOf(osrsItems.get(id).limit).compareTo("0") == 0 ? "N/A" : String.valueOf(osrsItems.get(id).limit));
-
-        final ImageButton ibFavorite = new ImageButton(this);
-
-        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-
-        if(osrsItems.get(id).isFavorite){
-            ibFavorite.setImageResource(android.R.drawable.star_on);
-            ibFavorite.setId((int)android.R.drawable.star_on);
-        }
-        else{
-            ibFavorite.setImageResource(android.R.drawable.star_off);
-            ibFavorite.setId((int)android.R.drawable.star_off);
-        }
-
-        tr.addView(ibFavorite);
-        tr.addView(tvName);
-        tr.addView(tvBuy);
-        tr.addView(tvLimit);
-        tr.setId(id);
-
-        tvName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println(((TextView) view).getText().toString() + " clicked!");
-                Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
-
-                intent.putExtra("osrsItem", osrsItems.get(id));
-
-                startActivity(intent);
-            }
-        });
-
-
-        ibFavorite.setPadding(0,-8,0,0);
-
-        ibFavorite.setBackgroundDrawable(null);
-        ibFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ContentValues cv = new ContentValues();
-
-                if(ibFavorite.getId() == (int) android.R.drawable.star_off){
-                    cv.put("isFavorite", 1);
-                    System.out.println("TURNING ON!!!!");
-                    ibFavorite.setImageResource(android.R.drawable.star_on);
-                    ibFavorite.setId((int) android.R.drawable.star_on);
-
-                    Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " added to favorites", Toast.LENGTH_SHORT).show();
-                    osrsItems.get(id).isFavorite = true;
-
-                    db.update("Item", cv, "id = ?", new String[]{String.valueOf(id)});
-                }
-                else{
-                    cv.put("isFavorite", 0);
-                    System.out.println("TURNING OFF!!!!");
-                    ibFavorite.setImageResource(android.R.drawable.star_off);
-                    ibFavorite.setId((int) android.R.drawable.star_off);
-                    Toast.makeText(HomeActivity.this, osrsItems.get(id).name + " removed from favorites", Toast.LENGTH_SHORT).show();
-                    osrsItems.get(id).isFavorite = false;
-
-                    db.update("Item", cv, "id = ?", new String[]{String.valueOf(id)});
-                }
-            }
-        });
-
-        table.addView(tr);
-    }
-    */
 
     public void onButtonSettingsClick(View v){
         Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
@@ -280,201 +187,11 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /*
-    public void sortItemName(){
-        ArrayList<Pair<String, OsrsItem>> strArr = new ArrayList<> ();
+    public void onButtonSearchClick(View v){
+        System.out.println("Search button clicked!!");
 
-        for(int i = 0; i < table.getChildCount(); i++){
-            int itemId = table.getChildAt(i).getId();
-
-            OsrsItem item = osrsItems.get(itemId);
-            strArr.add(new Pair(item.name, osrsItems.get(itemId)));
-        }
-
-        if(strArr.get(0).first.compareTo(strArr.get(strArr.size()-1).first) < 0 ){
-            Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
-                @Override
-                public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
-                    return o2.first.compareTo(o1.first);
-                }
-            });
-        }
-        else{
-            Collections.sort(strArr, new Comparator<Pair<String, OsrsItem>>() {
-                @Override
-                public int compare(final Pair<String, OsrsItem> o1, final Pair<String, OsrsItem> o2) {
-                    return o1.first.compareTo(o2.first);
-                }
-            });
-        }
-
-        table.removeAllViewsInLayout();
-
-        for(int i = 0; i < strArr.size(); i++){
-            addItemToTable(strArr.get(i).second.id);
-        }
-    }
-
-    public void sortFavorite(){
-        ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
-
-        for(int i = 0; i < table.getChildCount(); i++){
-            int itemId = table.getChildAt(i).getId();
-
-            OsrsItem item = osrsItems.get(itemId);
-
-            if(item.isFavorite)
-                intArr.add(new Pair(item.isFavorite ? 1 : 0, osrsItems.get(itemId)));
-        }
-
-        if(intArr.get(0).first.compareTo(intArr.get(intArr.size()-1).first) > 0 ){
-            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
-                @Override
-                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
-                    return o1.first.compareTo(o2.first);
-                }
-            });
-        }
-        else{
-            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
-                @Override
-                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
-                    return o2.first.compareTo(o1.first);
-                }
-            });
-        }
-
-        table.removeAllViewsInLayout();
-
-        for(int i = 0; i < intArr.size(); i++){
-            addItemToTable(intArr.get(i).second.id);
-        }
-    }
-
-    public void sortByHeader(String header) {
-        ArrayList<Pair<Integer, OsrsItem>> intArr = new ArrayList<> ();
-
-        for(int i = 0; i < table.getChildCount(); i++){
-            int itemId = table.getChildAt(i).getId();
-
-            OsrsItem item = osrsItems.get(itemId);
-
-            if(header.compareTo("Buy") == 0)
-                intArr.add(new Pair(item.highAlch, osrsItems.get(itemId)));
-            if(header.compareTo("High Alch") == 0)
-                intArr.add(new Pair(item.limit, osrsItems.get(itemId)));
-        }
-
-        if(intArr.get(0).first.compareTo(intArr.get(intArr.size()-1).first) > 0 ){
-            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
-                @Override
-                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
-                    return o1.first.compareTo(o2.first);
-                }
-            });
-        }
-        else{
-            Collections.sort(intArr, new Comparator<Pair<Integer, OsrsItem>>() {
-                @Override
-                public int compare(final Pair<Integer, OsrsItem> o1, final Pair<Integer, OsrsItem> o2) {
-                    return o2.first.compareTo(o1.first);
-                }
-            });
-        }
-
-        table.removeAllViewsInLayout();
-
-        for(int i = 0; i < intArr.size(); i++){
-            addItemToTable(intArr.get(i).second.id);
-        }
-    }
-    */
-
-    @SuppressLint("ResourceAsColor")
-    public void addTableHeaders(){
-
-        TextView tvItem = new TextView(this);
-        TextView tvBuy = new TextView(this);
-        TextView tvHighAlch = new TextView(this);
-
-        tvItem.setTextColor(getResources().getColor(R.color.osrsOrange));
-        tvItem.setTypeface(typeface);
-        tvItem.setTextSize(18);
-
-        tvBuy.setTextColor(getResources().getColor(R.color.osrsOrange));
-        tvBuy.setTypeface(typeface);
-        tvBuy.setTextSize(18);
-
-        tvHighAlch.setTextColor(getResources().getColor(R.color.osrsOrange));
-        tvHighAlch.setTypeface(typeface);
-        tvHighAlch.setTextSize(18);
-
-        final ImageButton ibFavorite = new ImageButton(this);
-
-        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        ibFavorite.setImageResource(android.R.drawable.star_off);
-        //ibFavorite.setImageResource(R.drawable.high_alch);
-        ibFavorite.setId((int)android.R.drawable.star_off);
-        ibFavorite.setPadding(0,-5,0,0);
-        ibFavorite.setBackgroundDrawable(null);
-
-        ibFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(ibFavorite.getId() == (int) android.R.drawable.star_off){
-                    System.out.println("TURNING ON!!!!");
-                    ibFavorite.setImageResource(android.R.drawable.star_on);
-                    ibFavorite.setId((int) android.R.drawable.star_on);
-                }
-                else{
-                    System.out.println("TURNING OFF!!!!");
-                    ibFavorite.setImageResource(android.R.drawable.star_off);
-                    ibFavorite.setId((int) android.R.drawable.star_off);
-                }
-            }
-        });
-        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
-        tvBuy.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
-        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-
-        ibFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //ortFavorite();
-            }
-        });
-
-        tvItem.setText("Item");
-        tvItem.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                //sortItemName();
-            }
-        });
-
-        tvBuy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //sortByHeader("Buy");
-            }
-        });
-
-        tvHighAlch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //sortByHeader("High Alch");
-            }
-        });
-
-        tvBuy.setText("Buy");
-        tvHighAlch.setText("High Alch");
-
-        headerRow.addView(ibFavorite);
-        headerRow.addView(tvItem);
-        headerRow.addView(tvBuy);
-        headerRow.addView(tvHighAlch);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Title");
     }
 
     private class FetchCurrentPricesTask extends AsyncTask<String, Void, JSONObject> {
@@ -499,9 +216,15 @@ public class HomeActivity extends AppCompatActivity {
                             System.out.println("Finished gathering response");
 
                             for(Integer id: osrsItems.keySet()){
-                                //osrsItems.get(id). = ((JSONObject) response.get(String.valueOf(id))).getInt("overall_average");
+                                int price = ((JSONObject) response.get(String.valueOf(id))).getInt("overall_average");
+                                osrsItems.get(id).setPrice(price);
+
+                                if(id == OsrsItem.NATURE_RUNE){
+                                    OsrsItem.PRICE_NATURE_RUNE = price;
+                                }
                             }
 
+                            table.sortColumn("Profit");
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -530,4 +253,159 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    public class OsrsTable {
+        private TableLayout table;
+        private TableRow header;
+        private Context context;
+
+        private ImageButton ibFavorite;
+        private TextView tvItem;
+        private TextView tvHighAlch;
+        private TextView tvPrice;
+        private TextView tvProfit;
+        private TextView tvLimit;
+
+        final private int HEADER_TEXT_SIZE = 18;
+
+        private View headers[] = new View[6];
+        private HashMap<String, Boolean> sortedBy = new HashMap<>();
+
+        public OsrsTable(TableRow header, TableLayout table){
+            this.table = table;
+            this.header = header;
+            context = HomeActivity.this;
+
+            headers[0] = ibFavorite = createFavoriteHeader("Favorite");
+            headers[1] = tvItem = createTextView("Item");
+            headers[2] = tvHighAlch = createTextView("Alch");
+            headers[3] = tvPrice = createTextView("Price");
+            headers[4] = tvProfit = createTextView("Profit");
+            headers[5] = tvLimit = createTextView("Limit");
+
+            //initialize onClickListeners for all headers.
+            for(View v: headers){
+                final String text = (String) v.getTag();
+
+                v.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+                        //header text is stored in tag
+                        System.out.println("Sorting by " + (String) (v.getTag()));
+                        sortColumn(text);
+                    }
+                });
+
+                sortedBy.put(text, false);
+            }
+
+            ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+            tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
+            tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+            tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+            tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
+            tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
+
+            tvProfit.setVisibility(View.GONE);
+            tvLimit.setVisibility(View.GONE);
+
+            header.addView(ibFavorite);
+            header.addView(tvItem);
+            header.addView(tvHighAlch);
+            header.addView(tvPrice);
+            header.addView(tvProfit);
+            header.addView(tvLimit);
+        }
+
+        private TextView createTextView(String text){
+            TextView tv = new TextView(context);
+
+            tv.setTextColor(getResources().getColor(R.color.osrsOrange));
+            tv.setTypeface(typeface);
+            tv.setTextSize(HEADER_TEXT_SIZE);
+            tv.setText(text);
+            tv.setTag(text);
+
+            return tv;
+        }
+
+        private View getHeader(String header){
+            if(header.compareTo("Item") == 0) return tvItem;
+            if(header.compareTo("Alch") == 0) return tvHighAlch;
+            if(header.compareTo("Price") == 0) return tvPrice;
+            if(header.compareTo("Profit") == 0) return tvProfit;
+            if(header.compareTo("Limit") == 0) return tvLimit;
+            if(header.compareTo("Favorite") == 0) return ibFavorite;
+
+            return null;
+        }
+
+        private ImageButton createFavoriteHeader(String tag){
+            ImageButton ib = new ImageButton(context);
+
+            ib.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+            ib.setImageResource(android.R.drawable.star_off);
+            ib.setPadding(0,-5,0,0);
+            ib.setBackgroundDrawable(null);
+            ib.setTag(tag);
+
+            return ib;
+        }
+
+        public void sortColumn(String columnName){
+            Map<Integer, Integer> mInt = new TreeMap<>();
+            Map<String, Integer> mStr = new TreeMap<>();
+
+            boolean sorted = sortedBy.get(columnName);
+
+            //sort descending if already sorted (ascending)
+            if(sorted){
+                mInt = new TreeMap<>(Collections.<Integer>reverseOrder());
+                mStr = new TreeMap<>(Collections.<String>reverseOrder());
+            }
+
+            //clear previous sort criteria
+            for(String s: sortedBy.keySet()){
+                sortedBy.put(s, false);
+            }
+
+            //iterate through table to preserve existing sorts as much as possible.
+            for(int i = 0; i < table.getChildCount(); i++){
+                int id = table.getChildAt(i).getId();
+
+                if(columnName.compareTo("Item") == 0)
+                    mStr.put(osrsItems.get(id).getString(columnName), id);
+                else
+                    mInt.put(osrsItems.get(id).getInt(columnName), id);
+            }
+
+            //clear all rows and put the items back into the table.
+            table.removeAllViewsInLayout();
+
+            for(Integer id: mInt.keySet()){
+                this.addItem(osrsItems.get(mInt.get(id)));
+            }
+
+            for(String id: mStr.keySet()){
+                this.addItem(osrsItems.get(mStr.get(id)));
+            }
+
+            //mark inverse of what we started with.
+            sortedBy.put(columnName, !sorted);
+        }
+
+        public void hideColumn(String columnName){
+            View v = getHeader(columnName);
+            v.setVisibility(View.GONE);
+        }
+
+        public void showColumn(String columnName){
+            View v = getHeader(columnName);
+            v.setVisibility(View.VISIBLE);
+        }
+
+        public void addItem(OsrsItem item){
+            table.addView(item.getTableRow());
+        }
+
+    }
 }

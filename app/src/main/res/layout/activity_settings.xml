@@ -23,4 +23,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/star_on" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="88dp"
+        android:layout_height="89dp"
+        app:srcCompat="@drawable/p561"
+        tools:layout_editor_absoluteX="72dp"
+        tools:layout_editor_absoluteY="166dp" />
 </android.support.constraint.ConstraintLayout>

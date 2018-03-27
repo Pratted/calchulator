@@ -31,9 +31,9 @@ public class OsrsItem implements Parcelable{
     private boolean isMembers;
     private boolean isFavorite = false;
 
-    public static Integer PRICE_NAT;
+    public static Integer PRICE_NATURE_RUNE = 210;
+    final public static Integer NATURE_RUNE = 561;
     public static Context CONTEXT;
-    public static TableLayout TABLE;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         row = new TableRow(CONTEXT);
@@ -60,12 +60,13 @@ public class OsrsItem implements Parcelable{
 
         formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvPrice);
 
-        row.addView(ibFavorite);//, 0, TableRow.LayoutParams.WRAP_CONTENT);
-        row.addView(tvName);//, 200, TableRow.LayoutParams.WRAP_CONTENT);
-        row.addView(tvPrice);//, 50, TableRow.LayoutParams.WRAP_CONTENT);
-        row.addView(tvHighAlch);//, 50, TableRow.LayoutParams.WRAP_CONTENT);
+        row.addView(ibFavorite);
+        row.addView(tvName);
+        row.addView(tvHighAlch);
+        row.addView(tvPrice);
         row.addView(tvProfit);
-        row.addView(tvLimit);//, 50, TableRow.LayoutParams.WRAP_CONTENT);
+        row.addView(tvLimit);
+        row.setId(id);
     }
 
     private TextView tvLimit;
@@ -81,8 +82,6 @@ public class OsrsItem implements Parcelable{
 
     public void setTableRow(TableRow row){
         this.row = row;
-
-        ibFavorite = (ImageButton) row.getChildAt(0);
     }
 
     private TableRow row;
@@ -96,32 +95,19 @@ public class OsrsItem implements Parcelable{
     Buy Limit
      */
     public void setColumnWeights(float wIsFavorite, float wName, float wPrice, float wHighAlch, float wProfit, float wLimit){
-        float maxWidth = ((TableLayout) row.getParent()).getWidth();
-        float weight = wName + wHighAlch + wProfit+ wPrice + wLimit + wIsFavorite + 0.0000001f;
+        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
+        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
+        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
+        tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
+        tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
+        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
 
-        wIsFavorite = wIsFavorite / weight * maxWidth;
-        wName = wName / weight * maxWidth;
-        wPrice = wPrice / weight * maxWidth;
-        wHighAlch = wHighAlch / weight * maxWidth;
-        wProfit = wProfit / weight * maxWidth;
-        wLimit = wLimit / weight * maxWidth;
-
-        System.out.println(wIsFavorite);
-        System.out.println(wName);
-        System.out.println(wPrice);
-        System.out.println(wHighAlch);
-        System.out.println(wProfit);
-        System.out.println(wLimit);
-
-        row.getChildAt(0).setLayoutParams(new TableRow.LayoutParams((int) wIsFavorite, TableRow.LayoutParams.WRAP_CONTENT));
-        row.getChildAt(1).setLayoutParams(new TableRow.LayoutParams((int) wName, TableRow.LayoutParams.WRAP_CONTENT));
-        row.getChildAt(2).setLayoutParams(new TableRow.LayoutParams((int) wPrice, TableRow.LayoutParams.WRAP_CONTENT));
-        row.getChildAt(3).setLayoutParams(new TableRow.LayoutParams((int) wHighAlch, TableRow.LayoutParams.WRAP_CONTENT));
-        row.getChildAt(4).setLayoutParams(new TableRow.LayoutParams((int) wProfit, TableRow.LayoutParams.WRAP_CONTENT));
-        row.getChildAt(5).setLayoutParams(new TableRow.LayoutParams((int) wLimit, TableRow.LayoutParams.WRAP_CONTENT));
-
-        System.out.println("Parent " + row.getParent());
-        System.out.println("Width: " + maxWidth);
+        if(wIsFavorite == 0) row.getChildAt(0).setVisibility(View.GONE);
+        if(wName == 0) row.getChildAt(1).setVisibility(View.GONE);
+        if(wHighAlch == 0) row.getChildAt(2).setVisibility(View.GONE);
+        if(wPrice == 0) row.getChildAt(3).setVisibility(View.GONE);
+        if(wProfit == 0) row.getChildAt(4).setVisibility(View.GONE);
+        if(wLimit == 0) row.getChildAt(5).setVisibility(View.GONE);
     }
 
     private void formatTextViews(TextView... views){
@@ -129,6 +115,22 @@ public class OsrsItem implements Parcelable{
             //view.setTypeface(typeface);
             view.setTextColor(Color.WHITE);
         }
+    }
+
+    public int getInt(String name){
+        if(name.compareTo("Alch") == 0) return highAlch;
+        if(name.compareTo("Price") == 0) return price;
+        if(name.compareTo("Profit") == 0) return getProfit();
+        if(name.compareTo("Limit") == 0) return limit;
+        if(name.compareTo("Favorite") == 0) return isFavorite ? 1 : 0;
+
+        return 0;
+    }
+
+    public String getString(String name){
+        if(name.compareTo("Item") == 0) return this.name;
+
+        return "";
     }
 
     public Integer getId() {
@@ -248,16 +250,25 @@ public class OsrsItem implements Parcelable{
     }
 
     public Integer getProfit(){
-        return highAlch - PRICE_NAT + price;
+        return highAlch - PRICE_NATURE_RUNE + price;
     }
 
+    public void hide(){
+        row.setVisibility(View.GONE);
+    }
+
+    public void show(){
+        row.setVisibility(View.VISIBLE);
+    }
 
     public OsrsItem(Parcel in){
         id = in.readInt();
+        name = in.readString();
         highAlch = in.readInt();
         price = in.readInt();
         limit = in.readInt();
-        name = in.readString();
+        isMembers = in.readInt() == 1;
+        isFavorite = in.readInt() == 1;
     }
 
     @Override
@@ -275,6 +286,13 @@ public class OsrsItem implements Parcelable{
         parcel.writeInt(isMembers ? 1 : 0);
         parcel.writeInt(isFavorite ? 1 : 0);
 
+        tvHighAlch = null;
+        tvPrice = null;
+        tvName = null;
+        tvProfit = null;
+        tvLimit = null;
+        ibFavorite = null;
+        row = null;
     }
 
     public static final Parcelable.Creator<OsrsItem> CREATOR = new Parcelable.Creator<OsrsItem>(){
