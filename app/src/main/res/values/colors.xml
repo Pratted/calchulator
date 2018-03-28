@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="osrsBrown">#473E31</color>
+    <color name="osrsLightBrown">#524A3D</color>
     <color name="osrsCharcoal">#191917</color>
     <color name="osrsOrange">#CA770F</color>
 </resources>

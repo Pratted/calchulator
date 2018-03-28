@@ -3,6 +3,7 @@ package com.example.edp19.calchulator;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
@@ -34,6 +35,8 @@ public class OsrsItem implements Parcelable{
     public static Integer PRICE_NATURE_RUNE = 210;
     final public static Integer NATURE_RUNE = 561;
     public static Context CONTEXT;
+
+    public static Typeface typeface;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         row = new TableRow(CONTEXT);
@@ -69,6 +72,7 @@ public class OsrsItem implements Parcelable{
         row.setId(id);
     }
 
+
     private TextView tvLimit;
     private TextView tvName;
     private ImageButton ibFavorite;
@@ -94,13 +98,17 @@ public class OsrsItem implements Parcelable{
     Profit
     Buy Limit
      */
-    public void setColumnWeights(float wIsFavorite, float wName, float wPrice, float wHighAlch, float wProfit, float wLimit){
-        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
-        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-        tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
-        tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
-        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
+    public void setColumnWeights(float wIsFavorite, float wName, float wHighAlch, float wPrice, float wProfit, float wLimit){
+        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wIsFavorite));
+        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wName));
+        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wHighAlch));
+        tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wPrice));
+        tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wProfit));
+        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wLimit));
+
+        for(int i = 0; i < row.getChildCount(); i++){
+            row.getChildAt(i).setVisibility(View.VISIBLE);
+        }
 
         if(wIsFavorite == 0) row.getChildAt(0).setVisibility(View.GONE);
         if(wName == 0) row.getChildAt(1).setVisibility(View.GONE);
@@ -112,7 +120,7 @@ public class OsrsItem implements Parcelable{
 
     private void formatTextViews(TextView... views){
         for(TextView view: views){
-            //view.setTypeface(typeface);
+            view.setTypeface(typeface);
             view.setTextColor(Color.WHITE);
         }
     }

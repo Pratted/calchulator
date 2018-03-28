@@ -52,14 +52,19 @@ public class OsrsDB extends SQLiteOpenHelper {
                 SQL_CREATE_DB += s.nextLine() + "\n";
             }
 
+            int i = 0;
+
             //tokenize SQL script. Can only execute one SQL statement at a time
             for(String cmd: SQL_CREATE_DB.split(";")){
+                i++;
 
                 //only execute non-empty commands.
                 if(cmd.trim().length() > 0){
                     db.execSQL(cmd + ";");
                 }
             }
+
+            System.out.println("INSERTED " + i + " items");
 
         } catch (Exception e){
             System.out.println("Failed to read file!");

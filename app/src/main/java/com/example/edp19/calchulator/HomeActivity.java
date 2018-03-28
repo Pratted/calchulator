@@ -1,6 +1,5 @@
 package com.example.edp19.calchulator;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,11 +8,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -32,39 +29,41 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class HomeActivity extends AppCompatActivity {
     private SQLiteDatabase db;
 
     private HashMap<Integer, OsrsItem> osrsItems;
-    private Typeface typeface;
+    private Typeface fontOsrsBold;
+    private Typeface fontOsrs;
     private OsrsTable table;
+    private boolean updatedPrices;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("HOMEACTIVITY ONCREATE CALLED");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        typeface = Typeface.createFromAsset(getAssets(), "fonts/osrs.ttf");
+        fontOsrs = Typeface.createFromAsset(getAssets(), "fonts/osrs.ttf");
+        fontOsrsBold = Typeface.createFromAsset(getAssets(), "fonts/osrs_bold.ttf");
+
+        OsrsItem.typeface = fontOsrs;
 
         osrsItems = new HashMap<>();
+        updatedPrices = false;
 
         //initialize widgets on screen
         table = new OsrsTable(
+                this,
+                osrsItems,
                 (TableRow) findViewById(R.id.headerRow),
                 (TableLayout)findViewById(R.id.tlGridTable)
         );
-        
-        System.out.println("Summary: " + getString(R.string.summaryJson));
-    }
 
-    @Override
-    public void onResume(){
-        super.onResume();
+        System.out.println("Summary: " + getString(R.string.summaryJson));
+
 
         OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
             @Override
@@ -78,11 +77,19 @@ public class HomeActivity extends AppCompatActivity {
                 }
 
                 loadOsrsItems();
-                new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
+
+                if(!updatedPrices){
+                    new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
+                    table.reformat(new boolean[]{true, true, true, false, false, false});
+                }
+
             }
         });
+    }
 
-
+    @Override
+    public void onResume(){
+        super.onResume();
     }
 
     @Override
@@ -126,6 +133,7 @@ public class HomeActivity extends AppCompatActivity {
 
         System.out.println("DESTROYEDDDD!!!!");
     }
+
 
 
     public void loadOsrsItems(){
@@ -172,7 +180,7 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
 
-            item.setColumnWeights(1,4,2,3,0,0);
+            //item.setColumnWeights(1,4,2,2,0,0);
         }
 
         c.close();
@@ -206,6 +214,7 @@ public class HomeActivity extends AppCompatActivity {
             requestQueue.start();
 
             try {
+                System.out.println("OSRS ITEMS SIZE: " + osrsItems.size());
 
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
@@ -214,6 +223,7 @@ public class HomeActivity extends AppCompatActivity {
                         System.out.println(response.toString());
                         try {
                             System.out.println("Finished gathering response");
+
 
                             for(Integer id: osrsItems.keySet()){
                                 int price = ((JSONObject) response.get(String.valueOf(id))).getInt("overall_average");
@@ -225,6 +235,7 @@ public class HomeActivity extends AppCompatActivity {
                             }
 
                             table.sortColumn("Profit");
+                            updatedPrices = true;
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -251,161 +262,5 @@ public class HomeActivity extends AppCompatActivity {
         protected void onPostExecute(JSONObject json) {
 
         }
-    }
-
-    public class OsrsTable {
-        private TableLayout table;
-        private TableRow header;
-        private Context context;
-
-        private ImageButton ibFavorite;
-        private TextView tvItem;
-        private TextView tvHighAlch;
-        private TextView tvPrice;
-        private TextView tvProfit;
-        private TextView tvLimit;
-
-        final private int HEADER_TEXT_SIZE = 18;
-
-        private View headers[] = new View[6];
-        private HashMap<String, Boolean> sortedBy = new HashMap<>();
-
-        public OsrsTable(TableRow header, TableLayout table){
-            this.table = table;
-            this.header = header;
-            context = HomeActivity.this;
-
-            headers[0] = ibFavorite = createFavoriteHeader("Favorite");
-            headers[1] = tvItem = createTextView("Item");
-            headers[2] = tvHighAlch = createTextView("Alch");
-            headers[3] = tvPrice = createTextView("Price");
-            headers[4] = tvProfit = createTextView("Profit");
-            headers[5] = tvLimit = createTextView("Limit");
-
-            //initialize onClickListeners for all headers.
-            for(View v: headers){
-                final String text = (String) v.getTag();
-
-                v.setOnClickListener(new View.OnClickListener(){
-                    @Override
-                    public void onClick(View v){
-                        //header text is stored in tag
-                        System.out.println("Sorting by " + (String) (v.getTag()));
-                        sortColumn(text);
-                    }
-                });
-
-                sortedBy.put(text, false);
-            }
-
-            ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-            tvItem.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4f));
-            tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2f));
-            tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 3f));
-            tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
-            tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 0f));
-
-            tvProfit.setVisibility(View.GONE);
-            tvLimit.setVisibility(View.GONE);
-
-            header.addView(ibFavorite);
-            header.addView(tvItem);
-            header.addView(tvHighAlch);
-            header.addView(tvPrice);
-            header.addView(tvProfit);
-            header.addView(tvLimit);
-        }
-
-        private TextView createTextView(String text){
-            TextView tv = new TextView(context);
-
-            tv.setTextColor(getResources().getColor(R.color.osrsOrange));
-            tv.setTypeface(typeface);
-            tv.setTextSize(HEADER_TEXT_SIZE);
-            tv.setText(text);
-            tv.setTag(text);
-
-            return tv;
-        }
-
-        private View getHeader(String header){
-            if(header.compareTo("Item") == 0) return tvItem;
-            if(header.compareTo("Alch") == 0) return tvHighAlch;
-            if(header.compareTo("Price") == 0) return tvPrice;
-            if(header.compareTo("Profit") == 0) return tvProfit;
-            if(header.compareTo("Limit") == 0) return tvLimit;
-            if(header.compareTo("Favorite") == 0) return ibFavorite;
-
-            return null;
-        }
-
-        private ImageButton createFavoriteHeader(String tag){
-            ImageButton ib = new ImageButton(context);
-
-            ib.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-            ib.setImageResource(android.R.drawable.star_off);
-            ib.setPadding(0,-5,0,0);
-            ib.setBackgroundDrawable(null);
-            ib.setTag(tag);
-
-            return ib;
-        }
-
-        public void sortColumn(String columnName){
-            Map<Integer, Integer> mInt = new TreeMap<>();
-            Map<String, Integer> mStr = new TreeMap<>();
-
-            boolean sorted = sortedBy.get(columnName);
-
-            //sort descending if already sorted (ascending)
-            if(sorted){
-                mInt = new TreeMap<>(Collections.<Integer>reverseOrder());
-                mStr = new TreeMap<>(Collections.<String>reverseOrder());
-            }
-
-            //clear previous sort criteria
-            for(String s: sortedBy.keySet()){
-                sortedBy.put(s, false);
-            }
-
-            //iterate through table to preserve existing sorts as much as possible.
-            for(int i = 0; i < table.getChildCount(); i++){
-                int id = table.getChildAt(i).getId();
-
-                if(columnName.compareTo("Item") == 0)
-                    mStr.put(osrsItems.get(id).getString(columnName), id);
-                else
-                    mInt.put(osrsItems.get(id).getInt(columnName), id);
-            }
-
-            //clear all rows and put the items back into the table.
-            table.removeAllViewsInLayout();
-
-            for(Integer id: mInt.keySet()){
-                this.addItem(osrsItems.get(mInt.get(id)));
-            }
-
-            for(String id: mStr.keySet()){
-                this.addItem(osrsItems.get(mStr.get(id)));
-            }
-
-            //mark inverse of what we started with.
-            sortedBy.put(columnName, !sorted);
-        }
-
-        public void hideColumn(String columnName){
-            View v = getHeader(columnName);
-            v.setVisibility(View.GONE);
-        }
-
-        public void showColumn(String columnName){
-            View v = getHeader(columnName);
-            v.setVisibility(View.VISIBLE);
-        }
-
-        public void addItem(OsrsItem item){
-            table.addView(item.getTableRow());
-        }
-
     }
 }

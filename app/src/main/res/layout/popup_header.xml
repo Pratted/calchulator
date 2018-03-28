@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llSortChangePopup"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/spellbook_border"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/osrsBrown"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="6dp"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:textColor="@color/osrsOrange"
+        android:text="Select up to 3 columns"/>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Favorites"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:background="@color/osrsLightBrown"
+        android:checked="true"/>
+
+    <!-- Hide Item checkbox since it should always been displayed -->
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Item"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:background="@color/osrsLightBrown"
+        android:checked="true"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/osrsBrown"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:text="Alch"/>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/osrsLightBrown"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:text="Price"/>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/osrsBrown"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:text="Profit"/>
+
+    <CheckBox
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/osrsLightBrown"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:text="Limit"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="77dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:background="@color/osrsBrown" />
+
+</LinearLayout>
