@@ -35,8 +35,6 @@ public class HomeActivity extends AppCompatActivity {
     private SQLiteDatabase db;
 
     private HashMap<Integer, OsrsItem> osrsItems;
-    private Typeface fontOsrsBold;
-    private Typeface fontOsrs;
     private OsrsTable table;
     private boolean updatedPrices;
 
@@ -45,11 +43,11 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("HOMEACTIVITY ONCREATE CALLED");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        fontOsrs = Typeface.createFromAsset(getAssets(), "fonts/osrs.ttf");
-        fontOsrsBold = Typeface.createFromAsset(getAssets(), "fonts/osrs_bold.ttf");
 
-        OsrsItem.typeface = fontOsrs;
+        new Osrs(this);;
+
+
+        setContentView(R.layout.activity_home);
 
         osrsItems = new HashMap<>();
         updatedPrices = false;
@@ -62,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
                 (TableLayout)findViewById(R.id.tlGridTable)
         );
 
-        System.out.println("Summary: " + getString(R.string.summaryJson));
+        System.out.println("Summary: " + Osrs.strings.URL_CURRENT_PRICES);
 
 
         OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
@@ -79,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
                 loadOsrsItems();
 
                 if(!updatedPrices){
-                    new FetchCurrentPricesTask().execute(getString(R.string.summaryJson));
+                    new FetchCurrentPricesTask().execute(Osrs.strings.URL_CURRENT_PRICES);
                     table.reformat(new boolean[]{true, true, true, false, false, false});
                 }
 
@@ -225,16 +223,17 @@ public class HomeActivity extends AppCompatActivity {
                             System.out.println("Finished gathering response");
 
 
-                            for(Integer id: osrsItems.keySet()){
-                                int price = ((JSONObject) response.get(String.valueOf(id))).getInt("overall_average");
-                                osrsItems.get(id).setPrice(price);
+                            for(OsrsItem item: osrsItems.values()){
+                                int price = ((JSONObject) response.get(String.valueOf(item.getId()))).getInt("overall_average");
+                                item.setPrice(price);
 
-                                if(id == OsrsItem.NATURE_RUNE){
+                                if(item.getId().equals(OsrsItem.NATURE_RUNE)){
                                     OsrsItem.PRICE_NATURE_RUNE = price;
                                 }
+
                             }
 
-                            table.sortColumn("Profit");
+                            table.sortColumn(Osrs.strings.NAME_PROFIT_COLUMN);
                             updatedPrices = true;
 
                         } catch (Exception e) {

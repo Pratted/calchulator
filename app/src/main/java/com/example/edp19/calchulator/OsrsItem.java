@@ -36,8 +36,6 @@ public class OsrsItem implements Parcelable{
     final public static Integer NATURE_RUNE = 561;
     public static Context CONTEXT;
 
-    public static Typeface typeface;
-
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         row = new TableRow(CONTEXT);
 
@@ -90,53 +88,25 @@ public class OsrsItem implements Parcelable{
 
     private TableRow row;
 
-    /*
-    Favorite
-    Name
-    Buy
-    High Alch
-    Profit
-    Buy Limit
-     */
-    public void setColumnWeights(float wIsFavorite, float wName, float wHighAlch, float wPrice, float wProfit, float wLimit){
-        ibFavorite.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wIsFavorite));
-        tvName.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wName));
-        tvHighAlch.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wHighAlch));
-        tvPrice.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wPrice));
-        tvProfit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wProfit));
-        tvLimit.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, wLimit));
-
-        for(int i = 0; i < row.getChildCount(); i++){
-            row.getChildAt(i).setVisibility(View.VISIBLE);
-        }
-
-        if(wIsFavorite == 0) row.getChildAt(0).setVisibility(View.GONE);
-        if(wName == 0) row.getChildAt(1).setVisibility(View.GONE);
-        if(wHighAlch == 0) row.getChildAt(2).setVisibility(View.GONE);
-        if(wPrice == 0) row.getChildAt(3).setVisibility(View.GONE);
-        if(wProfit == 0) row.getChildAt(4).setVisibility(View.GONE);
-        if(wLimit == 0) row.getChildAt(5).setVisibility(View.GONE);
-    }
-
     private void formatTextViews(TextView... views){
         for(TextView view: views){
-            view.setTypeface(typeface);
+            view.setTypeface(Osrs.typefaces.FONT_REGULAR);
             view.setTextColor(Color.WHITE);
         }
     }
 
     public int getInt(String name){
-        if(name.compareTo("Alch") == 0) return highAlch;
-        if(name.compareTo("Price") == 0) return price;
-        if(name.compareTo("Profit") == 0) return getProfit();
-        if(name.compareTo("Limit") == 0) return limit;
-        if(name.compareTo("Favorite") == 0) return isFavorite ? 1 : 0;
+        if(name.compareTo(Osrs.strings.NAME_ALCH_COLUMN) == 0) return highAlch;
+        if(name.compareTo(Osrs.strings.NAME_PRICE_COLUMN) == 0) return price;
+        if(name.compareTo(Osrs.strings.NAME_PROFIT_COLUMN) == 0) return getProfit();
+        if(name.compareTo(Osrs.strings.NAME_LIMIT_COLUMN) == 0) return limit;
+        if(name.compareTo(Osrs.strings.NAME_FAVORITE_COLUMN) == 0) return isFavorite ? 1 : 0;
 
         return 0;
     }
 
     public String getString(String name){
-        if(name.compareTo("Item") == 0) return this.name;
+        if(name.compareTo(Osrs.strings.NAME_ITEM_COLUMN) == 0) return this.name;
 
         return "";
     }

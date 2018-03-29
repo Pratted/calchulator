@@ -22,15 +22,6 @@ public class OsrsTable {
     private TableRow header;
     private Context context;
 
-    private ImageButton ibFavorite;
-    private TextView tvItem;
-    private TextView tvHighAlch;
-    private TextView tvPrice;
-    private TextView tvProfit;
-    private TextView tvLimit;
-
-    final private int HEADER_TEXT_SIZE = 18;
-
     private View headers[] = new View[6];
     private HashMap<String, Boolean> sortedBy = new HashMap<>();
     private HashMap<Integer, OsrsItem> osrsItems;
@@ -50,12 +41,12 @@ public class OsrsTable {
         this.context = context;
         this.osrsItems = osrsItems;
 
-        headers[COLUMN_FAVORITE] = ibFavorite = createFavoriteHeader("Favorite");
-        headers[COLUMN_ITEM] = tvItem = createTextView("Item");
-        headers[COLUMN_ALCH] = tvHighAlch = createTextView("Alch");
-        headers[COLUMN_PRICE] = tvPrice = createTextView("Price");
-        headers[COLUMN_PROFIT] = tvProfit = createTextView("Profit");
-        headers[COLUMN_LIMIT] = tvLimit = createTextView("Limit");
+        headers[COLUMN_FAVORITE] = createFavoriteHeader(Osrs.strings.NAME_FAVORITE_COLUMN);
+        headers[COLUMN_ITEM] = createTextView(Osrs.strings.NAME_ITEM_COLUMN);
+        headers[COLUMN_ALCH] = createTextView(Osrs.strings.NAME_ALCH_COLUMN);
+        headers[COLUMN_PRICE] = createTextView(Osrs.strings.NAME_PRICE_COLUMN);
+        headers[COLUMN_PROFIT] = createTextView(Osrs.strings.NAME_PROFIT_COLUMN);
+        headers[COLUMN_LIMIT] = createTextView(Osrs.strings.NAME_LIMIT_COLUMN);
 
         header.setPadding(0,50,0,0);
 
@@ -101,24 +92,13 @@ public class OsrsTable {
     private TextView createTextView(String text){
         TextView tv = new TextView(context);
 
-        //tv.setTextColor(getResources().getColor(R.color.osrsOrange));
-        //tv.setTypeface(fontOsrs);
-        tv.setTextSize(HEADER_TEXT_SIZE);
+        tv.setTextColor(Osrs.colors.ORANGE);
+        tv.setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
+        tv.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
         tv.setText(text);
         tv.setTag(text);
 
         return tv;
-    }
-
-    private View getHeader(String header){
-        if(header.compareTo("Item") == 0) return tvItem;
-        if(header.compareTo("Alch") == 0) return tvHighAlch;
-        if(header.compareTo("Price") == 0) return tvPrice;
-        if(header.compareTo("Profit") == 0) return tvProfit;
-        if(header.compareTo("Limit") == 0) return tvLimit;
-        if(header.compareTo("Favorite") == 0) return ibFavorite;
-
-        return null;
     }
 
     private ImageButton createFavoriteHeader(String tag){
@@ -209,10 +189,10 @@ public class OsrsTable {
         weights[COLUMN_ITEM] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_ITEM] ? 4 : 0);
 
         //Alch, Price, Profit, Limit
-        weights[2] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[2] ? 2 : 0);
-        weights[3] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[3] ? 2 : 0);
-        weights[4] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[4] ? 2 : 0);
-        weights[5] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[5] ? 1 : 0);
+        weights[COLUMN_ALCH] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_ALCH] ? 2 : 0);
+        weights[COLUMN_PRICE] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_PRICE] ? 2 : 0);
+        weights[COLUMN_PROFIT] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_PROFIT] ? 2 : 0);
+        weights[COLUMN_LIMIT] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_LIMIT] ? 2 : 0);
 
         reset(this.header);
 
