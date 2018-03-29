@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
@@ -34,18 +35,35 @@ public class OsrsItem implements Parcelable{
 
     public static Integer PRICE_NATURE_RUNE = 210;
     final public static Integer NATURE_RUNE = 561;
-    public static Context CONTEXT;
+    private Context context;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
-        row = new TableRow(CONTEXT);
+        this.id = id;
+        this.name = name;
+        this.highAlch = highAlch;
+        this.price = price;
+        this.limit = limit;
+        this.isMembers = isMembers;
+        this.isFavorite = isFavorite;
+    }
 
-        tvName = new TextView(CONTEXT);
-        tvPrice = new TextView(CONTEXT);
-        tvHighAlch = new TextView(CONTEXT);
-        tvLimit = new TextView(CONTEXT);
-        tvProfit = new TextView(CONTEXT);
-        ibFavorite = new ImageButton(CONTEXT);
-        tvProfit = new TextView(CONTEXT);
+    public void setContext(Context context){
+        this.context = context;
+
+        row = new TableRow(context);
+
+        tvName = new TextView(context);
+        tvPrice = new TextView(context);
+        tvHighAlch = new TextView(context);
+        tvLimit = new TextView(context);
+        tvProfit = new TextView(context);
+        ibFavorite = new ImageButton(context);
+        tvProfit = new TextView(context);
+
+        tvPrice.setGravity(Gravity.RIGHT);
+        tvHighAlch.setGravity(Gravity.RIGHT);
+        tvProfit.setGravity(Gravity.RIGHT);
+        tvLimit.setGravity(Gravity.RIGHT);
 
         ibFavorite.setBackgroundDrawable(null);
         ibFavorite.setPadding(0,-8,0,0);
@@ -70,7 +88,6 @@ public class OsrsItem implements Parcelable{
         row.setId(id);
     }
 
-
     private TextView tvLimit;
     private TextView tvName;
     private ImageButton ibFavorite;
@@ -91,6 +108,7 @@ public class OsrsItem implements Parcelable{
     private void formatTextViews(TextView... views){
         for(TextView view: views){
             view.setTypeface(Osrs.typefaces.FONT_REGULAR);
+            view.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
             view.setTextColor(Color.WHITE);
         }
     }
@@ -207,7 +225,7 @@ public class OsrsItem implements Parcelable{
 
     public void setLimit(int limit) {
         this.limit = limit;
-        tvLimit.setText(String.valueOf(limit == 0 ? "NA": limit));
+        tvLimit.setText(String.valueOf(limit == -1 ? "N/A": limit));
     }
 
     public TextView getTvLimit() {
@@ -229,14 +247,6 @@ public class OsrsItem implements Parcelable{
 
     public Integer getProfit(){
         return highAlch - PRICE_NATURE_RUNE + price;
-    }
-
-    public void hide(){
-        row.setVisibility(View.GONE);
-    }
-
-    public void show(){
-        row.setVisibility(View.VISIBLE);
     }
 
     public OsrsItem(Parcel in){

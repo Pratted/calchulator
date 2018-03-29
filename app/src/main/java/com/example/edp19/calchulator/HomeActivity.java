@@ -1,16 +1,20 @@
 package com.example.edp19.calchulator;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.PopupWindow;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -44,15 +48,14 @@ public class HomeActivity extends AppCompatActivity {
         System.out.println("HOMEACTIVITY ONCREATE CALLED");
         super.onCreate(savedInstanceState);
 
+        //initialize resources (strings, fonts, colors, etc)
         new Osrs(this);;
-
 
         setContentView(R.layout.activity_home);
 
         osrsItems = new HashMap<>();
         updatedPrices = false;
 
-        //initialize widgets on screen
         table = new OsrsTable(
                 this,
                 osrsItems,
@@ -68,22 +71,19 @@ public class HomeActivity extends AppCompatActivity {
             public void onDBReady(SQLiteDatabase db) {
                 HomeActivity.this.db = db;
 
-                Cursor c = db.rawQuery("Select count(*) from Item", null);
-
-                if(c.moveToNext()){
-                    System.out.println("Loaded " + c.getString(0) + " items");
-                }
-
                 loadOsrsItems();
 
                 if(!updatedPrices){
                     new FetchCurrentPricesTask().execute(Osrs.strings.URL_CURRENT_PRICES);
-                    table.reformat(new boolean[]{true, true, true, false, false, false});
+                    table.reformat(OsrsTable.LAYOUT_DEFAULT);
                 }
 
             }
         });
+
+
     }
+
 
     @Override
     public void onResume(){
@@ -138,7 +138,6 @@ public class HomeActivity extends AppCompatActivity {
         osrsItems.clear();
 
         Cursor c = db.rawQuery("select * from Item", null);
-        OsrsItem.CONTEXT = this;
 
         while(c.moveToNext()){
             int id = c.getInt(0);
@@ -150,6 +149,7 @@ public class HomeActivity extends AppCompatActivity {
             final boolean isFavorite = c.getInt(6) == 1;
 
             final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
+            item.setContext(this);
 
             osrsItems.put(item.getId(), item);
             table.addItem(item);
@@ -160,9 +160,9 @@ public class HomeActivity extends AppCompatActivity {
                     System.out.println(((TextView) view).getText().toString() + " clicked!");
                     Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
 
-                    //intent.putExtra("osrsItem", osrsItems.get(item.getId()));
+                    intent.putExtra("osrsItem", item);
 
-                    //startActivity(intent);
+                    startActivity(intent);
                 }
             });
 
@@ -178,11 +178,33 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
 
-            //item.setColumnWeights(1,4,2,2,0,0);
+            item.getTvName().setOnLongClickListener(new View.OnLongClickListener(){
+
+                @Override
+                public boolean onLongClick(View view) {
+                    LayoutInflater inflater = (LayoutInflater) HomeActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                    PopupWindow pw = new PopupWindow(
+                            inflater.inflate(R.layout.popup_header, null, false),
+                            100,
+                            100,
+                            true);
+                    // The code below assumes that the root container has an id called 'main'
+                    pw.showAtLocation(item.getTvName(), Gravity.CENTER, 0, 0);
+                    return false;
+                }
+
+                private void getSystemService(String layoutInflaterService) {
+                }
+            });
         }
 
+        SharedPreferences prefs = getSharedPreferences("Hello", MODE_PRIVATE);
+        String restoredText = prefs.getString("name", "failed to find name");
+
+        System.out.println("Loaded: " + restoredText);
+
         c.close();
-        System.out.println("Closed cursor!!");
     }
 
 

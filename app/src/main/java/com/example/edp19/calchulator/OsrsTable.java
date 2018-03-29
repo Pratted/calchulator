@@ -1,6 +1,7 @@
 package com.example.edp19.calchulator;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
@@ -21,6 +22,9 @@ public class OsrsTable {
     private TableLayout table;
     private TableRow header;
     private Context context;
+    private static boolean T = true;
+    private static boolean F = false;
+    private boolean lastRowBrown = false;
 
     private View headers[] = new View[6];
     private HashMap<String, Boolean> sortedBy = new HashMap<>();
@@ -34,6 +38,8 @@ public class OsrsTable {
     final public static int COLUMN_LIMIT = 5;
 
     public OsrsPopupColumnSelector columnSelector;
+
+    public static boolean[] LAYOUT_DEFAULT = new boolean[]{T,T,T,T,F,F};
 
     public OsrsTable(Context context, HashMap<Integer, OsrsItem> osrsItems, TableRow header, final TableLayout table){
         this.table = table;
@@ -86,6 +92,11 @@ public class OsrsTable {
                 OsrsTable.this.reformat(columnSelector.getSelectedColumns());
             }
         });
+
+        for(int i = COLUMN_ALCH; i < headers.length; i++){
+            ((TextView) headers[i]).setGravity(Gravity.RIGHT);
+        }
+        
 
     }
 
@@ -205,7 +216,11 @@ public class OsrsTable {
     }
 
     public void addItem(OsrsItem item){
+        item.getTableRow().setBackgroundColor(lastRowBrown ? Osrs.colors.LIGHT_BROWN : Osrs.colors.BROWN);
         table.addView(item.getTableRow());
+
+        //alternating row color...
+        lastRowBrown = !lastRowBrown;
     }
 }
 
