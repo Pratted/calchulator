@@ -1,8 +1,6 @@
 package com.example.edp19.calchulator;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -11,10 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.PopupWindow;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,6 +28,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -42,7 +38,7 @@ public class HomeActivity extends AppCompatActivity {
     private OsrsTable table;
     private boolean updatedPrices;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("HOMEACTIVITY ONCREATE CALLED");
@@ -63,31 +59,27 @@ public class HomeActivity extends AppCompatActivity {
                 (TableLayout)findViewById(R.id.tlGridTable)
         );
 
-        System.out.println("Summary: " + Osrs.strings.URL_CURRENT_PRICES);
 
-
-        OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
-            @Override
-            public void onDBReady(SQLiteDatabase db) {
-                HomeActivity.this.db = db;
-
-                loadOsrsItems();
-
-                if(!updatedPrices){
-                    new FetchCurrentPricesTask().execute(Osrs.strings.URL_CURRENT_PRICES);
-                    table.reformat(OsrsTable.LAYOUT_DEFAULT);
-                }
-
-            }
-        });
-
-
+        if(table.needsPriceUpdate()){
+            System.out.println("BEGIN FETCH PRICE UPDATE");
+            new FetchCurrentPricesTask().execute(Osrs.strings.URL_CURRENT_PRICES);
+        }
+        else{
+            System.out.println("Prices already updated");
+        }
     }
-
 
     @Override
     public void onResume(){
         super.onResume();
+
+        for(OsrsItem item: osrsItems.values()){
+            item.setContext(this);
+        }
+
+
+
+        System.out.println("On resume called...");
     }
 
     @Override
@@ -95,6 +87,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onPause();
 
         System.out.println("ON PAUSE CALLED!!!");
+        table.save();
+
+        System.out.println("Saved table");
     }
 
     @Override
@@ -134,80 +129,6 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-    public void loadOsrsItems(){
-        osrsItems.clear();
-
-        Cursor c = db.rawQuery("select * from Item", null);
-
-        while(c.moveToNext()){
-            int id = c.getInt(0);
-            String name = c.getString(1);
-            int highAlch = c.getInt(2);
-            int currentPrice = c.getInt(3);
-            int buyLimit = c.getInt(4);
-            boolean isMembers = c.getInt(5) == 1;
-            final boolean isFavorite = c.getInt(6) == 1;
-
-            final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
-            item.setContext(this);
-
-            osrsItems.put(item.getId(), item);
-            table.addItem(item);
-
-            item.getTvName().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    System.out.println(((TextView) view).getText().toString() + " clicked!");
-                    Intent intent = new Intent(HomeActivity.this, ItemActivity.class);
-
-                    intent.putExtra("osrsItem", item);
-
-                    startActivity(intent);
-                }
-            });
-
-            item.getIbFavorite().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    item.toggleFavorite();
-
-                    db.execSQL("Update Item set isFavorite = " + (item.getFavorite() ? "1" : "0") + " where id = " + item.getId());
-                    Toast.makeText(HomeActivity.this,
-                            item.getName() + (item.getFavorite() ? " added" : " removed") + " to favorites",
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            item.getTvName().setOnLongClickListener(new View.OnLongClickListener(){
-
-                @Override
-                public boolean onLongClick(View view) {
-                    LayoutInflater inflater = (LayoutInflater) HomeActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                    PopupWindow pw = new PopupWindow(
-                            inflater.inflate(R.layout.popup_header, null, false),
-                            100,
-                            100,
-                            true);
-                    // The code below assumes that the root container has an id called 'main'
-                    pw.showAtLocation(item.getTvName(), Gravity.CENTER, 0, 0);
-                    return false;
-                }
-
-                private void getSystemService(String layoutInflaterService) {
-                }
-            });
-        }
-
-        SharedPreferences prefs = getSharedPreferences("Hello", MODE_PRIVATE);
-        String restoredText = prefs.getString("name", "failed to find name");
-
-        System.out.println("Loaded: " + restoredText);
-
-        c.close();
-    }
-
-
     public void onButtonSettingsClick(View v){
         Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
         intent.putExtra("osrsItems", osrsItems);
@@ -237,6 +158,7 @@ public class HomeActivity extends AppCompatActivity {
                 System.out.println("OSRS ITEMS SIZE: " + osrsItems.size());
 
                 JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onResponse(JSONObject response) {
                         System.out.println("GOT A RESPONSE!!!!");
@@ -252,12 +174,10 @@ public class HomeActivity extends AppCompatActivity {
                                 if(item.getId().equals(OsrsItem.NATURE_RUNE)){
                                     OsrsItem.PRICE_NATURE_RUNE = price;
                                 }
-
                             }
 
-                            table.sortColumn(Osrs.strings.NAME_PROFIT_COLUMN);
-                            updatedPrices = true;
-
+                            //mark time last updated for future runs..
+                            Osrs.PRICES_LAST_UPDATED = Instant.now().toEpochMilli();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -277,11 +197,6 @@ public class HomeActivity extends AppCompatActivity {
 
             System.out.println("The background task is about to end!!!");
             return new JSONObject();
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject json) {
-
         }
     }
 }

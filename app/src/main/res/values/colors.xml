@@ -7,4 +7,7 @@
     <color name="osrsLightBrown">#524A3D</color>
     <color name="osrsCharcoal">#191917</color>
     <color name="osrsOrange">#CA770F</color>
+    <color name="osrsGreen">#1A381B</color>
+    <color name="osrsRed">#631513</color>
+    <color name="osrsBlack">#000500</color>
 </resources>

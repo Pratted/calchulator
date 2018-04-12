@@ -77,7 +77,7 @@ public class OsrsItem implements Parcelable{
         setMembers(isMembers);
         setFavorite(isFavorite);
 
-        formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvPrice);
+        formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvProfit);
 
         row.addView(ibFavorite);
         row.addView(tvName);
@@ -161,6 +161,11 @@ public class OsrsItem implements Parcelable{
         if(tvPrice != null){
             tvPrice.setText(String.valueOf(price));
         }
+
+        if(tvProfit != null){
+            tvProfit.setText(String.valueOf(getProfit()));
+        }
+
     }
 
     public void setTvPrice(TextView tv){
@@ -246,7 +251,7 @@ public class OsrsItem implements Parcelable{
     }
 
     public Integer getProfit(){
-        return highAlch - PRICE_NATURE_RUNE + price;
+        return PRICE_NATURE_RUNE + price - highAlch;
     }
 
     public OsrsItem(Parcel in){
@@ -274,6 +279,7 @@ public class OsrsItem implements Parcelable{
         parcel.writeInt(isMembers ? 1 : 0);
         parcel.writeInt(isFavorite ? 1 : 0);
 
+        /*
         tvHighAlch = null;
         tvPrice = null;
         tvName = null;
@@ -281,6 +287,7 @@ public class OsrsItem implements Parcelable{
         tvLimit = null;
         ibFavorite = null;
         row = null;
+        */
     }
 
     public static final Parcelable.Creator<OsrsItem> CREATOR = new Parcelable.Creator<OsrsItem>(){

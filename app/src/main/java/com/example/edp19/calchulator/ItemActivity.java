@@ -35,8 +35,6 @@ public class ItemActivity extends AppCompatActivity {
     ImageView ivItemImg;
 
 
-    RequestQueue requestQueue;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +48,7 @@ public class ItemActivity extends AppCompatActivity {
         System.out.println("onCreate called for ItemActivity!!!!");
 
         tvItemName = findViewById(R.id.tvItemName);
-        tvCurrentPrice = findViewById(R.id.tvCurrentPrice);
+        //tvCurrentPrice = findViewById(R.id.tvCurrentPrice);
         ivItemImg = findViewById(R.id.ivItemImg);
 
         Intent intent = getIntent();
@@ -64,8 +62,7 @@ public class ItemActivity extends AppCompatActivity {
             Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
 
             ivItemImg.setImageDrawable(drawable);
-
-            //new FetchCurrentPricesTask().execute("https://api.rsbuddy.com/grandExchange?a=guidePrice&i=" + String.valueOf(item.getId()));
+            ivItemImg.setBackgroundDrawable(null);
         }
         else{
             System.out.println("savedInstanceState is null!!");
@@ -73,73 +70,9 @@ public class ItemActivity extends AppCompatActivity {
 
     }
 
-
-    public static Drawable loadImageFromWeb(String url){
-        try{
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            return d;
-        } catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     @Override
     protected void onStart(){
         super.onStart();
 
     }
-
-    private class FetchCurrentPricesTask extends AsyncTask<String, Void, JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(String... urls) {
-            String url = urls[0];
-
-            Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
-            Network network = new BasicNetwork(new HurlStack());
-            requestQueue = new RequestQueue(cache, network);
-            requestQueue.start();
-
-            try{
-
-                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        System.out.println("GOT A RESPONSE!!!!");
-                        System.out.println(response.toString());
-                        try{
-                            tvCurrentPrice.setText("");
-                            tvCurrentPrice.setText("Current Price: " + String.valueOf(response.get("overall")));
-
-                            System.out.println("Finished gathering response");
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println("Error response!!");
-                        System.out.println(error.toString());
-                    }
-                });
-
-                requestQueue.add(jsObjRequest);
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-
-            System.out.println("The background task is about to end!!!");
-            return new JSONObject();
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject json) {
-
-        }
-    }
-
 }

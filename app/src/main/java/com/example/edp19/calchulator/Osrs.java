@@ -38,6 +38,7 @@ public class Osrs {
         public static String NAME_PROFIT_COLUMN;
         public static String NAME_LIMIT_COLUMN;
         public static String URL_CURRENT_PRICES;
+        public static String PREFS_FILE;
     }
 
     public Osrs(Context context){
@@ -59,11 +60,13 @@ public class Osrs {
         strings.NAME_PROFIT_COLUMN = res.getString(R.string.name_profit_column);
         strings.NAME_LIMIT_COLUMN = res.getString(R.string.name_limit_column);
         strings.URL_CURRENT_PRICES = res.getString(R.string.url_current_prices);
+        strings.PREFS_FILE = "osrs.prefs";
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);
         fonts.FONT_SIZE_LARGE = res.getInteger(R.integer.font_size_large);
     }
 
+    public static long PRICES_LAST_UPDATED = 0;
 
 }

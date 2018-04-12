@@ -25,7 +25,7 @@ public class OsrsPopupColumnSelector {
 
     CheckBox checkboxes[];
 
-    private Point getPoint(View v){
+    public static Point getPoint(View v){
         int[] location = new int[2];
 
         v.getLocationOnScreen(location);
@@ -54,7 +54,7 @@ public class OsrsPopupColumnSelector {
         for(int i = 1, j = 0; i < layout.getChildCount()-1; i++, j++){
             checkboxes[j] = (CheckBox) layout.getChildAt(i);
             checkboxes[j].setTextColor(Osrs.colors.ORANGE);
-            checkboxes[j].setTextSize(18);
+            checkboxes[j].setTextSize(Osrs.fonts.FONT_SIZE_SMALL);
             checkboxes[j].setTypeface(Osrs.typefaces.FONT_REGULAR);
 
             final CheckBox c = checkboxes[j];
@@ -120,6 +120,12 @@ public class OsrsPopupColumnSelector {
         }
 
         return n;
+    }
+
+    public void selectColumns(boolean[] cols){
+        for(int i = 0; i < checkboxes.length; i++){
+            checkboxes[i].setChecked(cols[i]);
+        }
     }
 
     private void enableAllCheckboxes(){
