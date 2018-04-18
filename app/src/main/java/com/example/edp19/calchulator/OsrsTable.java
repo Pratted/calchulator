@@ -15,6 +15,7 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -68,6 +69,8 @@ public class OsrsTable {
     private SQLiteDatabase db;
     private LinearLayout layout;
     private PopupWindow window;
+
+    private SearchBar searchBar;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public OsrsTable(Context context, HashMap<Integer, OsrsItem> osrsItems, TableRow header, final TableLayout table){
@@ -157,6 +160,33 @@ public class OsrsTable {
 
 
     }
+
+    public class SearchBar {
+        private EditText tvSearch;
+        private TextView tvSearchLabel;
+        private TextView tvStatus;
+
+        public SearchBar(TextView tvStatus, TextView tvSearchLabel, EditText tvSearch) {
+            this.tvSearch = tvSearch;
+            this.tvSearchLabel = tvSearchLabel;
+            this.tvStatus = tvStatus;
+
+            configureTextView(tvSearch);
+            configureTextView(tvSearchLabel);
+            configureTextView(tvStatus);
+
+        }
+
+        private void configureTextView(TextView tv){
+            tv.setTypeface(Osrs.typefaces.FONT_REGULAR);
+            tv.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
+        }
+    }
+
+    public void createSearchBar(TextView tvStatus, TextView tvSearchLabel, EditText tvSearch){
+        searchBar = new SearchBar(tvStatus, tvSearchLabel, tvSearch);
+    }
+
 
     private TextView createTextView(String text){
         TextView tv = new TextView(context);

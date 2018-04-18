@@ -10,6 +10,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -57,6 +58,12 @@ public class HomeActivity extends AppCompatActivity {
                 osrsItems,
                 (TableRow) findViewById(R.id.headerRow),
                 (TableLayout)findViewById(R.id.tlGridTable)
+        );
+
+        table.createSearchBar(
+                (TextView) findViewById(R.id.tvStatus),
+                (TextView) findViewById(R.id.tvSearchLabel),
+                (EditText) findViewById(R.id.tvSearch)
         );
 
 
