@@ -28,7 +28,7 @@ public class OsrsSearchBar {
     private OsrsTable table;
 
     public OsrsSearchBar(final OsrsTable table, HashMap<Integer, OsrsItem> osrsItems,
-                         TextView tvStatus, TextView tvSearchLabel, final EditText etSearch, ImageButton ibSearch) {
+                         TextView tvStatus, TextView tvSearchLabel, final EditText etSearch) {
 
         this.table = table;
         this.osrsItems = osrsItems;
@@ -40,15 +40,6 @@ public class OsrsSearchBar {
         configureTextView(etSearch);
         configureTextView(tvSearchLabel);
         configureTextView(tvStatus);
-        ibSearch.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String toSearch = etSearch.getText().toString();
-                if(toSearch.equals("")) table.resetSearch();
-                else table.filterItems(toSearch);
-            }
-        });
-
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override

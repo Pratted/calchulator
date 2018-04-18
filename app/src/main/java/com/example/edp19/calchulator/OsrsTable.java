@@ -1,14 +1,29 @@
 package com.example.edp19.calchulator;
 
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -222,6 +237,7 @@ public class OsrsTable {
                             System.out.println("Accepted!!!");
                             item.getTableRow().setVisibility(View.GONE);
                             OsrsTable.this.paint();
+                            setAlarm(item);
                         }
                     });
 
@@ -261,6 +277,67 @@ public class OsrsTable {
         }
 
         c.close();
+    }
+
+    public void setAlarm(final OsrsItem hiddenItem) {
+        final NotificationManager nManager = buildNotificationManager();
+        final NotificationCompat.Builder builder = buildNotificationBuilder(hiddenItem);
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override public void onReceive( Context context, Intent intent) {
+                System.out.println("ON FUCKING RECEIVE");
+                context.unregisterReceiver(this); // this == BroadcastReceiver, not Activity
+                hiddenItem.getTableRow().setVisibility(View.VISIBLE);
+                paint();
+                nManager.notify(hiddenItem.getId(), builder.build());
+            }
+        };
+
+        context.registerReceiver( receiver, new IntentFilter("This doesn't matter"));
+
+        PendingIntent pintent = PendingIntent.getBroadcast( context, 0, new Intent("This doesn't matter"), 0);
+        AlarmManager manager = (AlarmManager)(context.getSystemService( Context.ALARM_SERVICE ));
+
+        // set alarm to fire 5 sec (1000*5) from now (SystemClock.elapsedRealtime())
+        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000*5, pintent);
+    }
+
+    private NotificationManager buildNotificationManager(){
+        String NOTIFICATION_CHANNEL_ID = "4655";
+        //Notification Channel
+        int importance = NotificationManager.IMPORTANCE_MAX;
+        @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PLZ", importance);
+        notificationChannel.enableLights(true);
+        notificationChannel.setLightColor(Color.RED);
+        notificationChannel.enableVibration(true);
+        notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.createNotificationChannel(notificationChannel);
+        return notificationManager;
+    }
+
+    private NotificationCompat.Builder buildNotificationBuilder(OsrsItem item) {
+        Intent intent = new Intent(context, SettingsActivity.class);
+        intent.putExtra("osrsItems", osrsItems);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
+        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.high_alch);
+
+        String NOTIFICATION_CHANNEL_ID = "4655";
+        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        return new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.high_alch)
+                .setContentTitle("Item available again.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentText(item.getName() + " available again.")
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setContentIntent(pendingIntent);
     }
 
     private ImageButton createFavoriteHeader(String tag){

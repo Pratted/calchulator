@@ -104,19 +104,6 @@
                 </LinearLayout>
 
                 <ImageButton
-                    android:id="@+id/ibSearchButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:background="@color/osrsBrown"
-                    android:layout_weight="0.1"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginBottom="2dp"
-                    app:srcCompat="@drawable/osrs_search"/>
-
-                <ImageButton
                     android:id="@+id/settings_button"
                     android:onClick="onButtonSettingsClick"
                     android:layout_width="wrap_content"

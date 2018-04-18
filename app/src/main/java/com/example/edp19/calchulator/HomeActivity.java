@@ -1,12 +1,15 @@
 package com.example.edp19.calchulator;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,12 +19,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
@@ -69,73 +74,62 @@ public class HomeActivity extends AppCompatActivity {
                 this,
                 osrsItems,
                 (TableRow) findViewById(R.id.headerRow),
-                (TableLayout)findViewById(R.id.tlGridTable)
+                (TableLayout) findViewById(R.id.tlGridTable)
         );
 
         searchBar = new OsrsSearchBar(table, osrsItems,
                 (TextView) findViewById(R.id.tvStatus),
                 (TextView) findViewById(R.id.tvSearchLabel),
-                (EditText) findViewById(R.id.tvSearch),
-                (ImageButton) findViewById(R.id.ibSearchButton)
+                (EditText) findViewById(R.id.tvSearch)
         );
 
-        if(table.needsPriceUpdate()){
+        if (table.needsPriceUpdate()) {
             System.out.println("BEGIN FETCH PRICE UPDATE");
             new FetchCurrentPricesTask().execute(Osrs.strings.URL_CURRENT_PRICES);
-        }
-        else{
+        } else {
             System.out.println("Prices already updated");
         }
 
-        ImageButton b = (ImageButton) findViewById(R.id.ibSearchButton);
-        b.setOnClickListener(new View.OnClickListener(){
 
-            @Override
-            public void onClick(View v) {
-
-                String NOTIFICATION_CHANNEL_ID = "4655";
-                //Notification Channel
-                CharSequence channelName = "PLZ";
-                int importance = NotificationManager.IMPORTANCE_MAX;
-                @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PLZ", importance);
-                notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.RED);
-                notificationChannel.enableVibration(true);
-                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-
-
-                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-                intent.putExtra("osrsItems", osrsItems);
-
-
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
-                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.high_alch);
-                Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(HomeActivity.this, NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.high_alch)
-                        .setContentTitle("Temp")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setContentText("Heres the message...")
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setDefaults(Notification.DEFAULT_ALL)
-                        .setContentIntent(pendingIntent);
-
-                NotificationManager notificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                notificationManager.createNotificationChannel(notificationChannel);
-
-                notificationManager.notify(99, notificationBuilder.build());
-
-            }
-        });
-
-
+//            @Override
+//            public void onClick(View v) {
+//                String NOTIFICATION_CHANNEL_ID = "4655";
+//                //Notification Channel
+//                int importance = NotificationManager.IMPORTANCE_MAX;
+//                @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PLZ", importance);
+//                notificationChannel.enableLights(true);
+//                notificationChannel.setLightColor(Color.RED);
+//                notificationChannel.enableVibration(true);
+//                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+//
+//
+//                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+//                intent.putExtra("osrsItems", osrsItems);
+//
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
+//                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.high_alch);
+//                Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//
+//                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(HomeActivity.this, NOTIFICATION_CHANNEL_ID)
+//                        .setSmallIcon(R.drawable.high_alch)
+//                        .setContentTitle("Temp")
+//                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                        .setContentText("Heres the message...")
+//                        .setAutoCancel(true)
+//                        .setSound(defaultSoundUri)
+//                        .setDefaults(Notification.DEFAULT_ALL)
+//                        .setContentIntent(pendingIntent);
+//
+//                NotificationManager notificationManager =
+//                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//                notificationManager.createNotificationChannel(notificationChannel);
+//
+//                notificationManager.notify(99, notificationBuilder.build());
+//            }
+//        });
     }
-
 
     @Override
     public void onResume(){
