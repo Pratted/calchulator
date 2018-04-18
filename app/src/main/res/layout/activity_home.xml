@@ -103,8 +103,21 @@
 
                 </LinearLayout>
 
+                <ImageButton
+                    android:id="@+id/ibSearchButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:background="@color/osrsBrown"
+                    android:layout_weight="0.1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginBottom="2dp"
+                    app:srcCompat="@drawable/osrs_search"/>
 
                 <ImageButton
+                    android:id="@+id/settings_button"
                     android:onClick="onButtonSettingsClick"
                     android:layout_width="wrap_content"
                     android:layout_height="60dp"
@@ -169,14 +182,12 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
         android:background="@drawable/spellbook_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>

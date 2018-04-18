@@ -8,14 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
-import android.text.Layout;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -24,15 +21,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.Array;
 import java.sql.Time;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created by eric on 3/28/18.
@@ -69,8 +62,6 @@ public class OsrsTable {
     private SQLiteDatabase db;
     private LinearLayout layout;
     private PopupWindow window;
-
-    private SearchBar searchBar;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public OsrsTable(Context context, HashMap<Integer, OsrsItem> osrsItems, TableRow header, final TableLayout table){
@@ -157,36 +148,7 @@ public class OsrsTable {
         });
 
         System.out.println("Last updated: " + Time.from(Instant.ofEpochSecond(Osrs.PRICES_LAST_UPDATED)).toGMTString());
-
-
     }
-
-    public class SearchBar {
-        private EditText tvSearch;
-        private TextView tvSearchLabel;
-        private TextView tvStatus;
-
-        public SearchBar(TextView tvStatus, TextView tvSearchLabel, EditText tvSearch) {
-            this.tvSearch = tvSearch;
-            this.tvSearchLabel = tvSearchLabel;
-            this.tvStatus = tvStatus;
-
-            configureTextView(tvSearch);
-            configureTextView(tvSearchLabel);
-            configureTextView(tvStatus);
-
-        }
-
-        private void configureTextView(TextView tv){
-            tv.setTypeface(Osrs.typefaces.FONT_REGULAR);
-            tv.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-        }
-    }
-
-    public void createSearchBar(TextView tvStatus, TextView tvSearchLabel, EditText tvSearch){
-        searchBar = new SearchBar(tvStatus, tvSearchLabel, tvSearch);
-    }
-
 
     private TextView createTextView(String text){
         TextView tv = new TextView(context);
@@ -259,7 +221,7 @@ public class OsrsTable {
                             window.dismiss();
                             System.out.println("Accepted!!!");
                             item.getTableRow().setVisibility(View.GONE);
-                            OsrsTable.this.enableAlteratingRowColors();
+                            OsrsTable.this.paint();
                         }
                     });
 
@@ -368,7 +330,7 @@ public class OsrsTable {
         sortedBy.put(columnName, !sorted);
         lastSortedBy = columnName;
 
-        enableAlteratingRowColors();
+        paint();
     }
 
     private void hideAllColumns(TableRow row){
@@ -432,8 +394,11 @@ public class OsrsTable {
         table.addView(item.getTableRow());
     }
 
-    public void enableAlteratingRowColors(){
-        resetRowColors();
+    public void paint(){
+        for(int i = 0; i < size(); i++){
+            row(i).setBackgroundColor(Osrs.colors.BROWN);
+        }
+
         boolean isBrown = false;
 
         for(int i = 0; i < size(); i++){
@@ -451,11 +416,6 @@ public class OsrsTable {
         }
     }
 
-    private void resetRowColors(){
-        for(int i = 0; i < size(); i++){
-            row(i).setBackgroundColor(Osrs.colors.BROWN);
-        }
-    }
 
     private void restoreTable(){
         //load the previously selected columns, (use default if NA).
@@ -478,9 +438,8 @@ public class OsrsTable {
     public void refresh(){
         System.out.println("LAYOUT " + LAYOUT_CURRENT.toString());
         reformat(LAYOUT_CURRENT);
-        resetRowColors();
 
-        enableAlteratingRowColors();
+        paint();
     }
 
     public void save(){
@@ -505,5 +464,22 @@ public class OsrsTable {
         return Osrs.PRICES_LAST_UPDATED - 4 * 3600 * 1000 > 0;
     }
 
+    public void filterItems(String toSearch) {
+        for (OsrsItem item : osrsItems.values()) {
+            if(!item.getName().toLowerCase().contains(toSearch.toLowerCase())) {
+                item.getTableRow().setVisibility(View.GONE);
+            }
+        }
+
+        paint();
+    }
+
+    public void resetSearch() {
+        for(OsrsItem item : osrsItems.values()){
+            item.getTableRow().setVisibility(View.VISIBLE);
+        }
+
+        paint();
+    }
 }
 

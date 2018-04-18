@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -34,7 +35,7 @@ import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
     private SQLiteDatabase db;
-
+    private OsrsSearchBar searchBar;
     private HashMap<Integer, OsrsItem> osrsItems;
     private OsrsTable table;
     private boolean updatedPrices;
@@ -60,12 +61,12 @@ public class HomeActivity extends AppCompatActivity {
                 (TableLayout)findViewById(R.id.tlGridTable)
         );
 
-        table.createSearchBar(
+        searchBar = new OsrsSearchBar(table, osrsItems,
                 (TextView) findViewById(R.id.tvStatus),
                 (TextView) findViewById(R.id.tvSearchLabel),
-                (EditText) findViewById(R.id.tvSearch)
+                (EditText) findViewById(R.id.tvSearch),
+                (ImageButton) findViewById(R.id.ibSearchButton)
         );
-
 
         if(table.needsPriceUpdate()){
             System.out.println("BEGIN FETCH PRICE UPDATE");

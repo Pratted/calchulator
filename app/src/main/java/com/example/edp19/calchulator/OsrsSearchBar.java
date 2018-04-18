@@ -1,6 +1,12 @@
 package com.example.edp19.calchulator;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.edp19.calchulator.Osrs;
@@ -17,21 +23,55 @@ public class OsrsSearchBar {
     private EditText tvSearch;
     private TextView tvSearchLabel;
     private TextView tvStatus;
-
+    private ImageButton ibSearch;
     private HashMap<Integer, OsrsItem> osrsItems;
     private OsrsTable table;
 
-    public OsrsSearchBar(OsrsTable table, HashMap<Integer, OsrsItem> osrsItems,
-                         TextView tvStatus, TextView tvSearchLabel, EditText tvSearch) {
+    public OsrsSearchBar(final OsrsTable table, HashMap<Integer, OsrsItem> osrsItems,
+                         TextView tvStatus, TextView tvSearchLabel, final EditText etSearch, ImageButton ibSearch) {
+
         this.table = table;
         this.osrsItems = osrsItems;
-        this.tvSearch = tvSearch;
+        this.tvSearch = etSearch;
         this.tvSearchLabel = tvSearchLabel;
         this.tvStatus = tvStatus;
+        this.ibSearch = ibSearch;
 
-        configureTextView(tvSearch);
+        configureTextView(etSearch);
         configureTextView(tvSearchLabel);
         configureTextView(tvStatus);
+        ibSearch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String toSearch = etSearch.getText().toString();
+                if(toSearch.equals("")) table.resetSearch();
+                else table.filterItems(toSearch);
+            }
+        });
+
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                System.out.println("Current text: " + charSequence.toString());
+
+                String toSearch = charSequence.toString().toLowerCase();
+                if(toSearch.equals("")) table.resetSearch();
+                else table.filterItems(toSearch);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+
     }
 
     private void configureTextView(TextView tv){
