@@ -1,9 +1,12 @@
 package com.example.edp19.calchulator;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+
+import java.io.FileOutputStream;
 
 
 /**
@@ -65,8 +68,15 @@ public class Osrs {
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);
         fonts.FONT_SIZE_LARGE = res.getInteger(R.integer.font_size_large);
+
+        AssetFileDescriptor fd;
+
+
+
     }
 
     public static long PRICES_LAST_UPDATED = 0;
+
+
 
 }

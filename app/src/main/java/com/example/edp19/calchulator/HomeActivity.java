@@ -1,12 +1,24 @@
 package com.example.edp19.calchulator;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -15,7 +27,6 @@ import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -47,7 +58,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //initialize resources (strings, fonts, colors, etc)
-        new Osrs(this);;
+        new Osrs(this);
 
         setContentView(R.layout.activity_home);
 
@@ -75,7 +86,56 @@ public class HomeActivity extends AppCompatActivity {
         else{
             System.out.println("Prices already updated");
         }
+
+        ImageButton b = (ImageButton) findViewById(R.id.ibSearchButton);
+        b.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                String NOTIFICATION_CHANNEL_ID = "4655";
+                //Notification Channel
+                CharSequence channelName = "PLZ";
+                int importance = NotificationManager.IMPORTANCE_MAX;
+                @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PLZ", importance);
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(Color.RED);
+                notificationChannel.enableVibration(true);
+                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+
+                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
+                intent.putExtra("osrsItems", osrsItems);
+
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
+                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.high_alch);
+                Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(HomeActivity.this, NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.high_alch)
+                        .setContentTitle("Temp")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setContentText("Heres the message...")
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setContentIntent(pendingIntent);
+
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                notificationManager.createNotificationChannel(notificationChannel);
+
+                notificationManager.notify(99, notificationBuilder.build());
+
+            }
+        });
+
+
     }
+
 
     @Override
     public void onResume(){
@@ -205,6 +265,11 @@ public class HomeActivity extends AppCompatActivity {
 
             System.out.println("The background task is about to end!!!");
             return new JSONObject();
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject jsonObject) {
+            super.onPostExecute(jsonObject);
         }
     }
 }
