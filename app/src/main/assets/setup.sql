@@ -1126,3 +1126,6 @@ set isFavorite = 0,
     isMembers = COALESCE(isMembers, 0),
     highAlch = COALESCE(highAlch, 0),
     buyLimit = COALESCE(buyLimit, 0);
+
+delete from item
+where highAlch > 100000 or highAlch = 0;

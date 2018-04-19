@@ -24,8 +24,7 @@ public class OsrsNotificationReceiver extends BroadcastReceiver {
         System.out.println("Osrs Notification Received!!!!");
 
         int item = intent.getIntExtra("item", 0);
-
-
+        
         System.out.println("Recieved a " + item);
 
         Intent outgoing = new Intent(context, OsrsNotificationService.class);

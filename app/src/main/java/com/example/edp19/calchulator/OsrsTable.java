@@ -550,7 +550,7 @@ public class OsrsTable {
 
     public void filterItems(String toSearch) {
         for (OsrsItem item : osrsItems.values()) {
-            if(!item.getName().toLowerCase().contains(toSearch.toLowerCase())) {
+            if(!item.getName().toLowerCase().contains(toSearch.toLowerCase().replace("*", ""))) {
                 item.getTableRow().setVisibility(View.GONE);
             }
         }
