@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
+import android.widget.Toast;
 
 import java.util.Date;
 
@@ -15,7 +16,7 @@ import java.util.Date;
  * Created by eric on 4/19/18.
  */
 
-public class OsrsNotificationReceiver extends BroadcastReceiver {
+public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
 
 
     // table.setSomeAlarm -> (wait n seconds) -> onReceive -> StartsService -> onHandleIntent
@@ -30,6 +31,8 @@ public class OsrsNotificationReceiver extends BroadcastReceiver {
         boolean priceUpdate = intent.getBooleanExtra("PriceUpdate", false);
 
         Intent outgoing = new Intent(context, OsrsNotificationService.class);
+
+        Toast.makeText(context, "ON RECEIVE CALLED", Toast.LENGTH_LONG).show();
 
         if(priceUpdate) {
             System.out.println("We are going to update the prices...");

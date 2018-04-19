@@ -56,7 +56,6 @@
                         android:background="#CCBC97"
                         android:editable="true"
                         android:gravity="bottom"
-                        android:hint="Type to search..."
                         android:paddingBottom="4dp"
                         android:paddingLeft="10dp"
                         android:layout_gravity="left"

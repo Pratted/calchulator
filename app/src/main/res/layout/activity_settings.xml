@@ -19,8 +19,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-
-
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -36,6 +34,49 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
+                    android:descendantFocusability="beforeDescendants"
+                    android:focusableInTouchMode="true"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:paddingLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Min Profit"
+                        android:textSize="24dp"
+                        android:gravity="center"
+                        android:textColor="@color/osrsOrange" />
+
+                    <EditText
+                        android:id="@+id/etMinProfit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right|center_vertical"
+                        android:textSize="24dp"
+                        android:maxLength="4"
+                        android:background="@color/osrsLightBrown"
+                        android:hint="None"
+                        android:inputType="numberDecimal"
+                        android:paddingRight="10dp"
+                        android:textColor="@color/osrsCharcoal" />
+
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+
+                android:background="@color/osrsBrown">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:descendantFocusability="beforeDescendants"
+                    android:focusableInTouchMode="true"
                     android:layout_weight="1">
 
                     <TextView
@@ -48,12 +89,15 @@
                         android:textColor="@color/osrsOrange" />
 
                     <EditText
+                        android:id="@+id/etPriceNat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:gravity="right"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right|center_vertical"
                         android:textSize="24dp"
                         android:maxLength="3"
+                        android:background="@color/osrsLightBrown"
                         android:hint="220"
                         android:inputType="numberDecimal"
                         android:paddingRight="10dp"
@@ -87,6 +131,24 @@
 
                 </LinearLayout>
             </TableRow>
+
+            <TableRow
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="Hidden Items"
+                    android:textSize="20dp"
+                    android:textAlignment="center"
+                    android:paddingTop="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/osrsOrange"
+                    android:background="@drawable/rectangle_button"
+                    android:layout_weight="1"/>
+            </TableRow>
+
 
             <TableRow
                 android:minHeight="60dp"
@@ -147,6 +209,10 @@
         android:layout_height="match_parent"
         android:background="@drawable/osrscolumns_nobottom"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout_editor_absoluteY="0dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

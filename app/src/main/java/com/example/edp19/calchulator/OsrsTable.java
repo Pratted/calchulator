@@ -295,67 +295,6 @@ public class OsrsTable {
         notificationReceiver.setPriceUpdateAlarm(context, 10);
     }
 
-    public void setAlarm(final OsrsItem hiddenItem) {
-        final NotificationManager nManager = buildNotificationManager();
-        final NotificationCompat.Builder builder = buildNotificationBuilder(hiddenItem);
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override public void onReceive( Context context, Intent intent) {
-                System.out.println("ON FUCKING RECEIVE");
-                context.unregisterReceiver(this); // this == BroadcastReceiver, not Activity
-                hiddenItem.getTableRow().setVisibility(View.VISIBLE);
-                paint();
-                nManager.notify(hiddenItem.getId(), builder.build());
-            }
-        };
-
-        context.registerReceiver( receiver, new IntentFilter("This doesn't matter"));
-
-        PendingIntent pintent = PendingIntent.getBroadcast( context, 0, new Intent("This doesn't matter"), 0);
-        AlarmManager manager = (AlarmManager)(context.getSystemService( Context.ALARM_SERVICE ));
-
-        // set alarm to fire 5 sec (1000*5) from now (SystemClock.elapsedRealtime())
-        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000*5, pintent);
-    }
-
-    private NotificationManager buildNotificationManager(){
-        String NOTIFICATION_CHANNEL_ID = "4655";
-        //Notification Channel
-        int importance = NotificationManager.IMPORTANCE_MAX;
-        @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PLZ", importance);
-        notificationChannel.enableLights(true);
-        notificationChannel.setLightColor(Color.RED);
-        notificationChannel.enableVibration(true);
-        notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.createNotificationChannel(notificationChannel);
-        return notificationManager;
-    }
-
-    private NotificationCompat.Builder buildNotificationBuilder(OsrsItem item) {
-        Intent intent = new Intent(context, SettingsActivity.class);
-        intent.putExtra("osrsItems", osrsItems);
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
-        Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.high_alch);
-
-        String NOTIFICATION_CHANNEL_ID = "4655";
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        return new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(R.drawable.high_alch)
-                .setContentTitle("Item available again.")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentText(item.getName() + " available again.")
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setContentIntent(pendingIntent);
-    }
-
     private ImageButton createFavoriteHeader(String tag){
         ImageButton ib = new ImageButton(context);
 

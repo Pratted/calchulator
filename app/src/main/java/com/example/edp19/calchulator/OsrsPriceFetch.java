@@ -86,8 +86,8 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
                             public void onDBReady(SQLiteDatabase db) {
                                 db.execSQL(updatePrices.toString());
 
-                                db.execSQL("update item set currentPrice = null " +
-                                            "where currentPrice = 0");
+                                db.execSQL("update item set currentPrice = null where currentPrice = 0");
+
                                 //mark time last updated for future runs..
                                 Osrs.PRICES_LAST_UPDATED = Instant.now().toEpochMilli();
                                 SharedPreferences sp = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);

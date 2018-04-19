@@ -39,12 +39,12 @@ public class OsrsNotificationService extends IntentService {
 
         int id = intent.getIntExtra("item", 0);
         boolean hasPriceUpdate = intent.getBooleanExtra("PriceUpdate", false);
-        String notificationCategory = "Price update";
-        String NOTIFICATION_CHANNEL_ID; // = String.valueOf(id);
+        String category = "Price update";
+        String channelId;
         String message;
         String title;
 
-        if(intent.hasExtra("PriceUpdate")) {
+        if(hasPriceUpdate) {
             try {
                 System.out.println("BEFORE THE SHIT");
                 JSONObject n = new OsrsPriceFetch(this).execute(getString(R.string.url_current_prices)).get();
@@ -53,20 +53,25 @@ public class OsrsNotificationService extends IntentService {
 
             title = "Price update Complete.";
             message = "The prices will update again in 4 hrs.";
-            NOTIFICATION_CHANNEL_ID = "Price Update";
+            channelId = "Price Update";
         }
         else{
-            notificationCategory = "Item available";
-            NOTIFICATION_CHANNEL_ID = String.valueOf(id);
+            category = "Item available";
+            channelId = String.valueOf(id);
             OsrsItem item = OsrsDB.getInstance(this).getItem(id);
 
             title = item.getName() + " is available again.";
             message = "The current market price is: " + item.getPrice();
         }
 
+        displayNotification(category, channelId, title, message);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void displayNotification(String category, String id, String title, String message){
         //Notification Channel
         int importance = NotificationManager.IMPORTANCE_MAX;
-        @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, notificationCategory, importance);
+        @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(id, category, importance);
         notificationChannel.enableLights(true);
         notificationChannel.setLightColor(Color.RED);
         notificationChannel.enableVibration(true);
@@ -77,17 +82,14 @@ public class OsrsNotificationService extends IntentService {
 
         notificationManager.createNotificationChannel(notificationChannel);
 
-
-
         Intent next = new Intent(this, HomeActivity.class);
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , next,PendingIntent.FLAG_ONE_SHOT);
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.high_alch);
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, id)
                 .setSmallIcon(R.drawable.high_alch)
                 .setContentTitle(title)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

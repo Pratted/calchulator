@@ -8,143 +8,181 @@
     tools:context="com.example.edp19.calchulator.ItemActivity">
 
 
-    <!--
-    <TextView
-        android:id="@+id/tvBuyLimit"
-        android:layout_width="161dp"
-        android:layout_height="23dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="92dp"
-        android:text="Buy Limit"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvItemName"
-        android:layout_marginLeft="8dp" />
-
-    <TextView
-        android:id="@+id/tvHighAlch"
-        android:layout_width="161dp"
-        android:layout_height="23dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="56dp"
-        android:text="High Alch"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvItemName"
-        android:layout_marginLeft="8dp" />
-
-    <TextView
-        android:id="@+id/tvCurrentPrice"
-        android:layout_width="161dp"
-        android:layout_height="23dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/labelCurrentPrice"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvItemName"
-        android:layout_marginLeft="8dp" />
-
-    <ImageButton
-        android:id="@+id/ibFavorite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="188dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/btn_star_big_on"
-        android:layout_marginLeft="8dp" />
-
-    <TextView
-        android:id="@+id/tvFavorite"
-        android:layout_width="189dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="204dp"
-        android:text="Add as favorite"
-        app:layout_constraintStart_toEndOf="@+id/ibFavorite"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="16dp" />
-    -->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
         android:orientation="vertical"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="80dp"/>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/backdrop_765_top"/>
+            android:background="@drawable/backdrop_765_top" />
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:background="@drawable/backdrop_745">
 
             <TableLayout
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/ivItemImg"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/p561"/>
+                    android:layout_height="match_parent"
+                    android:layout_gravity="right"
+                    android:gravity="right"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
 
                     <TextView
                         android:id="@+id/tvItemName"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="Item Name"
-                        android:layout_gravity="center"
-                        android:gravity="right"/>
+                        android:layout_weight="3"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="10dp"
+                        android:text="Nature Rune"
+                        android:textSize="30sp" />
+
+                    <LinearLayout
+                        android:layout_height="match_parent"
+                        android:layout_gravity="right"
+                        android:layout_weight="1"
+                        android:gravity="right">
+
+                        <ImageView
+                            android:id="@+id/ivItemImg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/p561"
+                            android:scaleType="center" />
+                    </LinearLayout>
                 </TableRow>
 
                 <TableRow
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/high_alch"
-                            android:scaleType="fitCenter" />
+                    android:layout_marginTop="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
 
                         <TextView
-                            android:id="@+id/tvHighAlch"
+                            android:paddingLeft="10dp"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="Price: "
+                            android:textSize="24dp"
+                            android:gravity="right|center_vertical" />
+
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:text="Alch Price"
-                            android:layout_gravity="center"
-                            android:gravity="right"/>
+                            android:text="38000"
+                            android:textSize="24dp"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
 
+                        <TextView
+                            android:paddingLeft="10dp"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="Alch: "
+                            android:textSize="24dp"
+                            android:gravity="right|center_vertical" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="38200"
+                            android:textSize="24dp"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:paddingLeft="10dp"
+                            android:layout_width="80dp"
+                            android:layout_height="match_parent"
+                            android:text="Alch: "
+                            android:textSize="24dp"
+                            android:gravity="right|center_vertical" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="38200"
+                            android:textSize="24dp"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/imageButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:srcCompat="@android:drawable/star_big_on"
+                            android:background="null"/>
+
+                        <TextView
+                            android:paddingLeft="10dp"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:text="Alch: "
+                            android:textSize="24dp" />
+
+                    </LinearLayout>
                 </TableRow>
             </TableLayout>
-
-
         </ScrollView>
-
-
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/backdrop_765_bottom"/>
+            android:background="@drawable/backdrop_765_bottom" />
 
     </LinearLayout>
 
