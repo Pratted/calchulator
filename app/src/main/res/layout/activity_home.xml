@@ -93,6 +93,7 @@
                             android:editable="true"
                             android:gravity="bottom"
                             android:paddingBottom="4dp"
+                            android:inputType="text"
                             android:paddingLeft="4dp"
                             android:layout_gravity="left"
                             android:text="*"

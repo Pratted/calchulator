@@ -51,6 +51,9 @@ public class ItemActivity extends AppCompatActivity {
         //tvCurrentPrice = findViewById(R.id.tvCurrentPrice);
         ivItemImg = findViewById(R.id.ivItemImg);
 
+        //load the item from the database. fuck it.
+
+        /*
         Intent intent = getIntent();
 
         if(intent != null){
@@ -67,6 +70,7 @@ public class ItemActivity extends AppCompatActivity {
         else{
             System.out.println("savedInstanceState is null!!");
         }
+        */
 
     }
 

@@ -21,10 +21,18 @@ public class SettingsActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        buttonRemoveFavs = findViewById(R.id.buttonRemoveFavs);
+        //buttonRemoveFavs = findViewById(R.id.buttonRemoveFavs);
 
         System.out.println("ABout to unpakc");
         osrsItems = (HashMap<Integer, OsrsItem> ) getIntent().getSerializableExtra("osrsItems");
+
+        OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
+            @Override
+            public void onDBReady(SQLiteDatabase db) {
+                SettingsActivity.this.db = db;
+
+            }
+        });
     }
 
 
@@ -32,12 +40,12 @@ public class SettingsActivity extends AppCompatActivity  {
     public void onResume(){
         super.onResume();
 
+        /*
         OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
             @Override
             public void onDBReady(SQLiteDatabase db) {
                 SettingsActivity.this.db = db;
 
-                /******************** Callback ********************/
                 buttonRemoveFavs.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -65,6 +73,7 @@ public class SettingsActivity extends AppCompatActivity  {
                 });
             }
         });
+        */
     }
 
     public void removeAllFavorites() {

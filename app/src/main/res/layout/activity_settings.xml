@@ -4,54 +4,149 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/osrsBrown"
+    android:background="@color/osrsLightBrown"
     tools:context="com.example.edp19.calchulator.SettingsActivity">
 
-    <Button
-        android:id="@+id/buttonRemoveFavs"
-        android:layout_width="135dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="128dp"
-        android:layout_marginStart="16dp"
-        android:text="Remove all Favorites"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/star_on" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+
+                android:background="@color/osrsBrown">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:paddingLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Nature Rune"
+                        android:textSize="24dp"
+                        android:gravity="center"
+                        android:textColor="@color/osrsOrange" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="right"
+                        android:textSize="24dp"
+                        android:maxLength="3"
+                        android:hint="220"
+                        android:inputType="numberDecimal"
+                        android:paddingRight="10dp"
+                        android:textColor="@color/osrsCharcoal" />
+
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/osrsBrown">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_weight="1">
+
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Show Member Items"
+                        android:textSize="22dp"
+                        android:paddingLeft="10dp"
+                        android:checked="true"
+                        android:gravity="center_vertical"
+                        android:layoutDirection="rtl"
+                        android:textColor="@color/osrsOrange"/>
+
+
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="Blocked Items"
+                    android:textSize="20dp"
+                    android:textAlignment="center"
+                    android:paddingTop="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/osrsOrange"
+                    android:background="@drawable/rectangle_button"
+                    android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="Remove All Favorites"
+                    android:textSize="20dp"
+                    android:textAlignment="center"
+                    android:paddingTop="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/osrsOrange"
+                    android:background="@drawable/rectangle_button"
+                    android:layout_weight="1"/>
+            </TableRow>
+
+            <TableRow
+                android:minHeight="60dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="Restore Defaults"
+                    android:textSize="20dp"
+                    android:paddingTop="10dp"
+                    android:textAlignment="center"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/osrsOrange"
+                    android:background="@drawable/rectangle_button"
+                    android:layout_weight="1"/>
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="88dp"
-        android:layout_height="44dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonRemoveFavs"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton"
-        app:layout_constraintVertical_bias="0.445"
-        app:srcCompat="@drawable/p561" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="124dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="168dp"
-        android:background="#CCBC97"
-        android:textColor="#000000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.068"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/osrscolumns_nobottom"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp" />
 
 </android.support.constraint.ConstraintLayout>

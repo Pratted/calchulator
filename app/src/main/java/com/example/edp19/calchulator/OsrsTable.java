@@ -78,6 +78,8 @@ public class OsrsTable {
     private LinearLayout layout;
     private PopupWindow window;
 
+    private OsrsNotificationReceiver notificationReceiver;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public OsrsTable(Context context, HashMap<Integer, OsrsItem> osrsItems, TableRow header, final TableLayout table){
         this.table = table;
@@ -163,6 +165,8 @@ public class OsrsTable {
         });
 
         System.out.println("Last updated: " + Time.from(Instant.ofEpochSecond(Osrs.PRICES_LAST_UPDATED)).toGMTString());
+
+        notificationReceiver = new OsrsNotificationReceiver();
     }
 
     private TextView createTextView(String text){
@@ -214,6 +218,9 @@ public class OsrsTable {
 
                 @Override
                 public boolean onLongClick(View v) {
+
+
+
                     Point p = OsrsPopupColumnSelector.getPoint(v);
 
                     TextView prompt = layout.findViewById(R.id.tvHideItemPrompt);
@@ -227,7 +234,6 @@ public class OsrsTable {
                     accept.setTypeface(Osrs.typefaces.FONT_REGULAR);
                     accept.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
 
-                    final TextView tis = (TextView) v;
 
                     accept.setOnClickListener(new View.OnClickListener(){
 
@@ -237,7 +243,7 @@ public class OsrsTable {
                             System.out.println("Accepted!!!");
                             item.getTableRow().setVisibility(View.GONE);
                             OsrsTable.this.paint();
-                            setAlarm(item);
+                            notificationReceiver.setAlarm(context, item.getId(), 10);
                         }
                     });
 
@@ -426,6 +432,7 @@ public class OsrsTable {
 
             if(weights[i].weight != 0){
                 row.getChildAt(i).setVisibility(View.VISIBLE);
+                row.setGravity(Gravity.CENTER_VERTICAL);
             }
         }
     }

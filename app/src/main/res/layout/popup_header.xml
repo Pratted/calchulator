@@ -2,79 +2,91 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/llSortChangePopup"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="350dp"
     android:background="@drawable/spellbook_border"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/osrsBrown"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginRight="6dp"
-        android:textSize="20dp"
-        android:gravity="center"
-        android:textColor="@color/osrsOrange"
-        android:text="Select up to 3 columns"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/osrsBrown"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginRight="6dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/osrsOrange"
+            android:text="Select up to 3 columns"/>
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Favorites"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:background="@color/osrsLightBrown"
-        android:checked="true"/>
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Favorites"
 
-    <!-- Hide Item checkbox since it should always been displayed -->
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Item"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:background="@color/osrsLightBrown"
-        android:checked="true"
-        android:visibility="gone" />
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@color/osrsLightBrown"
+            android:checked="true"/>
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/osrsBrown"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:text="Alch"/>
+        <!-- Hide Item checkbox since it should always been displayed -->
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Item"
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/osrsLightBrown"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:text="Price"/>
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:background="@color/osrsLightBrown"
+            android:checked="true"
+            android:visibility="gone" />
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/osrsBrown"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:text="Profit"/>
+        <CheckBox
 
-    <CheckBox
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/osrsLightBrown"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:text="Limit"/>
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/osrsBrown"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:text="Alch"/>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="77dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:background="@color/osrsBrown" />
+        <CheckBox
+
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/osrsLightBrown"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:text="Price"/>
+
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/osrsBrown"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:text="Profit"/>
+
+        <CheckBox
+
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/osrsLightBrown"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:text="Limit"/>
+
+
+
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/osrsBrown"
+            android:layout_gravity="bottom"
+            android:text="Show Hidden Items" />
 
 </LinearLayout>

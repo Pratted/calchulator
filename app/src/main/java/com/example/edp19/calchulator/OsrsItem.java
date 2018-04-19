@@ -37,6 +37,13 @@ public class OsrsItem implements Parcelable{
     final public static Integer NATURE_RUNE = 561;
     private Context context;
 
+    private TextView tvLimit;
+    private TextView tvName;
+    private ImageButton ibFavorite;
+    private TextView tvPrice;
+    private TextView tvHighAlch;
+    private TextView tvProfit;
+
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         this.id = id;
         this.name = name;
@@ -51,6 +58,7 @@ public class OsrsItem implements Parcelable{
         this.context = context;
 
         row = new TableRow(context);
+        row.setMinimumHeight(60);
 
         tvName = new TextView(context);
         tvPrice = new TextView(context);
@@ -59,6 +67,8 @@ public class OsrsItem implements Parcelable{
         tvProfit = new TextView(context);
         ibFavorite = new ImageButton(context);
         tvProfit = new TextView(context);
+
+        tvName.setMaxLines(2);
 
         tvPrice.setGravity(Gravity.RIGHT);
         tvHighAlch.setGravity(Gravity.RIGHT);
@@ -88,12 +98,7 @@ public class OsrsItem implements Parcelable{
         row.setId(id);
     }
 
-    private TextView tvLimit;
-    private TextView tvName;
-    private ImageButton ibFavorite;
-    private TextView tvPrice;
-    private TextView tvHighAlch;
-    private TextView tvProfit;
+
 
     public TableRow getTableRow() {
         return row;

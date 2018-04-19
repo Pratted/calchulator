@@ -26,5 +26,9 @@
         </activity>
         <activity android:name=".ItemActivity" android:parentActivityName=".HomeActivity" />
         <activity android:name=".SettingsActivity" android:parentActivityName=".HomeActivity"></activity>
+
+        <service
+            android:name=".OsrsNotificationService"
+            android:exported="false"/>
     </application>
 </manifest>

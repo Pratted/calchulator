@@ -89,46 +89,6 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             System.out.println("Prices already updated");
         }
-
-
-//            @Override
-//            public void onClick(View v) {
-//                String NOTIFICATION_CHANNEL_ID = "4655";
-//                //Notification Channel
-//                int importance = NotificationManager.IMPORTANCE_MAX;
-//                @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "PLZ", importance);
-//                notificationChannel.enableLights(true);
-//                notificationChannel.setLightColor(Color.RED);
-//                notificationChannel.enableVibration(true);
-//                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-//
-//
-//                Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-//                intent.putExtra("osrsItems", osrsItems);
-//
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                PendingIntent pendingIntent = PendingIntent.getActivity(HomeActivity.this, 0 , intent,PendingIntent.FLAG_ONE_SHOT);
-//                Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.high_alch);
-//                Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//
-//                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(HomeActivity.this, NOTIFICATION_CHANNEL_ID)
-//                        .setSmallIcon(R.drawable.high_alch)
-//                        .setContentTitle("Temp")
-//                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                        .setContentText("Heres the message...")
-//                        .setAutoCancel(true)
-//                        .setSound(defaultSoundUri)
-//                        .setDefaults(Notification.DEFAULT_ALL)
-//                        .setContentIntent(pendingIntent);
-//
-//                NotificationManager notificationManager =
-//                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//                notificationManager.createNotificationChannel(notificationChannel);
-//
-//                notificationManager.notify(99, notificationBuilder.build());
-//            }
-//        });
     }
 
     @Override
@@ -196,13 +156,6 @@ public class HomeActivity extends AppCompatActivity {
         intent.putExtra("osrsItems", osrsItems);
 
         startActivity(intent);
-    }
-
-    public void onButtonSearchClick(View v){
-        System.out.println("Search button clicked!!");
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Title");
     }
 
     private class FetchCurrentPricesTask extends AsyncTask<String, Void, JSONObject> {

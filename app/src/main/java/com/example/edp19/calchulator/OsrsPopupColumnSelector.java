@@ -49,13 +49,14 @@ public class OsrsPopupColumnSelector {
         window.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
         window.setFocusable(true);
 
-        ((TextView) layout.getChildAt(0)).setTypeface(Osrs.typefaces.FONT_REGULAR);
+        ((TextView) layout.getChildAt(0)).setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
+        ((TextView) layout.getChildAt(0)).setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
 
         for(int i = 1, j = 0; i < layout.getChildCount()-1; i++, j++){
             checkboxes[j] = (CheckBox) layout.getChildAt(i);
             checkboxes[j].setTextColor(Osrs.colors.ORANGE);
-            checkboxes[j].setTextSize(Osrs.fonts.FONT_SIZE_SMALL);
-            checkboxes[j].setTypeface(Osrs.typefaces.FONT_REGULAR);
+            checkboxes[j].setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
+            checkboxes[j].setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
 
             final CheckBox c = checkboxes[j];
             checkboxes[j].setOnCheckedChangeListener(new CheckBox.OnCheckedChangeListener(){

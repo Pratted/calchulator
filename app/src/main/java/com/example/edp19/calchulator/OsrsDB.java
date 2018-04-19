@@ -1,6 +1,7 @@
 package com.example.edp19.calchulator;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
@@ -38,6 +39,21 @@ public class OsrsDB extends SQLiteOpenHelper {
         }
 
         return db;
+    }
+
+    public OsrsItem getItem(int id){
+        Cursor c = getWritableDatabase().rawQuery("select * from Item where id = " + id, null);
+
+        c.moveToNext();
+
+        final String name = c.getString(1);
+        int highAlch = c.getInt(2);
+        int currentPrice = c.getInt(3);
+        int buyLimit = c.getInt(4);
+        boolean isMembers = c.getInt(5) == 1;
+        boolean isFavorite = c.getInt(6) == 1;
+
+        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
     }
 
     @Override

@@ -52,8 +52,9 @@ public class OsrsSearchBar {
                 System.out.println("Current text: " + charSequence.toString());
 
                 String toSearch = charSequence.toString().toLowerCase();
-                if(toSearch.equals("")) table.resetSearch();
-                else table.filterItems(toSearch);
+
+                table.resetSearch();
+                table.filterItems(toSearch);
             }
 
             @Override
