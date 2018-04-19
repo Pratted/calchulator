@@ -17,6 +17,9 @@ import java.util.Date;
 
 public class OsrsNotificationReceiver extends BroadcastReceiver {
 
+
+    // table.setSomeAlarm -> (wait n seconds) -> onReceive -> StartsService -> onHandleIntent
+
     @Override
     public void onReceive(Context context, Intent intent) {
         System.out.println("Action: " + intent.getAction());
@@ -24,13 +27,21 @@ public class OsrsNotificationReceiver extends BroadcastReceiver {
         System.out.println("Osrs Notification Received!!!!");
 
         int item = intent.getIntExtra("item", 0);
-        
-        System.out.println("Recieved a " + item);
+        boolean priceUpdate = intent.getBooleanExtra("PriceUpdate", false);
 
         Intent outgoing = new Intent(context, OsrsNotificationService.class);
-        outgoing.putExtra("item", item);
 
-        context.startService(outgoing);
+        if(priceUpdate) {
+            System.out.println("We are going to update the prices...");
+
+            outgoing.putExtra("PriceUpdate", true);
+            context.startService(outgoing);
+        } else {
+            System.out.println("Recieved a " + item);
+
+            outgoing.putExtra("item", item);
+            context.startService(outgoing);
+        }
     }
 
     public void setAlarm(Context context, int id, int seconds){
@@ -44,4 +55,20 @@ public class OsrsNotificationReceiver extends BroadcastReceiver {
 
         manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000* seconds, pintent);
     }
+
+    public void setPriceUpdateAlarm(Context context, int seconds) {
+        context.registerReceiver( this, new IntentFilter("com.example.edp19.calchulator.OsrsNotificationService"));
+
+        Intent i = new Intent("com.example.edp19.calchulator.OsrsNotificationService");
+        i.putExtra("PriceUpdate", true);
+
+        PendingIntent pintent = PendingIntent.getBroadcast( context, 1, i, 0);
+        AlarmManager manager = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
+
+        System.out.println("PRICE UPDATE ALARM SET");
+
+        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000* seconds, pintent);
+    }
+
+
 }

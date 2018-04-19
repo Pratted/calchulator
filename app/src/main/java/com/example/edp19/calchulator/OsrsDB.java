@@ -37,7 +37,6 @@ public class OsrsDB extends SQLiteOpenHelper {
         if (db == null) {
             db = new OsrsDB(context);
         }
-
         return db;
     }
 

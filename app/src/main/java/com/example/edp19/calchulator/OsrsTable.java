@@ -77,6 +77,17 @@ public class OsrsTable {
     private SQLiteDatabase db;
     private LinearLayout layout;
     private PopupWindow window;
+    private OsrsPriceFetch osrsPrices;
+
+    public synchronized boolean fetchPrices() {
+        if(osrsPrices != null) return false;
+        else {
+            osrsPrices = new OsrsPriceFetch(context);
+            osrsPrices.execute(Osrs.strings.URL_CURRENT_PRICES);
+            osrsPrices = null;
+            return true;
+        }
+    }
 
     private OsrsNotificationReceiver notificationReceiver;
 
@@ -198,7 +209,6 @@ public class OsrsTable {
             final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
             item.setContext(context);
 
-
             osrsItems.put(item.getId(), item);
             addItem(item);
 
@@ -281,8 +291,8 @@ public class OsrsTable {
             });
 
         }
-
         c.close();
+        notificationReceiver.setPriceUpdateAlarm(context, 10);
     }
 
     public void setAlarm(final OsrsItem hiddenItem) {

@@ -83,12 +83,18 @@ public class HomeActivity extends AppCompatActivity {
                 (EditText) findViewById(R.id.tvSearch)
         );
 
-        if (table.needsPriceUpdate()) {
-            System.out.println("BEGIN FETCH PRICE UPDATE");
-            new FetchCurrentPricesTask().execute(Osrs.strings.URL_CURRENT_PRICES);
-        } else {
-            System.out.println("Prices already updated");
-        }
+        System.out.println("BEGIN FETCH PRICE UPDATE");
+
+        //table.fetchPrices();
+        System.out.println("PRICES UPDATED BITCHHHHHH");
+
+//        if (table.needsPriceUpdate()) {
+//            System.out.println("BEGIN FETCH PRICE UPDATE");
+//            table.fetchPrices();
+//            System.out.println("PRICES UPDATED BITCHHHHHH");
+//        } else {
+//            System.out.println("Prices already updated");
+//        }
     }
 
     @Override
@@ -156,67 +162,7 @@ public class HomeActivity extends AppCompatActivity {
         intent.putExtra("osrsItems", osrsItems);
 
         startActivity(intent);
-    }
 
-    private class FetchCurrentPricesTask extends AsyncTask<String, Void, JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(String... urls) {
-            String url = urls[0];
-
-            Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
-            Network network = new BasicNetwork(new HurlStack());
-            RequestQueue requestQueue = new RequestQueue(cache, network);
-            requestQueue.start();
-
-            try {
-                System.out.println("OSRS ITEMS SIZE: " + osrsItems.size());
-
-                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        System.out.println("GOT A RESPONSE!!!!");
-                        System.out.println(response.toString());
-                        try {
-                            System.out.println("Finished gathering response");
-
-
-                            for(OsrsItem item: osrsItems.values()){
-                                int price = ((JSONObject) response.get(String.valueOf(item.getId()))).getInt("overall_average");
-                                item.setPrice(price);
-
-                                if(item.getId().equals(OsrsItem.NATURE_RUNE)){
-                                    OsrsItem.PRICE_NATURE_RUNE = price;
-                                }
-                            }
-
-                            //mark time last updated for future runs..
-                            Osrs.PRICES_LAST_UPDATED = Instant.now().toEpochMilli();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println("Error response!!");
-                        System.out.println(error.toString());
-                    }
-                });
-
-                requestQueue.add(jsObjRequest);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("The background task is about to end!!!");
-            return new JSONObject();
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
-        }
+        getCacheDir();
     }
 }
