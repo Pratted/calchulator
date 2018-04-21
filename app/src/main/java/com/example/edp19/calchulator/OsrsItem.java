@@ -72,6 +72,10 @@ public class OsrsItem implements Parcelable{
         return id;
     }
 
+    public void setFavorite(boolean isFavorite){
+        this.isFavorite = isFavorite;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

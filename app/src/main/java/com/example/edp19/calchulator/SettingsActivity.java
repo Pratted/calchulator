@@ -1,6 +1,6 @@
 package com.example.edp19.calchulator;
 
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,40 +16,30 @@ public class SettingsActivity extends AppCompatActivity  {
     Button btnRestoreDefaults;
     HashMap<Integer, OsrsItem> osrsItems;
     SQLiteDatabase db;
+    private SharedPreferences.Editor editor;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        //btnRemoveFavs = findViewById(R.id.btnRemoveFavs);
-
-        System.out.println("About to unpack");
-        osrsItems = (HashMap<Integer, OsrsItem>) getIntent().getSerializableExtra("osrsItems");
-
-        OsrsDB.getInstance(this).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
-            @Override
-            public void onDBReady(SQLiteDatabase db) {
-                SettingsActivity.this.db = db;
-            }
-        });
-
-        Cursor c = db.rawQuery("select * from Item", null);
-
-        while(c.moveToNext()) {
-
-        }
-
+        osrsItems = OsrsDB.fetchAllItems(this);
+        db = OsrsDB.getInstance(this).getReadableDatabase();
         btnHiddenItems = findViewById(R.id.btnHiddenItems);
         btnBlockedItems = findViewById(R.id.btnBlockedItems);
         findViewById(R.id.btnRemoveFavs).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeAllFavorites();
+                removeAllFavorites(db);
             }
         });
-        btnRestoreDefaults = findViewById(R.id.btnRestoreDefaults);
+        findViewById(R.id.btnRestoreDefaults).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeAllFavorites(db);
+                restoreToDefault();
+            }
+        });
     }
-
 
     @Override
     public void onResume(){
@@ -91,10 +81,14 @@ public class SettingsActivity extends AppCompatActivity  {
         */
     }
 
-    public void removeAllFavorites() {
+    private void removeAllFavorites(SQLiteDatabase db) {
         for (Integer id : osrsItems.keySet()) {
-            //osrsItems.get(id).setFavorite(false);
+            osrsItems.get(id).setFavorite(false);
         }
-        this.db.execSQL("update Item set isFavorite = 0;");
+        db.execSQL("update Item set isFavorite = 0;");
+    }
+
+    private void restoreToDefault() {
+
     }
 }
