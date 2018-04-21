@@ -4,11 +4,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.RequiresApi;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -43,6 +46,7 @@ public class OsrsItem implements Parcelable{
     private TextView tvPrice;
     private TextView tvHighAlch;
     private TextView tvProfit;
+    private LinearLayout llSpecialAttack;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         this.id = id;
@@ -54,6 +58,7 @@ public class OsrsItem implements Parcelable{
         this.isFavorite = isFavorite;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void setContext(Context context){
         this.context = context;
 
@@ -67,6 +72,7 @@ public class OsrsItem implements Parcelable{
         tvProfit = new TextView(context);
         ibFavorite = new ImageButton(context);
         tvProfit = new TextView(context);
+        llSpecialAttack = new LinearLayout(context);
 
         tvName.setMaxLines(2);
 
@@ -78,6 +84,8 @@ public class OsrsItem implements Parcelable{
         ibFavorite.setBackgroundDrawable(null);
         ibFavorite.setPadding(0,-8,0,0);
         tvName.setTextSize(18);
+
+        llSpecialAttack.setBackground(context.getDrawable(R.drawable.specialattack));
 
         setId(id);
         setName(name);
@@ -95,6 +103,7 @@ public class OsrsItem implements Parcelable{
         row.addView(tvPrice);
         row.addView(tvProfit);
         row.addView(tvLimit);
+        row.addView(llSpecialAttack);
         row.setId(id);
     }
 

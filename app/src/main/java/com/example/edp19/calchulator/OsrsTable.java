@@ -28,7 +28,9 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TableLayout;
@@ -247,11 +249,30 @@ public class OsrsTable {
 
                     accept.setOnClickListener(new View.OnClickListener(){
 
+                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                         @Override
                         public void onClick(View view) {
                             window.dismiss();
                             System.out.println("Accepted!!!");
-                            item.getTableRow().setVisibility(View.GONE);
+                            //item.getTableRow().setVisibility(View.GONE);
+
+                            item.getTvName().setBackground(context.getDrawable(R.drawable.specialattack));
+                            item.getTvName().setGravity(Gravity.CENTER);
+
+                            /*
+                            for(int i = 0; i < item.getTableRow().getChildCount()-1; i++){
+                                item.getTableRow().getChildAt(i).setVisibility(View.GONE);
+                            }
+
+                            LinearLayout l = (LinearLayout) item.getTableRow().getChildAt(item.getTableRow().getChildCount()-1);
+
+                            l.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1));
+
+                            l.setVisibility(View.VISIBLE);
+                            */
+                            //item.getTableRow().getChildAt(k).setLayoutParams(
+
+
                             OsrsTable.this.paint();
                             notificationReceiver.setAlarm(context, item.getId(), 10);
                         }
@@ -292,7 +313,6 @@ public class OsrsTable {
 
         }
         c.close();
-        notificationReceiver.setPriceUpdateAlarm(context, 10);
     }
 
     private ImageButton createFavoriteHeader(String tag){
@@ -376,7 +396,7 @@ public class OsrsTable {
     }
 
     private void setColumnWeights(TableRow row, TableRow.LayoutParams weights[]){
-        for(int i = 0; i < row.getChildCount(); i++){
+        for(int i = 0; i < weights.length; i++){
             row.getChildAt(i).setLayoutParams(weights[i]);
 
             if(weights[i].weight != 0){
@@ -394,7 +414,8 @@ public class OsrsTable {
         return table.getChildCount();
     }
 
-    public void reformat(boolean[] cols){
+
+    private TableRow.LayoutParams[] getColumnWeights(boolean[] cols){
         TableRow.LayoutParams weights[] = new TableRow.LayoutParams[cols.length];
 
         weights[COLUMN_FAVORITE] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_FAVORITE] ? 1 : 0);
@@ -405,6 +426,12 @@ public class OsrsTable {
         weights[COLUMN_PRICE] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_PRICE] ? 2 : 0);
         weights[COLUMN_PROFIT] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_PROFIT] ? 2 : 0);
         weights[COLUMN_LIMIT] = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, cols[COLUMN_LIMIT] ? 2 : 0);
+
+        return weights;
+    }
+
+    public void reformat(boolean[] cols){
+        TableRow.LayoutParams weights[] = getColumnWeights(cols);
 
         hideAllColumns(this.header);
 

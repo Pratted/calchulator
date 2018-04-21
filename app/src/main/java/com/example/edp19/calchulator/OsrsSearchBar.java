@@ -23,19 +23,15 @@ public class OsrsSearchBar {
     private EditText tvSearch;
     private TextView tvSearchLabel;
     private TextView tvStatus;
-    private ImageButton ibSearch;
-    private HashMap<Integer, OsrsItem> osrsItems;
     private OsrsTable table;
 
-    public OsrsSearchBar(final OsrsTable table, HashMap<Integer, OsrsItem> osrsItems,
-                         TextView tvStatus, TextView tvSearchLabel, final EditText etSearch) {
+    public OsrsSearchBar(final OsrsTable table, TextView tvStatus, TextView tvSearchLabel,
+                         final EditText etSearch) {
 
         this.table = table;
-        this.osrsItems = osrsItems;
         this.tvSearch = etSearch;
         this.tvSearchLabel = tvSearchLabel;
         this.tvStatus = tvStatus;
-        this.ibSearch = ibSearch;
 
         configureTextView(etSearch);
         configureTextView(tvSearchLabel);
