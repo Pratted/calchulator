@@ -55,7 +55,7 @@ public class HomeActivity extends AppCompatActivity {
         System.out.println("BEGIN FETCH PRICE UPDATE");
 
         //table.fetchPrices();
-        System.out.println("PRICES UPDATED BITCHHHHHH");
+        System.out.println("PRICES UPDATED");
 
 //        if (table.needsPriceUpdate()) {
 //            System.out.println("BEGIN FETCH PRICE UPDATE");
@@ -69,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        if(prefs.getBoolean("RestoreTable", true)) {
+        if(prefs.getBoolean("ReloadTable", false)) {
             table.restoreDefaults();
             System.out.println("TABLE SHOULD BE RESTORED");
         }

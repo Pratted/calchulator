@@ -110,7 +110,7 @@ public class OsrsTable {
         headers[COLUMN_PROFIT] = createTextView(Osrs.strings.NAME_PROFIT_COLUMN);
         headers[COLUMN_LIMIT] = createTextView(Osrs.strings.NAME_LIMIT_COLUMN);
 
-        LAYOUT_CURRENT = LAYOUT_DEFAULT;
+        LAYOUT_CURRENT = LAYOUT_DEFAULT.clone();
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layout = (LinearLayout) layoutInflater.inflate(R.layout.hide_item_menu, null);

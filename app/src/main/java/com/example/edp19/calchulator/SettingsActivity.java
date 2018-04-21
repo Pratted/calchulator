@@ -93,12 +93,6 @@ public class SettingsActivity extends AppCompatActivity  {
     }
 
     private void restoreToDefault() {
-        editor.putBoolean(Osrs.strings.NAME_FAVORITE_COLUMN, OsrsTable.LAYOUT_DEFAULT[OsrsTable.COLUMN_FAVORITE]);
-        editor.putBoolean(Osrs.strings.NAME_ALCH_COLUMN, OsrsTable.LAYOUT_DEFAULT[OsrsTable.COLUMN_ALCH]);
-        editor.putBoolean(Osrs.strings.NAME_ITEM_COLUMN, OsrsTable.LAYOUT_DEFAULT[OsrsTable.COLUMN_ITEM]);
-        editor.putBoolean(Osrs.strings.NAME_LIMIT_COLUMN, OsrsTable.LAYOUT_DEFAULT[OsrsTable.COLUMN_LIMIT]);
-        editor.putBoolean(Osrs.strings.NAME_PRICE_COLUMN, OsrsTable.LAYOUT_DEFAULT[OsrsTable.COLUMN_PRICE]);
-        editor.putBoolean(Osrs.strings.NAME_PROFIT_COLUMN, OsrsTable.LAYOUT_DEFAULT[OsrsTable.COLUMN_PROFIT]);
         editor.putBoolean("ReloadTable", true);
         editor.commit();
     }
