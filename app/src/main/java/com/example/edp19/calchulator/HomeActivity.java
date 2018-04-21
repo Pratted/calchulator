@@ -1,6 +1,8 @@
 package com.example.edp19.calchulator;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,13 +22,16 @@ public class HomeActivity extends AppCompatActivity {
     private HashMap<Integer, OsrsItem> osrsItems;
     private OsrsTable table;
     private boolean updatedPrices;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("HOMEACTIVITY ONCREATE CALLED");
         super.onCreate(savedInstanceState);
-
+        prefs = this.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
+        editor = prefs.edit();
         //initialize resources (strings, fonts, colors, etc)
         new Osrs(this);
 
@@ -64,16 +69,10 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-
-
-        /*
-        for(OsrsItem item: osrsItems.values()){
-            item.setContext(this);
+        if(prefs.getBoolean("RestoreTable", true)) {
+            table.restoreDefaults();
+            System.out.println("TABLE SHOULD BE RESTORED");
         }
-        */
-
-
-
         System.out.println("On resume called...");
     }
 
