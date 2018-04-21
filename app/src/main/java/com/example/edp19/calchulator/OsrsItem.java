@@ -1,24 +1,7 @@
 package com.example.edp19.calchulator;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.RequiresApi;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
 
 /**
  * Created by eric on 2/13/18.
@@ -28,25 +11,16 @@ import java.io.Serializable;
  */
 
 public class OsrsItem implements Parcelable{
-    private int id;
-    private String name;
-    private int highAlch = 1;
-    private int price = 1;
-    private int limit;
-    private boolean isMembers;
-    private boolean isFavorite = false;
+    protected int id;
+    protected String name;
+    protected int highAlch = 1;
+    protected int price = 1;
+    protected int limit;
+    protected boolean isMembers;
+    protected boolean isFavorite;
 
     public static Integer PRICE_NATURE_RUNE = 210;
     final public static Integer NATURE_RUNE = 561;
-    private Context context;
-
-    private TextView tvLimit;
-    private TextView tvName;
-    private ImageButton ibFavorite;
-    private TextView tvPrice;
-    private TextView tvHighAlch;
-    private TextView tvProfit;
-    private LinearLayout llSpecialAttack;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
         this.id = id;
@@ -58,74 +32,17 @@ public class OsrsItem implements Parcelable{
         this.isFavorite = isFavorite;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void setContext(Context context){
-        this.context = context;
-
-        row = new TableRow(context);
-        row.setMinimumHeight(60);
-
-        tvName = new TextView(context);
-        tvPrice = new TextView(context);
-        tvHighAlch = new TextView(context);
-        tvLimit = new TextView(context);
-        tvProfit = new TextView(context);
-        ibFavorite = new ImageButton(context);
-        tvProfit = new TextView(context);
-        llSpecialAttack = new LinearLayout(context);
-
-        tvName.setMaxLines(2);
-
-        tvPrice.setGravity(Gravity.RIGHT);
-        tvHighAlch.setGravity(Gravity.RIGHT);
-        tvProfit.setGravity(Gravity.RIGHT);
-        tvLimit.setGravity(Gravity.RIGHT);
-
-        ibFavorite.setBackgroundDrawable(null);
-        ibFavorite.setPadding(0,-8,0,0);
-        tvName.setTextSize(18);
-
-        llSpecialAttack.setBackground(context.getDrawable(R.drawable.specialattack));
-
-        setId(id);
-        setName(name);
-        setHighAlch(highAlch);
-        setPrice(price);
-        setLimit(limit);
-        setMembers(isMembers);
-        setFavorite(isFavorite);
-
-        formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvProfit);
-
-        row.addView(ibFavorite);
-        row.addView(tvName);
-        row.addView(tvHighAlch);
-        row.addView(tvPrice);
-        row.addView(tvProfit);
-        row.addView(tvLimit);
-        row.addView(llSpecialAttack);
-        row.setId(id);
+    public OsrsItem(OsrsItem item){
+        this.id = item.id;
+        this.name = item.name;
+        this.highAlch = item.highAlch;
+        this.price = item.price;
+        this.limit = item.limit;
+        this.isMembers = item.isMembers;
+        this.isFavorite = item.isFavorite;
     }
 
-
-
-    public TableRow getTableRow() {
-        return row;
-    }
-
-    public void setTableRow(TableRow row){
-        this.row = row;
-    }
-
-    private TableRow row;
-
-    private void formatTextViews(TextView... views){
-        for(TextView view: views){
-            view.setTypeface(Osrs.typefaces.FONT_REGULAR);
-            view.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-            view.setTextColor(Color.WHITE);
-        }
-    }
+    public OsrsItem(){}
 
     public int getInt(String name){
         if(name.compareTo(Osrs.strings.NAME_ALCH_COLUMN) == 0) return highAlch;
@@ -155,113 +72,29 @@ public class OsrsItem implements Parcelable{
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-        tvName.setText(name);
-    }
-
-    public void setTvName(TextView tv){
-        tvName = tv;
-        setName(name);
-    }
-
-    public TextView getTvName(){
-        return tvName;
-    }
-
     public void setPrice(int price){
         this.price = price;
-
-        if(tvPrice != null){
-            tvPrice.setText(String.valueOf(price));
-        }
-
-        if(tvProfit != null){
-            tvProfit.setText(String.valueOf(getProfit()));
-        }
-
-    }
-
-    public void setTvPrice(TextView tv){
-        tvPrice = tv;
-        tv.setText(String.valueOf(price));
-    }
-
-    public TextView getTvPrice(){
-        return tvPrice;
     }
 
     public Integer getPrice() {
         return price;
     }
 
-    public void setFavorite(boolean isFavorite){
-        this.isFavorite = isFavorite;
-        ibFavorite.setImageResource(isFavorite ?
-                android.R.drawable.star_on :
-                android.R.drawable.star_off);
-    }
-
-    public void setIbFavorite(ImageButton ib){
-        ibFavorite = ib;
-        setFavorite(isFavorite);
-    }
-
-    public void toggleFavorite(){
-        setFavorite(!isFavorite);
-    }
 
     public boolean getFavorite(){
         return isFavorite;
-    }
-
-    public ImageButton getIbFavorite() {
-        return ibFavorite;
     }
 
     public int getHighAlch() {
         return highAlch;
     }
 
-    public void setHighAlch(int highAlch) {
-        this.highAlch = highAlch;
-
-        tvHighAlch.setText(String.valueOf(highAlch));
-    }
-
-    public TextView getTvHighAlch() {
-        return tvHighAlch;
-    }
-
-    public void setTvHighAlch(TextView tvHighAlch) {
-        this.tvHighAlch = tvHighAlch;
-        setHighAlch(highAlch);
-    }
-
     public int getLimit() {
         return limit;
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
-        tvLimit.setText(String.valueOf(limit == -1 ? "N/A": limit));
-    }
-
-    public TextView getTvLimit() {
-        return tvLimit;
-    }
-
-    public void setTvLimit(TextView tvLimit) {
-        this.tvLimit = tvLimit;
-        setLimit(limit);
-    }
-
     public boolean isMembers() {
         return isMembers;
-    }
-
-    public void setMembers(boolean members) {
-        isMembers = members;
     }
 
     public Integer getProfit(){
@@ -292,16 +125,6 @@ public class OsrsItem implements Parcelable{
         parcel.writeInt(limit);
         parcel.writeInt(isMembers ? 1 : 0);
         parcel.writeInt(isFavorite ? 1 : 0);
-
-        /*
-        tvHighAlch = null;
-        tvPrice = null;
-        tvName = null;
-        tvProfit = null;
-        tvLimit = null;
-        ibFavorite = null;
-        row = null;
-        */
     }
 
     public static final Parcelable.Creator<OsrsItem> CREATOR = new Parcelable.Creator<OsrsItem>(){

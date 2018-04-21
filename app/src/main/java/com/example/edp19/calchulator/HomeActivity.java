@@ -37,12 +37,11 @@ public class HomeActivity extends AppCompatActivity {
 
         table = new OsrsTable(
                 this,
-                osrsItems,
                 (TableRow) findViewById(R.id.headerRow),
                 (TableLayout) findViewById(R.id.tlGridTable)
         );
 
-        searchBar = new OsrsSearchBar(table, osrsItems,
+        searchBar = new OsrsSearchBar(table,
                 (TextView) findViewById(R.id.tvStatus),
                 (TextView) findViewById(R.id.tvSearchLabel),
                 (EditText) findViewById(R.id.tvSearch)
@@ -66,9 +65,12 @@ public class HomeActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
 
+
+        /*
         for(OsrsItem item: osrsItems.values()){
             item.setContext(this);
         }
+        */
 
 
 

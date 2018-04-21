@@ -57,7 +57,7 @@ public class OsrsTable {
 
     private View headers[] = new View[6];
     private HashMap<String, Boolean> sortedBy = new HashMap<>();
-    private HashMap<Integer, OsrsItem> osrsItems;
+    private HashMap<Integer, OsrsTableItem> osrsItems;
     private String lastSortedBy;
     private boolean sortDesc;
 
@@ -94,11 +94,11 @@ public class OsrsTable {
     private OsrsNotificationReceiver notificationReceiver;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public OsrsTable(Context context, HashMap<Integer, OsrsItem> osrsItems, TableRow header, final TableLayout table){
+    public OsrsTable(Context context, TableRow header, final TableLayout table){
         this.table = table;
         this.header = header;
         this.context = context;
-        this.osrsItems = osrsItems;
+        this.osrsItems = new HashMap<>();
 
         prefs = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
         editor = prefs.edit(); //cant use prefs.edit().putString()
@@ -130,6 +130,12 @@ public class OsrsTable {
                 public void onClick(View v){
                     //header text is stored in tag
                     sortColumn(text);
+
+                    ((ImageButton) headers[COLUMN_FAVORITE])
+                            .setImageResource(sortedBy.get(Osrs.strings.NAME_FAVORITE_COLUMN) ?
+                            android.R.drawable.star_on :
+                            android.R.drawable.star_off
+                            );
                 }
             });
 
@@ -200,16 +206,7 @@ public class OsrsTable {
         Cursor c = db.rawQuery("select * from Item", null);
 
         while(c.moveToNext()){
-            int id = c.getInt(0);
-            final String name = c.getString(1);
-            int highAlch = c.getInt(2);
-            int currentPrice = c.getInt(3);
-            int buyLimit = c.getInt(4);
-            boolean isMembers = c.getInt(5) == 1;
-            final boolean isFavorite = c.getInt(6) == 1;
-
-            final OsrsItem item = new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
-            item.setContext(context);
+            final OsrsTableItem item = new OsrsTableItem(context, c);
 
             osrsItems.put(item.getId(), item);
             addItem(item);
@@ -230,9 +227,6 @@ public class OsrsTable {
 
                 @Override
                 public boolean onLongClick(View v) {
-
-
-
                     Point p = OsrsPopupColumnSelector.getPoint(v);
 
                     TextView prompt = layout.findViewById(R.id.tvHideItemPrompt);
@@ -241,7 +235,7 @@ public class OsrsTable {
 
                     prompt.setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
                     prompt.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-                    prompt.setText("Hide " + name + " for 4 hours?");
+                    prompt.setText("Hide " + item.getName() + " for 4 hours?");
 
                     accept.setTypeface(Osrs.typefaces.FONT_REGULAR);
                     accept.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
@@ -254,24 +248,10 @@ public class OsrsTable {
                         public void onClick(View view) {
                             window.dismiss();
                             System.out.println("Accepted!!!");
-                            //item.getTableRow().setVisibility(View.GONE);
+                            item.getTableRow().setVisibility(View.GONE);
 
-                            item.getTvName().setBackground(context.getDrawable(R.drawable.specialattack));
-                            item.getTvName().setGravity(Gravity.CENTER);
-
-                            /*
-                            for(int i = 0; i < item.getTableRow().getChildCount()-1; i++){
-                                item.getTableRow().getChildAt(i).setVisibility(View.GONE);
-                            }
-
-                            LinearLayout l = (LinearLayout) item.getTableRow().getChildAt(item.getTableRow().getChildCount()-1);
-
-                            l.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1));
-
-                            l.setVisibility(View.VISIBLE);
-                            */
-                            //item.getTableRow().getChildAt(k).setLayoutParams(
-
+                            //item.getTvName().setBackground(context.getDrawable(R.drawable.specialattack));
+                            //item.getTvName().setGravity(Gravity.CENTER);
 
                             OsrsTable.this.paint();
                             notificationReceiver.setAlarm(context, item.getId(), 10);
@@ -345,9 +325,9 @@ public class OsrsTable {
             int id = table.getChildAt(i).getId();
 
             if(columnName.compareTo("Item") == 0)
-                a1.add(new Pair<String, Integer>(osrsItems.get(id).getString(columnName), id));
+                a1.add(new Pair<>(osrsItems.get(id).getString(columnName), id));
             else
-                a2.add(new Pair<Integer, Integer>(osrsItems.get(id).getInt(columnName), id));
+                a2.add(new Pair<>(osrsItems.get(id).getInt(columnName), id));
         }
 
 
@@ -450,7 +430,7 @@ public class OsrsTable {
         LAYOUT_CURRENT = cols.clone();
     }
 
-    public void addItem(OsrsItem item){
+    public void addItem(OsrsTableItem item){
         table.addView(item.getTableRow());
     }
 
@@ -525,7 +505,7 @@ public class OsrsTable {
     }
 
     public void filterItems(String toSearch) {
-        for (OsrsItem item : osrsItems.values()) {
+        for (OsrsTableItem item : osrsItems.values()) {
             if(!item.getName().toLowerCase().contains(toSearch.toLowerCase().replace("*", ""))) {
                 item.getTableRow().setVisibility(View.GONE);
             }
@@ -535,7 +515,7 @@ public class OsrsTable {
     }
 
     public void resetSearch() {
-        for(OsrsItem item : osrsItems.values()){
+        for(OsrsTableItem item : osrsItems.values()){
             item.getTableRow().setVisibility(View.VISIBLE);
         }
 

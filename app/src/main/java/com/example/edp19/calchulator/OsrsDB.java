@@ -55,6 +55,18 @@ public class OsrsDB extends SQLiteOpenHelper {
         return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
     }
 
+    public static OsrsItem getItemFromCursor(Cursor c){
+        int id = c.getInt(0);
+        final String name = c.getString(1);
+        int highAlch = c.getInt(2);
+        int currentPrice = c.getInt(3);
+        int buyLimit = c.getInt(4);
+        boolean isMembers = c.getInt(5) == 1;
+        final boolean isFavorite = c.getInt(6) == 1;
+
+        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         System.out.println("Initializing Database...");
