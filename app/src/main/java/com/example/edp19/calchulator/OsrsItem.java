@@ -15,9 +15,11 @@ public class OsrsItem implements Parcelable{
     protected String name;
     protected int highAlch = 1;
     protected int price = 1;
-    protected final int limit;
+    protected int limit;
     protected boolean isMembers;
     protected boolean isFavorite;
+    protected boolean isBlocked;
+    protected boolean isHidden;
 
     public static Integer PRICE_NATURE_RUNE = 210;
     final public static Integer NATURE_RUNE = 561;
@@ -56,6 +58,14 @@ public class OsrsItem implements Parcelable{
         if(name.compareTo(Osrs.strings.NAME_ITEM_COLUMN) == 0) return this.name;
 
         return "";
+    }
+
+    public boolean getBlocked(){
+        return isBlocked;
+    }
+
+    public boolean getHidden(){
+        return isHidden;
     }
 
     public Integer getId() {

@@ -5,7 +5,9 @@ create table Item (
 	currentPrice integer,
 	buyLimit integer,
 	isMembers integer,
-	isFavorite integer
+	isFavorite integer,
+	isHidden integer,
+	isBlocked integer
 );
 
 
@@ -1126,6 +1128,8 @@ set isFavorite = 0,
     isMembers = COALESCE(isMembers, 0),
     highAlch = COALESCE(highAlch, 0),
     buyLimit = COALESCE(buyLimit, 0);
+    isHidden = 0;
+    isBlocked = 0;
 
 delete from item
 where highAlch > 100000 or highAlch = 0;

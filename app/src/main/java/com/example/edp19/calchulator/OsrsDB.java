@@ -1,5 +1,6 @@
 package com.example.edp19.calchulator;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -127,6 +128,23 @@ public class OsrsDB extends SQLiteOpenHelper {
         }
 
         return items;
+    }
+
+    public static void save(Context context, OsrsItem item){
+        ContentValues cv = new ContentValues();
+        cv.put("currentPrice", item.getPrice());
+        cv.put("isFavorite", item.getFavorite());
+        cv.put("isBlocked", item.getBlocked());
+        cv.put("isHidden", item.getHidden());
+
+        getInstance(context).getWritableDatabase()
+                .update("Item", cv, "id = ?", new String[]{String.valueOf(item.getId())});
+    }
+
+    public static void save(Context context, HashMap<Integer, OsrsItem> items){
+        for(OsrsItem item: items.values()){
+            save(context, item);
+        }
     }
 
     private static class OpenDbAsyncTask extends AsyncTask<OnDBReadyListener,Void,SQLiteDatabase> {
