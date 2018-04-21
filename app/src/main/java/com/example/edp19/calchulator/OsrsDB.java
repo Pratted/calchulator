@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -64,6 +65,8 @@ public class OsrsDB extends SQLiteOpenHelper {
         boolean isMembers = c.getInt(5) == 1;
         final boolean isFavorite = c.getInt(6) == 1;
 
+        System.out.println("Got all attributes");
+
         return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
     }
 
@@ -111,6 +114,19 @@ public class OsrsDB extends SQLiteOpenHelper {
 
     public void getWritableDatabase(OnDBReadyListener listener) {
         new OpenDbAsyncTask().execute(listener);
+    }
+
+    public static HashMap<Integer, OsrsItem> fetchAllItems(Context context){
+        HashMap<Integer, OsrsItem> items = new HashMap<>();
+
+        Cursor c = getInstance(context).getReadableDatabase().rawQuery("select * from Item", null);
+
+        while(c.moveToNext()){
+            OsrsItem item = OsrsDB.getItemFromCursor(c);
+            items.put(item.getId(), item);
+        }
+
+        return items;
     }
 
     private static class OpenDbAsyncTask extends AsyncTask<OnDBReadyListener,Void,SQLiteDatabase> {

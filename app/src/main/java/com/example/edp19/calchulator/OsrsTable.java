@@ -209,6 +209,7 @@ public class OsrsTable {
             final OsrsTableItem item = new OsrsTableItem(context, c);
 
             osrsItems.put(item.getId(), item);
+
             addItem(item);
 
             item.getTvName().setOnClickListener(new View.OnClickListener() {

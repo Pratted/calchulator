@@ -25,6 +25,8 @@ public class OsrsTableItem extends OsrsItem {
     public OsrsTableItem(Context context, Cursor c){
         super(OsrsDB.getItemFromCursor(c));
 
+        System.out.println("Instaniated parent");
+
         row = new TableRow(context);
         row.setMinimumHeight(60);
 
@@ -47,18 +49,13 @@ public class OsrsTableItem extends OsrsItem {
         ibFavorite.setPadding(0,-8,0,0);
         tvName.setTextSize(18);
 
-        tvName.setText(name);
-        tvHighAlch.setText(highAlch);
-        tvPrice.setText(price);
-        tvLimit.setText(limit);
-        ibFavorite.setId(id);
-
         setName(name);
         setHighAlch(highAlch);
         setPrice(price);
         setLimit(limit);
         setMembers(isMembers);
         setFavorite(isFavorite);
+        System.out.println("DOne setting sit");
 
         formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvProfit);
 

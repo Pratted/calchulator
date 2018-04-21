@@ -15,7 +15,7 @@ public class OsrsItem implements Parcelable{
     protected String name;
     protected int highAlch = 1;
     protected int price = 1;
-    protected int limit;
+    protected final int limit;
     protected boolean isMembers;
     protected boolean isFavorite;
 
@@ -41,8 +41,6 @@ public class OsrsItem implements Parcelable{
         this.isMembers = item.isMembers;
         this.isFavorite = item.isFavorite;
     }
-
-    public OsrsItem(){}
 
     public int getInt(String name){
         if(name.compareTo(Osrs.strings.NAME_ALCH_COLUMN) == 0) return highAlch;
