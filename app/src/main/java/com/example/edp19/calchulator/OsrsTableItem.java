@@ -210,6 +210,6 @@ public class OsrsTableItem extends OsrsItem {
     }
 
     public Integer getProfit(){
-        return highAlch - PRICE_NATURE_RUNE - price;
+        return highAlch - Osrs.PRICE_NATURE_RUNE - price;
     }
 }

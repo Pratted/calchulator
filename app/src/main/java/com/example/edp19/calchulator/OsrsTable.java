@@ -81,6 +81,7 @@ public class OsrsTable {
         tvStatus.setText(R.string.pricesUpdated);
 
         Osrs.PRICES_LAST_UPDATED = prefs.getLong(Osrs.strings.PREFS_PRICE_UPDATE, 0);
+        Osrs.PRICE_NATURE_RUNE = prefs.getInt(Osrs.strings.PREFS_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
 
         //fire off this async task ASAP if needed
         if(this.needsPriceUpdate()){
@@ -542,10 +543,17 @@ public class OsrsTable {
         showMemsItems(boolShowMems);
 
         if(removeAllFavs) {
+            tvStatus.setText(context.getString(R.string.favs_removed));
+
             for(OsrsTableItem item : osrsItems.values()) {
                 item.setFavorite(false);
             }
+
+            editor.putBoolean(Osrs.strings.PREFS_REMOVE_FAVS, false);
+            editor.apply();
         }
+
+
     }
 
     // save information to shared prefs.
@@ -626,6 +634,7 @@ public class OsrsTable {
                     osrsItems.clear();
                     System.out.println("The prices have been gathered. Going to reload the table...");
                     editor.putLong(Osrs.strings.PREFS_PRICE_UPDATE, Instant.now().toEpochMilli());
+
                     //reload the table.
                     OsrsTable.this.reload();
                 }

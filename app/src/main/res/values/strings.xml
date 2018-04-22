@@ -26,4 +26,9 @@
     <string name="btn_restore_defs">Restore To Default</string>
     <string name="swtich_show_mems_checked">ShowMemsChecked</string>
     <string name="prefs_remove_favs">RemoveFavs</string>
+    <string name="favs_removed">Favorites removed</string>
+    <string name="items_page_msg_part_1">Remove </string>
+    <string name="items_page_msg_part_2">Add </string>
+    <string name="items_page_msg_part_3"> from favorites</string>
+    <string name="prefs_price_nat_rune">PriceNatRune</string>
 </resources>

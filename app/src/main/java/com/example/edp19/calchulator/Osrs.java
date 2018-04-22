@@ -31,6 +31,7 @@ public class Osrs {
 
     public static class strings {
         public static String MSG_PRICES_UPDATED;
+        public static String PREFS_PRICE_NATURE_RUNE;
         public static String SWITCH_SHOW_MEMS_ITEMS;
         public static String PREFS_REMOVE_FAVS;
         public static String PREFS_PRICE_UPDATE;
@@ -73,6 +74,7 @@ public class Osrs {
         strings.RESTORE_DEFAULTS = res.getString(R.string.restoreDefs);
         strings.SWITCH_SHOW_MEMS_ITEMS = res.getString(R.string.swtich_show_mems_checked);
         strings.PREFS_REMOVE_FAVS = res.getString(R.string.prefs_remove_favs);
+        strings.PREFS_PRICE_NATURE_RUNE = res.getString(R.string.prefs_price_nat_rune);
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);
@@ -80,5 +82,7 @@ public class Osrs {
     }
 
     public static long PRICES_LAST_UPDATED = 0;
+    public static Integer PRICE_NATURE_RUNE = 210;
+    final public static Integer ID_NATURE_RUNE = 561;
 
 }

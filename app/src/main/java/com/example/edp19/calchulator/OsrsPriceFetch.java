@@ -1,6 +1,5 @@
 package com.example.edp19.calchulator;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -82,14 +81,16 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
                                 prices.put(id, price);
                             }
 
-                            if(id == OsrsItem.NATURE_RUNE){
-                                OsrsItem.PRICE_NATURE_RUNE = price;
-                            }
+
                             updatePrices.append("\twhen id = " + id + " then " + price + "\n");
                         }
 
                         updatePrices.append("\nend;");
+                        Integer price = ((JSONObject) response.get(String.valueOf(Osrs.ID_NATURE_RUNE))).getInt("overall_average");
 
+                        if(price == Osrs.ID_NATURE_RUNE){
+                            Osrs.PRICE_NATURE_RUNE = price;
+                        }
 
                         OsrsDB.getInstance(context).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
                             @Override

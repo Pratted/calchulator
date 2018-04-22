@@ -21,9 +21,6 @@ public class OsrsItem implements Parcelable{
     protected boolean isBlocked;
     protected boolean isHidden;
 
-    public static Integer PRICE_NATURE_RUNE = 210;
-    final public static Integer NATURE_RUNE = 561;
-
     public OsrsItem(int id, String name, int highAlch, int price, int limit,
                     boolean isMembers, boolean isFavorite, boolean isHidden, boolean isBlocked) {
         this.id = id;
@@ -115,7 +112,7 @@ public class OsrsItem implements Parcelable{
     }
 
     public Integer getProfit(){
-        return PRICE_NATURE_RUNE + price - highAlch;
+        return Osrs.PRICE_NATURE_RUNE + price - highAlch;
     }
 
     public OsrsItem(Parcel in){
