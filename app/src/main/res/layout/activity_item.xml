@@ -90,6 +90,7 @@
                             android:gravity="right|center_vertical" />
 
                         <TextView
+                            android:id="@+id/tvCurrentPrice"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:text="38000"
@@ -116,6 +117,7 @@
                             android:gravity="right|center_vertical" />
 
                         <TextView
+                            android:id="@+id/tvHighAlch"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:text="38200"

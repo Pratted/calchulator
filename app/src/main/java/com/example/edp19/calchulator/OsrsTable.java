@@ -232,7 +232,7 @@ public class OsrsTable {
                 System.out.println(((TextView) view).getText().toString() + " clicked!");
                 Intent intent = new Intent(context, ItemActivity.class);
 
-                intent.putExtra("osrsItem", item);
+                intent.putExtra("item", item);
                 context.startActivity(intent);
             }
         };
@@ -535,13 +535,11 @@ public class OsrsTable {
     }
 
     public void refresh() {
-        boolean showMemsItems = prefs.getBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS, true);
+        boolean boolShowMems = prefs.getBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS, true);
         boolean removeAllFavs = prefs.getBoolean(Osrs.strings.PREFS_REMOVE_FAVS, false);
-        System.out.println("Hiding mems items " + showMemsItems);
+        System.out.println("Hiding mems items " + boolShowMems);
 
-        if(!showMemsItems) {
-            hideMemsItems();
-        }
+        showMemsItems(boolShowMems);
 
         if(removeAllFavs) {
             for(OsrsTableItem item : osrsItems.values()) {
@@ -550,7 +548,7 @@ public class OsrsTable {
         }
     }
 
-    //save information to shared prefs.
+    // save information to shared prefs.
     public void save(){
         //save the selected columns
         for(int i = 0; i < headers.length; i++){
@@ -586,10 +584,17 @@ public class OsrsTable {
         paint();
     }
 
-    public void hideMemsItems() {
+    public void showMemsItems(boolean showMems) {
         for(OsrsTableItem item : osrsItems.values()){
-            if(item.isMembers()){
-                item.hide();
+            if(!isItemApplicable(item)) continue;
+            if(!showMems) {
+                if(item.isMembers()){
+                    item.hide();
+                }
+            } else {
+                if(item.isMembers()) {
+                    item.show();
+                }
             }
         }
 
@@ -599,12 +604,16 @@ public class OsrsTable {
     //shows all 'applicable' items. excludes blocked and hidden items.
     public void showApplicableItems() {
         for(OsrsTableItem item : osrsItems.values()){
-            if(!item.isBlocked && !item.isHidden && item.price != 0 && item.price < 100000){
+            if(isItemApplicable(item)){
                 item.show();
             }
         }
 
         paint();
+    }
+
+    public boolean isItemApplicable(OsrsItem item) {
+        return !item.isBlocked && !item.isHidden && item.price != 0 && item.price < 100000;
     }
 
     public synchronized boolean fetchPrices() {

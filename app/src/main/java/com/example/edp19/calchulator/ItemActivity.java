@@ -48,29 +48,31 @@ public class ItemActivity extends AppCompatActivity {
         System.out.println("onCreate called for ItemActivity!!!!");
 
         tvItemName = findViewById(R.id.tvItemName);
-        //tvCurrentPrice = findViewById(R.id.tvCurrentPrice);
+        tvCurrentPrice = findViewById(R.id.tvCurrentPrice);
+        tvHighAlch = findViewById(R.id.tvHighAlch);
         ivItemImg = findViewById(R.id.ivItemImg);
 
         //load the item from the database. fuck it.
 
-        /*
+
         Intent intent = getIntent();
 
         if(intent != null){
             System.out.println("UPDATING THE ITEMNAME FIELD!");
 
-            OsrsItem item = (OsrsItem) intent.getParcelableExtra("osrsItem");
+            OsrsItem item = intent.getParcelableExtra("item");
 
             tvItemName.setText(item.getName());
             Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
 
             ivItemImg.setImageDrawable(drawable);
             ivItemImg.setBackgroundDrawable(null);
+            tvCurrentPrice.setText(String.valueOf(item.getPrice()));
+            tvHighAlch.setText(String.valueOf(item.getHighAlch()));
         }
         else{
             System.out.println("savedInstanceState is null!!");
         }
-        */
 
     }
 
