@@ -109,9 +109,9 @@ public class OsrsDB extends SQLiteOpenHelper {
 
     public static HashMap<Integer, OsrsItem> fetchAllItems(Context context){
         HashMap<Integer, OsrsItem> items = new HashMap<>();
-
+        System.out.println("FectchAllItems");
         Cursor c = getInstance(context).getReadableDatabase().rawQuery("select * from Item", null);
-
+        System.out.println("AFTER CURSOR");
         while(c.moveToNext()){
             OsrsItem item = OsrsDB.getItemFromCursor(c);
             items.put(item.getId(), item);

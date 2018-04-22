@@ -78,12 +78,12 @@ public class OsrsTable {
         prefs = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
         editor = prefs.edit(); //cant use prefs.edit().putString()
 
-        tvStatus.setText("The prices have been updated.");
+        tvStatus.setText(R.string.pricesUpdated);
 
         //fire off this async task ASAP if needed
         if(this.needsPriceUpdate()){
             System.out.println("Fetching prices...");
-            //this.fetchPrices();
+            this.fetchPrices();
         }
         else{
             System.out.println("Table does not need a price update.");
@@ -148,12 +148,15 @@ public class OsrsTable {
             ((TextView) headers[i]).setGravity(Gravity.RIGHT);
         }
 
-        Osrs.PRICES_LAST_UPDATED = prefs.getLong("PriceUpdate", Instant.now().toEpochMilli());
-
+        Osrs.PRICES_LAST_UPDATED = prefs.getLong(Osrs.strings.PREFS_PRICE_UPDATE, Instant.now().toEpochMilli());
         loadExistingTable();
         reload();
 
         System.out.println("Last updated: " + Time.from(Instant.ofEpochSecond(Osrs.PRICES_LAST_UPDATED)).toGMTString());
+
+
+        editor.putBoolean(Osrs.strings.PREFS_PRICE_UPDATE, false);
+//        editor.putBoolean("", );
 
         notificationReceiver = new OsrsNotificationReceiver();
     }
@@ -172,12 +175,12 @@ public class OsrsTable {
 
     //SettingsActivity may request settings to be restored, check prefs for answer.
     public boolean needsRestoreDefaults() {
-        return prefs.getBoolean("RestoreDefaults", false);
+        return prefs.getBoolean(Osrs.strings.RESTORE_DEFAULTS, false);
     }
 
     public void restoreDefaults(){
         this.showSelectedColumns(LAYOUT_DEFAULT);
-        editor.putBoolean("RestoreDefaults", false);
+        editor.putBoolean(Osrs.strings.RESTORE_DEFAULTS, false);
         editor.apply();
     }
 
@@ -193,7 +196,6 @@ public class OsrsTable {
         return tv;
     }
 
-
     private void loadOsrsItems(){
         System.out.println("Loading all items...");
 
@@ -208,7 +210,7 @@ public class OsrsTable {
             osrsItems.put(item.getId(), item);
             addItem(item);
         }
-        System.out.println("Done loading all itens...");
+        System.out.println("Done loading all items...");
     }
 
     OsrsPopupColumnSelector.OnDismissListener onColumnSelectorDismiss(){
@@ -512,7 +514,7 @@ public class OsrsTable {
     }
 
     public boolean needsUpdate(){
-        return prefs.getBoolean("ReloadTable", true);
+        return prefs.getBoolean(Osrs.strings.RELOAD_TABLE, true);
     }
 
     //imports the data from the database back into the table.
@@ -525,7 +527,7 @@ public class OsrsTable {
         draw();
 
         hideIncompleteItems();
-        editor.putBoolean("ReloadTable", false);
+        editor.putBoolean(Osrs.strings.RELOAD_TABLE, false);
         editor.apply();
     }
 
@@ -539,7 +541,7 @@ public class OsrsTable {
             editor.putBoolean(name,LAYOUT_CURRENT[i]);
         }
 
-        editor.putLong("PriceUpdate", Osrs.PRICES_LAST_UPDATED);
+        editor.putLong(Osrs.strings.PREFS_PRICE_UPDATE, Osrs.PRICES_LAST_UPDATED);
         editor.putString("SortBy", lastSortedBy);
         editor.putBoolean("SortDesc", sortDesc);
 
@@ -580,10 +582,9 @@ public class OsrsTable {
             osrsPrices.setOnPricesReadyListner(new OsrsPriceFetch.OnPricesReady() {
                 @Override
                 public void onPricesReady() {
-                    System.out.println("The prices have been gathered. Going to reload the table...");
                     osrsItems.clear();
-
-
+                    System.out.println("The prices have been gathered. Going to reload the table...");
+                    editor.putLong(Osrs.strings.PREFS_PRICE_UPDATE, Instant.now().toEpochMilli());
                     //reload the table.
                     OsrsTable.this.reload();
                 }

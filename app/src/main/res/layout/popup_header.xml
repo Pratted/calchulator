@@ -18,12 +18,12 @@
             android:textSize="20dp"
             android:gravity="center"
             android:textColor="@color/osrsOrange"
-            android:text="Select up to 3 columns"/>
+            android:text="@string/prompt_select_columns"/>
 
         <CheckBox
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="Favorites"
+            android:text="@string/name_favorite_column"
             android:buttonTint="@color/osrsLightGreen"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
@@ -34,8 +34,7 @@
         <CheckBox
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="Item"
-
+            android:text="@string/name_item_column"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:background="@color/osrsLightBrown"
@@ -50,7 +49,7 @@
             android:background="@color/osrsBrown"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
-            android:text="Alch"/>
+            android:text="@string/name_alch_column"/>
 
         <CheckBox
             android:buttonTint="@color/osrsLightGreen"
@@ -59,7 +58,7 @@
             android:background="@color/osrsLightBrown"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
-            android:text="Price"/>
+            android:text="@string/name_price_column"/>
 
         <CheckBox
             android:buttonTint="@color/osrsLightGreen"
@@ -68,7 +67,7 @@
             android:background="@color/osrsBrown"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
-            android:text="Profit"/>
+            android:text="@string/name_profit_column"/>
 
         <CheckBox
             android:buttonTint="@color/osrsLightGreen"
@@ -77,7 +76,7 @@
             android:background="@color/osrsLightBrown"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
-            android:text="Limit"/>
+            android:text="@string/name_limit_column"/>
 
 
 
@@ -93,6 +92,6 @@
             android:background="@color/osrsBrown"
             android:layout_gravity="bottom"
             android:textColor="@color/osrsOrange"
-            android:text="Show Hidden Items" />
+            android:text="@string/switch_show_mems" />
 
 </LinearLayout>

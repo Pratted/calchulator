@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity  {
     Button btnHiddenItems;
@@ -30,6 +31,7 @@ public class SettingsActivity extends AppCompatActivity  {
         btnBlockedItems = findViewById(R.id.btnBlockedItems);
         prefs = this.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
         editor = prefs.edit();
+
         findViewById(R.id.btnRemoveFavs).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +95,7 @@ public class SettingsActivity extends AppCompatActivity  {
     }
 
     private void restoreToDefault() {
-        editor.putBoolean("RestoreDefault", true);
+        editor.putBoolean(Osrs.strings.RESTORE_DEFAULTS, true);
         editor.commit();
     }
 }

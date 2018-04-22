@@ -38,7 +38,7 @@ public class OsrsNotificationService extends IntentService {
         System.out.println("Handling the intent in this service...");
 
         int id = intent.getIntExtra("item", 0);
-        boolean hasPriceUpdate = intent.getBooleanExtra("PriceUpdate", false);
+        boolean hasPriceUpdate = intent.getBooleanExtra(Osrs.strings.PREFS_PRICE_UPDATE, false);
         String category = "Price update";
         String channelId;
         String message;

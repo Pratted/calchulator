@@ -102,7 +102,7 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
                                 Osrs.PRICES_LAST_UPDATED = Instant.now().toEpochMilli();
                                 SharedPreferences sp = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sp.edit();
-                                editor.putLong("PriceUpdate", Osrs.PRICES_LAST_UPDATED);
+                                editor.putLong(Osrs.strings.PREFS_PRICE_UPDATE, Osrs.PRICES_LAST_UPDATED);
 
                                 System.out.println("Finished updating the database..");
                                 listner.onPricesReady();

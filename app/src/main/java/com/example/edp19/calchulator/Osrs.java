@@ -6,8 +6,6 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 
-import java.io.FileOutputStream;
-
 
 /**
  * Created by eric on 3/28/18.
@@ -33,6 +31,10 @@ public class Osrs {
     }
 
     public static class strings {
+        public static String MSG_PRICES_UPDATED;
+        public static String PREFS_PRICE_UPDATE;
+        public static String RESTORE_DEFAULTS;
+        public static String RELOAD_TABLE;
         public static String PROMPT_SELECT_COLUMNS;
         public static String NAME_FAVORITE_COLUMN;
         public static String NAME_ITEM_COLUMN;
@@ -63,7 +65,11 @@ public class Osrs {
         strings.NAME_PROFIT_COLUMN = res.getString(R.string.name_profit_column);
         strings.NAME_LIMIT_COLUMN = res.getString(R.string.name_limit_column);
         strings.URL_CURRENT_PRICES = res.getString(R.string.url_current_prices);
-        strings.PREFS_FILE = "osrs.prefs";
+        strings.PREFS_FILE = res.getString(R.string.OsrsPrefs);
+        strings.MSG_PRICES_UPDATED = context.getString(R.string.pricesUpdated);
+        strings.PREFS_PRICE_UPDATE = res.getString(R.string.prefsPriceUpdate);
+        strings.RELOAD_TABLE = res.getString(R.string.reloadTable);
+        strings.RESTORE_DEFAULTS = res.getString(R.string.restoreDefs);
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);

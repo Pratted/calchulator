@@ -3,13 +3,25 @@
     <string name="labelCurrentPrice">Current Price</string>
     <string name="url_current_prices">https://rsbuddy.com/exchange/summary.json</string>
     <string name="prompt_select_columns">Select up to 3 columns</string>
-    <string name="name_favorite_column">Favorite</string>
+    <string name="name_favorite_column">Favorites</string>
     <string name="name_item_column">Item</string>
     <string name="name_alch_column">Alch</string>
     <string name="name_price_column">Price</string>
     <string name="name_profit_column">Profit</string>
-    <string name="name_limit_column">GE Limit</string>
+    <string name="name_limit_column">Limit</string>
     <integer name="font_size_small">18</integer>
     <integer name="font_size_medium">20</integer>
     <integer name="font_size_large">24</integer>
+    <string name="pricesUpdated">The prices have been updated</string>
+    <string name="prefsPriceUpdate">PriceUpdate</string>
+    <string name="OsrsPrefs">osrs.prefs</string>
+    <string name="reloadTable">ReloadTable</string>
+    <string name="restoreDefs">RestoreDefault</string>
+    <string name="switch_show_mems">Show Member Items</string>
+    <string name="switch_show_hidden_items">Show Hidden Items</string>
+    <string name="Nat_rune">Nature Rune</string>
+    <string name="btn_hidden_items">Hidden Items</string>
+    <string name="btn_blocked_items">Blocked Items</string>
+    <string name="btn_rem_favorites">Remove All Favorites</string>
+    <string name="btn_restore_defs">Restore To Default</string>
 </resources>

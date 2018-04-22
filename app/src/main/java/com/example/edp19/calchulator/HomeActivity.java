@@ -38,7 +38,6 @@ public class HomeActivity extends AppCompatActivity {
                 (TableLayout) findViewById(R.id.tlGridTable)
         );
 
-
         searchBar = new OsrsSearchBar(table,
                 (TextView) findViewById(R.id.tvStatus),
                 (TextView) findViewById(R.id.tvSearchLabel),
@@ -52,6 +51,7 @@ public class HomeActivity extends AppCompatActivity {
         System.out.println("On resume called...");
 
         if(table.needsRestoreDefaults()){
+            System.out.println("RESTORING DEFAULTS");
             table.restoreDefaults();
         }
 
@@ -117,6 +117,5 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
 
         getCacheDir();
-
     }
 }

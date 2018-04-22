@@ -28,7 +28,7 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
         System.out.println("Osrs Notification Received!!!!");
 
         int item = intent.getIntExtra("item", 0);
-        boolean priceUpdate = intent.getBooleanExtra("PriceUpdate", false);
+        boolean priceUpdate = intent.getBooleanExtra(Osrs.strings.PREFS_PRICE_UPDATE, false);
 
         Intent outgoing = new Intent(context, OsrsNotificationService.class);
 
@@ -37,7 +37,7 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
         if(priceUpdate) {
             System.out.println("We are going to update the prices...");
 
-            outgoing.putExtra("PriceUpdate", true);
+            outgoing.putExtra(Osrs.strings.PREFS_PRICE_UPDATE, true);
             context.startService(outgoing);
         } else {
             System.out.println("Recieved a " + item);
@@ -63,7 +63,7 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
         context.registerReceiver( this, new IntentFilter("com.example.edp19.calchulator.OsrsNotificationService"));
 
         Intent i = new Intent("com.example.edp19.calchulator.OsrsNotificationService");
-        i.putExtra("PriceUpdate", true);
+        i.putExtra(Osrs.strings.PREFS_PRICE_UPDATE, true);
 
         PendingIntent pintent = PendingIntent.getBroadcast( context, 1, i, 0);
         AlarmManager manager = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
