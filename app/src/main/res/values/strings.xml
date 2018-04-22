@@ -24,4 +24,6 @@
     <string name="btn_blocked_items">Blocked Items</string>
     <string name="btn_rem_favorites">Remove All Favorites</string>
     <string name="btn_restore_defs">Restore To Default</string>
+    <string name="swtich_show_mems_checked">ShowMemsChecked</string>
+    <string name="prefs_remove_favs">RemoveFavs</string>
 </resources>

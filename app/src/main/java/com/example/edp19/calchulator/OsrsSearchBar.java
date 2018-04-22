@@ -2,18 +2,8 @@ package com.example.edp19.calchulator;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
-
-import com.example.edp19.calchulator.Osrs;
-import com.example.edp19.calchulator.OsrsItem;
-import com.example.edp19.calchulator.OsrsTable;
-
-import java.util.HashMap;
 
 /**
  * Created by eric on 4/17/18.
@@ -49,7 +39,7 @@ public class OsrsSearchBar {
 
                 String toSearch = charSequence.toString().toLowerCase();
 
-                table.showAllItems();
+                table.showApplicableItems();
                 table.filterItems(toSearch);
             }
 

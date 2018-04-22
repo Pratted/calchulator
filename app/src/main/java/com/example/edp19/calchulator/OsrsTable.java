@@ -80,6 +80,8 @@ public class OsrsTable {
 
         tvStatus.setText(R.string.pricesUpdated);
 
+        Osrs.PRICES_LAST_UPDATED = prefs.getLong(Osrs.strings.PREFS_PRICE_UPDATE, 0);
+
         //fire off this async task ASAP if needed
         if(this.needsPriceUpdate()){
             System.out.println("Fetching prices...");
@@ -514,7 +516,7 @@ public class OsrsTable {
     }
 
     public boolean needsUpdate(){
-        return prefs.getBoolean(Osrs.strings.RELOAD_TABLE, true);
+        return  prefs.getBoolean(Osrs.strings.RELOAD_TABLE, true);
     }
 
     //imports the data from the database back into the table.
@@ -528,7 +530,24 @@ public class OsrsTable {
 
         hideIncompleteItems();
         editor.putBoolean(Osrs.strings.RELOAD_TABLE, false);
+//        editor.putBoolean()
         editor.apply();
+    }
+
+    public void refresh() {
+        boolean showMemsItems = prefs.getBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS, true);
+        boolean removeAllFavs = prefs.getBoolean(Osrs.strings.PREFS_REMOVE_FAVS, false);
+        System.out.println("Hiding mems items " + showMemsItems);
+
+        if(!showMemsItems) {
+            hideMemsItems();
+        }
+
+        if(removeAllFavs) {
+            for(OsrsTableItem item : osrsItems.values()) {
+                item.setFavorite(false);
+            }
+        }
     }
 
     //save information to shared prefs.
@@ -551,7 +570,10 @@ public class OsrsTable {
 
     public boolean needsPriceUpdate(){
         // updated within last 4 hrs ? false : true
-        return Osrs.PRICES_LAST_UPDATED - 4 * 3600 * 1000 > 0;
+        long fourHrsInMilliseconds = 4 * 3600 * 1000;
+
+        return Instant.now().toEpochMilli() - Osrs.PRICES_LAST_UPDATED > fourHrsInMilliseconds ||
+                Osrs.PRICES_LAST_UPDATED == 0;
     }
 
     public void filterItems(String toSearch) {
@@ -564,8 +586,18 @@ public class OsrsTable {
         paint();
     }
 
+    public void hideMemsItems() {
+        for(OsrsTableItem item : osrsItems.values()){
+            if(item.isMembers()){
+                item.hide();
+            }
+        }
+
+        paint();
+    }
+
     //shows all 'applicable' items. excludes blocked and hidden items.
-    public void showAllItems() {
+    public void showApplicableItems() {
         for(OsrsTableItem item : osrsItems.values()){
             if(!item.isBlocked && !item.isHidden && item.price != 0 && item.price < 100000){
                 item.show();

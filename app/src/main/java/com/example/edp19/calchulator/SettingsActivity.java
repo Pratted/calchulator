@@ -7,31 +7,29 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity  {
     Button btnHiddenItems;
     Button btnBlockedItems;
     Button btnRemoveFavs;
     Button btnRestoreDefaults;
+    Switch swShowMemsItems;
     HashMap<Integer, OsrsItem> osrsItems;
     SQLiteDatabase db;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
         osrsItems = OsrsDB.fetchAllItems(this);
         db = OsrsDB.getInstance(this).getReadableDatabase();
         btnHiddenItems = findViewById(R.id.btnHiddenItems);
         btnBlockedItems = findViewById(R.id.btnBlockedItems);
         prefs = this.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
         editor = prefs.edit();
-
         findViewById(R.id.btnRemoveFavs).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,6 +43,8 @@ public class SettingsActivity extends AppCompatActivity  {
                 restoreToDefault();
             }
         });
+        swShowMemsItems = findViewById(R.id.switch_show_mems);
+        swShowMemsItems.setChecked(prefs.getBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS, true));
     }
 
     @Override
@@ -92,10 +92,22 @@ public class SettingsActivity extends AppCompatActivity  {
             osrsItems.get(id).setFavorite(false);
         }
         db.execSQL("update Item set isFavorite = 0;");
+        editor.putBoolean(Osrs.strings.PREFS_REMOVE_FAVS, true);
     }
 
     private void restoreToDefault() {
         editor.putBoolean(Osrs.strings.RESTORE_DEFAULTS, true);
+        editor.commit();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // not sure if onDestroy is called appropriately.
+        editor.putBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS,
+                swShowMemsItems.isChecked());
+        System.out.println("SETTINGS ON PAUSE");
+        System.out.println("isChecked = " + swShowMemsItems.isChecked());
         editor.commit();
     }
 }

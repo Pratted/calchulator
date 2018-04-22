@@ -55,13 +55,15 @@ public class HomeActivity extends AppCompatActivity {
             table.restoreDefaults();
         }
 
-        if(table.needsUpdate()){
-            System.out.println("Reloading the table...");
-            table.reload();
-        }
-        else{
-            System.out.println("Table does not need an update.");
-        }
+        table.refresh();
+
+//        if(table.needsUpdate()){
+//            System.out.println("Reloading the table...");
+//            table.refresh();
+//        }
+//        else{
+//            System.out.println("Table does not need an update.");
+//        }
     }
 
     @Override

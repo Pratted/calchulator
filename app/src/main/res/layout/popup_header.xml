@@ -78,8 +78,6 @@
             android:layout_marginRight="6dp"
             android:text="@string/name_limit_column"/>
 
-
-
         <Switch
             android:thumbTint="@color/osrsLightGreen"
             android:trackTint="@color/osrsCharcoal"
@@ -92,6 +90,6 @@
             android:background="@color/osrsBrown"
             android:layout_gravity="bottom"
             android:textColor="@color/osrsOrange"
-            android:text="@string/switch_show_mems" />
+            android:text="@string/switch_show_hidden_items" />
 
 </LinearLayout>

@@ -1,7 +1,6 @@
 package com.example.edp19.calchulator;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -32,6 +31,8 @@ public class Osrs {
 
     public static class strings {
         public static String MSG_PRICES_UPDATED;
+        public static String SWITCH_SHOW_MEMS_ITEMS;
+        public static String PREFS_REMOVE_FAVS;
         public static String PREFS_PRICE_UPDATE;
         public static String RESTORE_DEFAULTS;
         public static String RELOAD_TABLE;
@@ -70,19 +71,14 @@ public class Osrs {
         strings.PREFS_PRICE_UPDATE = res.getString(R.string.prefsPriceUpdate);
         strings.RELOAD_TABLE = res.getString(R.string.reloadTable);
         strings.RESTORE_DEFAULTS = res.getString(R.string.restoreDefs);
+        strings.SWITCH_SHOW_MEMS_ITEMS = res.getString(R.string.swtich_show_mems_checked);
+        strings.PREFS_REMOVE_FAVS = res.getString(R.string.prefs_remove_favs);
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);
         fonts.FONT_SIZE_LARGE = res.getInteger(R.integer.font_size_large);
-
-        AssetFileDescriptor fd;
-
-
-
     }
 
     public static long PRICES_LAST_UPDATED = 0;
-
-
 
 }
