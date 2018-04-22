@@ -24,7 +24,8 @@ public class OsrsItem implements Parcelable{
     public static Integer PRICE_NATURE_RUNE = 210;
     final public static Integer NATURE_RUNE = 561;
 
-    public OsrsItem(int id, String name, int highAlch, int price, int limit, boolean isMembers, boolean isFavorite) {
+    public OsrsItem(int id, String name, int highAlch, int price, int limit,
+                    boolean isMembers, boolean isFavorite, boolean isHidden, boolean isBlocked) {
         this.id = id;
         this.name = name;
         this.highAlch = highAlch;
@@ -32,6 +33,8 @@ public class OsrsItem implements Parcelable{
         this.limit = limit;
         this.isMembers = isMembers;
         this.isFavorite = isFavorite;
+        this.isHidden = isHidden;
+        this.isBlocked = isBlocked;
     }
 
     public OsrsItem(OsrsItem item){
@@ -42,6 +45,8 @@ public class OsrsItem implements Parcelable{
         this.limit = item.limit;
         this.isMembers = item.isMembers;
         this.isFavorite = item.isFavorite;
+        this.isBlocked = item.isBlocked;
+        this.isHidden = item.isHidden;
     }
 
     public int getInt(String name){

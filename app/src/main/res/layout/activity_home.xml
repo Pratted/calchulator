@@ -146,6 +146,7 @@
 
 
         <ScrollView
+            android:id="@+id/svTable"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="12dp"
@@ -160,6 +161,17 @@
                 android:background="@color/osrsBrown"
                 android:stretchColumns="*">
             </TableLayout>
+
+            <!--
+            <ImageButton
+                android:id="@+id/ibScrollToTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/osrsOrange"
+                android:layout_gravity="center_horizontal"
+                android:background="@null"
+                app:srcCompat="@android:drawable/arrow_up_float" />
+                -->
         </ScrollView>
 
 

@@ -124,6 +124,7 @@
                         android:textSize="22dp"
                         android:paddingLeft="10dp"
                         android:checked="true"
+                        android:buttonTint="@color/osrsLightGreen"
                         android:gravity="center_vertical"
                         android:layoutDirection="rtl"
                         android:textColor="@color/osrsOrange"/>

@@ -1,8 +1,6 @@
 package com.example.edp19.calchulator;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,70 +8,60 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
     private SQLiteDatabase db;
     private OsrsSearchBar searchBar;
-    private HashMap<Integer, OsrsItem> osrsItems;
     private OsrsTable table;
-    private boolean updatedPrices;
-    private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("HOMEACTIVITY ONCREATE CALLED");
         super.onCreate(savedInstanceState);
-        prefs = this.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
-        editor = prefs.edit();
+
         //initialize resources (strings, fonts, colors, etc)
         new Osrs(this);
 
         setContentView(R.layout.activity_home);
 
-        osrsItems = new HashMap<>();
-        updatedPrices = false;
-
         table = new OsrsTable(
                 this,
+                (TextView) findViewById(R.id.tvStatus),
                 (TableRow) findViewById(R.id.headerRow),
+                (ScrollView) findViewById(R.id.svTable),
                 (TableLayout) findViewById(R.id.tlGridTable)
         );
+
 
         searchBar = new OsrsSearchBar(table,
                 (TextView) findViewById(R.id.tvStatus),
                 (TextView) findViewById(R.id.tvSearchLabel),
                 (EditText) findViewById(R.id.tvSearch)
         );
-
-        System.out.println("BEGIN FETCH PRICE UPDATE");
-
-        //table.fetchPrices();
-        System.out.println("PRICES UPDATED");
-
-//        if (table.needsPriceUpdate()) {
-//            System.out.println("BEGIN FETCH PRICE UPDATE");
-//            table.fetchPrices();
-//            System.out.println("PRICES UPDATED BITCHHHHHH");
-//        } else {
-//            System.out.println("Prices already updated");
-//        }
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        if(prefs.getBoolean("ReloadTable", false)) {
-            table.restoreDefaults();
-            System.out.println("TABLE SHOULD BE RESTORED");
-        }
         System.out.println("On resume called...");
+
+        if(table.needsRestoreDefaults()){
+            table.restoreDefaults();
+        }
+
+        if(table.needsUpdate()){
+            System.out.println("Reloading the table...");
+            table.reload();
+        }
+        else{
+            System.out.println("Table does not need an update.");
+        }
     }
 
     @Override
@@ -125,10 +113,10 @@ public class HomeActivity extends AppCompatActivity {
 
     public void onButtonSettingsClick(View v){
         Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-        intent.putExtra("osrsItems", osrsItems);
 
         startActivity(intent);
 
         getCacheDir();
+
     }
 }

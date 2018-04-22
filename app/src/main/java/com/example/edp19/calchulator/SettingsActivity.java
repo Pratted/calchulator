@@ -93,7 +93,7 @@ public class SettingsActivity extends AppCompatActivity  {
     }
 
     private void restoreToDefault() {
-        editor.putBoolean("ReloadTable", true);
+        editor.putBoolean("RestoreDefault", true);
         editor.commit();
     }
 }

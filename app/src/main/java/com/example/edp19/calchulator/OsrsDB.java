@@ -44,17 +44,7 @@ public class OsrsDB extends SQLiteOpenHelper {
 
     public OsrsItem getItem(int id){
         Cursor c = getWritableDatabase().rawQuery("select * from Item where id = " + id, null);
-
-        c.moveToNext();
-
-        final String name = c.getString(1);
-        int highAlch = c.getInt(2);
-        int currentPrice = c.getInt(3);
-        int buyLimit = c.getInt(4);
-        boolean isMembers = c.getInt(5) == 1;
-        boolean isFavorite = c.getInt(6) == 1;
-
-        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
+        return getItemFromCursor(c);
     }
 
     public static OsrsItem getItemFromCursor(Cursor c){
@@ -64,11 +54,11 @@ public class OsrsDB extends SQLiteOpenHelper {
         int currentPrice = c.getInt(3);
         int buyLimit = c.getInt(4);
         boolean isMembers = c.getInt(5) == 1;
-        final boolean isFavorite = c.getInt(6) == 1;
+        boolean isFavorite = c.getInt(6) == 1;
+        boolean isHidden = c.getInt(7) == 1;
+        boolean isBlocked = c.getInt(8) == 1;
 
-        System.out.println("Got all attributes");
-
-        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite);
+        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite, isHidden, isBlocked);
     }
 
     @Override

@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:text="Favorites"
-
+            android:buttonTint="@color/osrsLightGreen"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:background="@color/osrsLightBrown"
@@ -39,11 +39,12 @@
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:background="@color/osrsLightBrown"
+            android:buttonTint="@color/osrsLightGreen"
             android:checked="true"
             android:visibility="gone" />
 
         <CheckBox
-
+            android:buttonTint="@color/osrsLightGreen"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/osrsBrown"
@@ -52,7 +53,7 @@
             android:text="Alch"/>
 
         <CheckBox
-
+            android:buttonTint="@color/osrsLightGreen"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/osrsLightBrown"
@@ -61,6 +62,7 @@
             android:text="Price"/>
 
         <CheckBox
+            android:buttonTint="@color/osrsLightGreen"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/osrsBrown"
@@ -69,7 +71,7 @@
             android:text="Profit"/>
 
         <CheckBox
-
+            android:buttonTint="@color/osrsLightGreen"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/osrsLightBrown"
@@ -79,7 +81,10 @@
 
 
 
-        <CheckBox
+        <Switch
+            android:thumbTint="@color/osrsLightGreen"
+            android:trackTint="@color/osrsCharcoal"
+            android:checked="false"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="6dp"
@@ -87,6 +92,7 @@
             android:layout_marginBottom="10dp"
             android:background="@color/osrsBrown"
             android:layout_gravity="bottom"
+            android:textColor="@color/osrsOrange"
             android:text="Show Hidden Items" />
 
 </LinearLayout>

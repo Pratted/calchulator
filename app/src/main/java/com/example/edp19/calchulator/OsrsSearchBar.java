@@ -49,7 +49,7 @@ public class OsrsSearchBar {
 
                 String toSearch = charSequence.toString().toLowerCase();
 
-                table.resetSearch();
+                table.showAllItems();
                 table.filterItems(toSearch);
             }
 

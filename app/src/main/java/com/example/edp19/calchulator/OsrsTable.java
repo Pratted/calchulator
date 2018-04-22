@@ -1,38 +1,20 @@
 package com.example.edp19.calchulator;
 
-import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -49,8 +31,10 @@ import java.util.HashMap;
  */
 
 public class OsrsTable {
+    private TextView tvStatus;
     private TableLayout table;
     private TableRow header;
+    private ScrollView scrollView;
     private Context context;
     final private static boolean T = true;
     final private static boolean F = false;
@@ -69,6 +53,7 @@ public class OsrsTable {
     final public static int COLUMN_LIMIT = 5;
 
     private OsrsPopupColumnSelector columnSelector;
+    private OsrsNotificationReceiver notificationReceiver;
 
     public static boolean[] LAYOUT_CURRENT = new boolean[6];
     public static boolean[] LAYOUT_DEFAULT = new boolean[]{T,T,T,T,F,F};
@@ -76,32 +61,33 @@ public class OsrsTable {
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
-    private SQLiteDatabase db;
     private LinearLayout layout;
     private PopupWindow window;
     private OsrsPriceFetch osrsPrices;
-
-    public synchronized boolean fetchPrices() {
-        if(osrsPrices != null) return false;
-        else {
-            osrsPrices = new OsrsPriceFetch(context);
-            osrsPrices.execute(Osrs.strings.URL_CURRENT_PRICES);
-            osrsPrices = null;
-            return true;
-        }
-    }
-
-    private OsrsNotificationReceiver notificationReceiver;
+    private ImageButton scrollToTopButton;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public OsrsTable(Context context, TableRow header, final TableLayout table){
+    public OsrsTable(Context context, TextView tvStatus, TableRow header, ScrollView svTable, TableLayout table){
+        this.tvStatus = tvStatus;
         this.table = table;
         this.header = header;
         this.context = context;
+        this.scrollView = svTable;
         this.osrsItems = new HashMap<>();
 
         prefs = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
         editor = prefs.edit(); //cant use prefs.edit().putString()
+
+        tvStatus.setText("The prices have been updated.");
+
+        //fire off this async task ASAP if needed
+        if(this.needsPriceUpdate()){
+            System.out.println("Fetching prices...");
+            //this.fetchPrices();
+        }
+        else{
+            System.out.println("Table does not need a price update.");
+        }
 
         headers[COLUMN_FAVORITE] = createFavoriteHeader(Osrs.strings.NAME_FAVORITE_COLUMN);
         headers[COLUMN_ITEM] = createTextView(Osrs.strings.NAME_ITEM_COLUMN);
@@ -121,71 +107,78 @@ public class OsrsTable {
         window.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
         window.setFocusable(true);
 
+        /*
+        scrollToTopButton = new ImageButton(context);
+        scrollToTopButton.setVisibility(View.GONE);
+
+        scrollView.setOnScrollChangeListener(new ScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(scrollY < oldScrollY){
+                    System.out.println("Scrolled downward!!!");
+                    scrollToTopButton.setVisibility(View.VISIBLE);
+                }
+                else{
+                    System.out.println("Scrolled Upward...");
+                    scrollToTopButton.setVisibility(View.GONE);
+                }
+            }
+        });
+        */
+
         //initialize onClickListeners for all headers.
         for(View v: headers){
-            final String text = (String) v.getTag();
+            final String column = (String) v.getTag();
 
-            v.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    //header text is stored in tag
-                    sortColumn(text);
+            v.setOnClickListener(onHeaderItemClick(column));
+            v.setOnLongClickListener(onHeaderItemLongClick());
 
-                    ((ImageButton) headers[COLUMN_FAVORITE])
-                            .setImageResource(sortedBy.get(Osrs.strings.NAME_FAVORITE_COLUMN) ?
-                            android.R.drawable.star_on :
-                            android.R.drawable.star_off
-                            );
-                }
-            });
-
-            v.setOnLongClickListener(new View.OnLongClickListener(){
-                @Override
-                public boolean onLongClick(View view) {
-                    columnSelector.show(view);
-                    return true;
-                }
-            });
-
-            sortedBy.put(text, false);
+            sortedBy.put(column, false);
             header.addView(v);
         }
 
         columnSelector = new OsrsPopupColumnSelector(context);
+        columnSelector.setOnDismissListener(onColumnSelectorDismiss());
 
-        columnSelector.setOnDismissListener(new OsrsPopupColumnSelector.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                System.out.println("MY DISMISS CALLED!!!!!!");
-                OsrsTable.this.reformat(columnSelector.getSelectedColumns());
-            }
-        });
+        //pre-select the visible columns in column selector
+        columnSelector.selectColumns(LAYOUT_CURRENT);
 
         //all columns to the right of Alch are numeric and shall be right aligned.
         for(int i = COLUMN_ALCH; i < headers.length; i++){
             ((TextView) headers[i]).setGravity(Gravity.RIGHT);
         }
 
-        //pre-select the visible columns in column selector
-        columnSelector.selectColumns(LAYOUT_CURRENT);
-
         Osrs.PRICES_LAST_UPDATED = prefs.getLong("PriceUpdate", Instant.now().toEpochMilli());
 
-        restoreTable();
-
-        OsrsDB.getInstance(context).getWritableDatabase(new OsrsDB.OnDBReadyListener() {
-            @Override
-            public void onDBReady(SQLiteDatabase db) {
-                OsrsTable.this.db = db;
-                loadOsrsItems();
-                sortColumn(lastSortedBy); //restore previous sort...
-                refresh();
-            }
-        });
+        loadExistingTable();
+        reload();
 
         System.out.println("Last updated: " + Time.from(Instant.ofEpochSecond(Osrs.PRICES_LAST_UPDATED)).toGMTString());
 
         notificationReceiver = new OsrsNotificationReceiver();
+    }
+
+    private TableRow row(int index){
+        return (TableRow) table.getChildAt(index);
+    }
+
+    private int size(){
+        return table.getChildCount();
+    }
+
+    private void addItem(OsrsTableItem item){
+        table.addView(item.getTableRow());
+    }
+
+    //SettingsActivity may request settings to be restored, check prefs for answer.
+    public boolean needsRestoreDefaults() {
+        return prefs.getBoolean("RestoreDefaults", false);
+    }
+
+    public void restoreDefaults(){
+        this.showSelectedColumns(LAYOUT_DEFAULT);
+        editor.putBoolean("RestoreDefaults", false);
+        editor.apply();
     }
 
     private TextView createTextView(String text){
@@ -200,100 +193,149 @@ public class OsrsTable {
         return tv;
     }
 
+
     private void loadOsrsItems(){
-        osrsItems.clear();
+        System.out.println("Loading all items...");
 
-        Cursor c = db.rawQuery("select * from Item", null);
+        for(OsrsItem parent: OsrsDB.fetchAllItems(context).values()){
+            OsrsTableItem item = new OsrsTableItem(context, parent);
 
-        while(c.moveToNext()){
-            final OsrsTableItem item = new OsrsTableItem(context, c);
+            item.getTvName().setOnClickListener(onItemNameClick(item));
+            item.getTvName().setOnLongClickListener(onItemNameLongClick(item));
+
+            item.getIbFavorite().setOnClickListener(onFavoriteButtonClick(item));
 
             osrsItems.put(item.getId(), item);
-
             addItem(item);
-
-            item.getTvName().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    System.out.println(((TextView) view).getText().toString() + " clicked!");
-                    Intent intent = new Intent(context, ItemActivity.class);
-
-                    intent.putExtra("osrsItem", item);
-
-                    context.startActivity(intent);
-                }
-            });
-
-            item.getTvName().setOnLongClickListener(new View.OnLongClickListener(){
-
-                @Override
-                public boolean onLongClick(View v) {
-                    Point p = OsrsPopupColumnSelector.getPoint(v);
-
-                    TextView prompt = layout.findViewById(R.id.tvHideItemPrompt);
-                    TextView accept = layout.findViewById(R.id.tvHideItemAccept);
-                    TextView decline = layout.findViewById(R.id.tvHideItemDecline);
-
-                    prompt.setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
-                    prompt.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-                    prompt.setText("Hide " + item.getName() + " for 4 hours?");
-
-                    accept.setTypeface(Osrs.typefaces.FONT_REGULAR);
-                    accept.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-
-
-                    accept.setOnClickListener(new View.OnClickListener(){
-
-                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-                        @Override
-                        public void onClick(View view) {
-                            window.dismiss();
-                            System.out.println("Accepted!!!");
-                            item.getTableRow().setVisibility(View.GONE);
-
-                            //item.getTvName().setBackground(context.getDrawable(R.drawable.specialattack));
-                            //item.getTvName().setGravity(Gravity.CENTER);
-
-                            OsrsTable.this.paint();
-                            notificationReceiver.setAlarm(context, item.getId(), 10);
-                        }
-                    });
-
-                    decline.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            window.dismiss();
-                        }
-                    });
-
-
-                    decline.setTypeface(Osrs.typefaces.FONT_REGULAR);
-                    decline.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-
-                    int OFFSET_X = -20;
-                    int OFFSET_Y = 50;
-
-                    window.setBackgroundDrawable(new BitmapDrawable());
-                    window.showAtLocation(layout, Gravity.NO_GRAVITY, p.x + OFFSET_X, p.y + OFFSET_Y);
-
-                    return false;
-                }
-            });
-
-            item.getIbFavorite().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    item.toggleFavorite();
-
-                    db.execSQL("Update Item set isFavorite = " + (item.getFavorite() ? "1" : "0") + " where id = " + item.getId());
-                    Toast.makeText(context,
-                            item.getName() + (item.getFavorite() ? " added" : " removed") + " to favorites",
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-
         }
-        c.close();
+        System.out.println("Done loading all itens...");
+    }
+
+    OsrsPopupColumnSelector.OnDismissListener onColumnSelectorDismiss(){
+        return new OsrsPopupColumnSelector.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                System.out.println("MY DISMISS CALLED!!!!!!");
+                OsrsTable.this.showSelectedColumns(columnSelector.getSelectedColumns());
+            }
+        };
+    }
+
+    View.OnClickListener onItemNameClick(final OsrsItem item){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println(((TextView) view).getText().toString() + " clicked!");
+                Intent intent = new Intent(context, ItemActivity.class);
+
+                intent.putExtra("osrsItem", item);
+                context.startActivity(intent);
+            }
+        };
+    }
+
+    View.OnLongClickListener onItemNameLongClick(final OsrsTableItem item){
+        return new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v) {
+                Point p = OsrsPopupColumnSelector.getPoint(v);
+
+                TextView prompt = layout.findViewById(R.id.tvHideItemPrompt);
+                TextView accept = layout.findViewById(R.id.tvHideItemAccept);
+                TextView decline = layout.findViewById(R.id.tvHideItemDecline);
+
+                prompt.setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
+                prompt.setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
+                prompt.setText("Hide/block " + item.getName() + "?");
+
+                accept.setTypeface(Osrs.typefaces.FONT_REGULAR);
+                accept.setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
+
+                decline.setTypeface(Osrs.typefaces.FONT_REGULAR);
+                decline.setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
+
+                accept.setOnClickListener(onAcceptButtonClick(item));
+                decline.setOnClickListener(onDeclineButtonClick());
+
+                window.setBackgroundDrawable(new BitmapDrawable());
+                window.showAtLocation(layout, Gravity.NO_GRAVITY, p.x + -20, p.y + 50);
+
+                return false;
+            }
+        };
+    }
+
+
+    View.OnClickListener onHeaderItemClick(final String column){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //header text is stored in tag
+                sortColumn(column);
+
+                ((ImageButton) headers[COLUMN_FAVORITE])
+                        .setImageResource(sortedBy.get(Osrs.strings.NAME_FAVORITE_COLUMN) ?
+                                android.R.drawable.star_on : android.R.drawable.star_off);
+            }
+        };
+    }
+
+    View.OnLongClickListener onHeaderItemLongClick(){
+        return new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View view) {
+                columnSelector.show(view);
+                return true;
+            }
+        };
+    }
+
+    View.OnClickListener onAcceptButtonClick(final OsrsTableItem item){
+        return new View.OnClickListener() {
+            public void onClick(View view) {
+                window.dismiss();
+                System.out.println("Accepted!!!");
+                item.getTableRow().setVisibility(View.GONE);
+
+                OsrsTable.this.paint();
+                notificationReceiver.setAlarm(context, item.getId(), 10);
+            }
+        };
+    }
+
+    View.OnClickListener onDeclineButtonClick(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                window.dismiss();
+            }
+        };
+    }
+
+    View.OnClickListener onFavoriteButtonClick(final OsrsTableItem item){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                item.toggleFavorite();
+
+                OsrsDB.save(context, item);
+                Toast.makeText(context,
+                        item.getName() + (item.getFavorite() ? " added" : " removed") + " to favorites",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
+
+
+    private void hideIncompleteItems(){
+        for(OsrsTableItem item: osrsItems.values()){
+            if(item.getPrice() == 0 || item.price > 100000){
+                item.hide();
+            }
+        }
+
+        paint();
     }
 
     private ImageButton createFavoriteHeader(String tag){
@@ -372,9 +414,7 @@ public class OsrsTable {
         }
     }
 
-    public void restoreDefaults(){
-        this.reformat(LAYOUT_DEFAULT);
-    }
+
 
     private void setColumnWeights(TableRow row, TableRow.LayoutParams weights[]){
         for(int i = 0; i < weights.length; i++){
@@ -386,15 +426,6 @@ public class OsrsTable {
             }
         }
     }
-
-    public TableRow row(int index){
-        return (TableRow) table.getChildAt(index);
-    }
-
-    public int size(){
-        return table.getChildCount();
-    }
-
 
     private TableRow.LayoutParams[] getColumnWeights(boolean[] cols){
         TableRow.LayoutParams weights[] = new TableRow.LayoutParams[cols.length];
@@ -411,7 +442,7 @@ public class OsrsTable {
         return weights;
     }
 
-    public void reformat(boolean[] cols){
+    public void showSelectedColumns(boolean[] cols){
         TableRow.LayoutParams weights[] = getColumnWeights(cols);
 
         hideAllColumns(this.header);
@@ -431,9 +462,6 @@ public class OsrsTable {
         LAYOUT_CURRENT = cols.clone();
     }
 
-    public void addItem(OsrsTableItem item){
-        table.addView(item.getTableRow());
-    }
 
     public void paint(){
         for(int i = 0; i < size(); i++){
@@ -458,7 +486,7 @@ public class OsrsTable {
     }
 
 
-    private void restoreTable(){
+    private void loadExistingTable(){
         //load the previously selected columns, (use default if NA).
         for(int i = 0; i < headers.length; i++){
             String name = (String) headers[i].getTag();
@@ -473,16 +501,35 @@ public class OsrsTable {
         sortedBy.put(lastSortedBy, sortDesc);
 
         sortColumn(lastSortedBy);
-        this.reformat(LAYOUT_CURRENT);
+        showSelectedColumns(LAYOUT_CURRENT);
     }
 
-    public void refresh(){
+    public void draw(){
         System.out.println("LAYOUT " + LAYOUT_CURRENT.toString());
-        reformat(LAYOUT_CURRENT);
+        showSelectedColumns(LAYOUT_CURRENT);
 
         paint();
     }
 
+    public boolean needsUpdate(){
+        return prefs.getBoolean("ReloadTable", true);
+    }
+
+    //imports the data from the database back into the table.
+    public void reload(){
+        table.removeAllViews();
+        osrsItems.clear();
+
+        loadOsrsItems();
+        sortColumn(lastSortedBy);
+        draw();
+
+        hideIncompleteItems();
+        editor.putBoolean("ReloadTable", false);
+        editor.apply();
+    }
+
+    //save information to shared prefs.
     public void save(){
         //save the selected columns
         for(int i = 0; i < headers.length; i++){
@@ -508,19 +555,43 @@ public class OsrsTable {
     public void filterItems(String toSearch) {
         for (OsrsTableItem item : osrsItems.values()) {
             if(!item.getName().toLowerCase().contains(toSearch.toLowerCase().replace("*", ""))) {
-                item.getTableRow().setVisibility(View.GONE);
+                item.hide();
             }
         }
 
         paint();
     }
 
-    public void resetSearch() {
+    //shows all 'applicable' items. excludes blocked and hidden items.
+    public void showAllItems() {
         for(OsrsTableItem item : osrsItems.values()){
-            item.getTableRow().setVisibility(View.VISIBLE);
+            if(!item.isBlocked && !item.isHidden && item.price != 0 && item.price < 100000){
+                item.show();
+            }
         }
 
         paint();
     }
-}
 
+    public synchronized boolean fetchPrices() {
+        if(osrsPrices != null) return false;
+        else {
+            osrsPrices = new OsrsPriceFetch(context);
+            osrsPrices.setOnPricesReadyListner(new OsrsPriceFetch.OnPricesReady() {
+                @Override
+                public void onPricesReady() {
+                    System.out.println("The prices have been gathered. Going to reload the table...");
+                    osrsItems.clear();
+
+
+                    //reload the table.
+                    OsrsTable.this.reload();
+                }
+            });
+
+            osrsPrices.execute(Osrs.strings.URL_CURRENT_PRICES);
+            osrsPrices = null;
+            return true;
+        }
+    }
+}

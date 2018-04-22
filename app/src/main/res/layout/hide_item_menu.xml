@@ -23,15 +23,55 @@
             android:background="@color/osrsBrown"
             android:id="@+id/tvHideItemPrompt"
             android:textColor="@color/osrsOrange"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:text="Hide item for 4 hours?"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:minWidth="300dp"
+            android:textSize="20dp"
+            android:layout_gravity="center"
+            android:text="Hide/Block Nature Rune?"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:minWidth="200dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/border_wall"/>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                    <RadioButton
+                        android:id="@+id/rbHide"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hide for 4 hours"
+                        android:textSize="18dp"
+                        android:paddingLeft="10dp"
+                        android:checked="true"
+                        android:buttonTint="@color/osrsLightGreen"
+                        android:gravity="center_vertical"
+                        android:layoutDirection="rtl"
+                        android:textColor="@color/osrsOrange"/>
+                    <RadioButton
+                        android:id="@+id/rbBlock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Block"
+                        android:textSize="18dp"
+                        android:buttonTint="@color/osrsLightGreen"
+                        android:paddingLeft="10dp"
+                        android:gravity="center_vertical"
+                        android:layoutDirection="rtl"
+                        android:textColor="@color/osrsOrange"/>
+            </RadioGroup>
+
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="5dp"
+            android:minWidth="200dp"
             android:adjustViewBounds="true"
             android:background="@drawable/border_wall"/>
 
@@ -39,6 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -47,17 +88,15 @@
                 android:background="@color/osrsLightBrown">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
+                    android:gravity="center"
                     android:text="Accept"
+                    android:textSize="20dp"
                     android:background="#000000"
                     android:id="@+id/tvHideItemAccept"
                     android:textColor="@color/osrsGreen" />
@@ -75,17 +114,15 @@
                 android:background="@color/osrsLightBrown">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
-                    android:paddingTop="2dp"
-                    android:paddingBottom="2dp"
+                    android:gravity="center"
                     android:text="Decline"
+                    android:textSize="20dp"
                     android:background="#000000"
                     android:id="@+id/tvHideItemDecline"
                     android:textColor="@color/osrsRed" />

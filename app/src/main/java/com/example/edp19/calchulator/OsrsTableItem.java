@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -22,8 +23,9 @@ public class OsrsTableItem extends OsrsItem {
     private TextView tvProfit;
     private TableRow row;
 
-    public OsrsTableItem(Context context, Cursor c){
-        super(OsrsDB.getItemFromCursor(c));
+    public OsrsTableItem(Context context, OsrsItem parent){
+        //super(OsrsDB.getItemFromCursor(c));
+        super(parent);
 
         row = new TableRow(context);
         row.setMinimumHeight(60);
@@ -191,6 +193,14 @@ public class OsrsTableItem extends OsrsItem {
         setLimit(limit);
     }
 
+    public void hide(){
+        row.setVisibility(View.GONE);
+    }
+
+    public void show(){
+        row.setVisibility(View.VISIBLE);
+    }
+
     public boolean isMembers() {
         return isMembers;
     }
@@ -200,6 +210,6 @@ public class OsrsTableItem extends OsrsItem {
     }
 
     public Integer getProfit(){
-        return PRICE_NATURE_RUNE + price - highAlch;
+        return highAlch - PRICE_NATURE_RUNE - price;
     }
 }

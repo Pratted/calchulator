@@ -38,6 +38,16 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
         this.context = context;
     }
 
+    public interface OnPricesReady{
+        void onPricesReady();
+    }
+
+    OnPricesReady listner;
+
+    public void setOnPricesReadyListner(OnPricesReady listner){
+        this.listner = listner;
+    }
+
     @Override
     protected JSONObject doInBackground(String... urls) {
         String url = urls[0];
@@ -86,15 +96,20 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
                             public void onDBReady(SQLiteDatabase db) {
                                 db.execSQL(updatePrices.toString());
 
-                                db.execSQL("update item set currentPrice = null where currentPrice = 0");
+                                //db.execSQL("update item set currentPrice = null where currentPrice = 0");
 
                                 //mark time last updated for future runs..
                                 Osrs.PRICES_LAST_UPDATED = Instant.now().toEpochMilli();
                                 SharedPreferences sp = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sp.edit();
                                 editor.putLong("PriceUpdate", Osrs.PRICES_LAST_UPDATED);
+
+                                System.out.println("Finished updating the database..");
+                                listner.onPricesReady();
                             }
                         });
+
+
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -113,12 +128,12 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
             e.printStackTrace();
         }
 
-        System.out.println("The background task is about to end!!!");
         return new JSONObject();
     }
 
     @Override
     protected void onPostExecute(JSONObject jsonObject) {
         super.onPostExecute(jsonObject);
+        System.out.println("On post execute called.");
     }
 }
