@@ -10,5 +10,6 @@
     <color name="osrsGreen">#2a532c</color>
     <color name="osrsLightGreen">#5eba62</color>
     <color name="osrsRed">#73201e</color>
+    <color name="osrsLightRed">#8e2220</color>
     <color name="osrsBlack">#000500</color>
 </resources>

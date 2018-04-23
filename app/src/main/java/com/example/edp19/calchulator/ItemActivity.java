@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,16 +40,15 @@ public class ItemActivity extends AppCompatActivity {
         ivItemImg = findViewById(R.id.ivItemImg);
         ibFavorite = findViewById(R.id.ibFavorite);
         tvFavorite = findViewById(R.id.tvFavorite);
+        tvBuyLimit = findViewById(R.id.tvLimit);
 
         //load the item from the database. fuck it.
-
-
         Intent intent = getIntent();
 
         if(intent != null){
             System.out.println("UPDATING THE ITEMNAME FIELD!");
 
-            OsrsItem item = intent.getParcelableExtra("item");
+            final OsrsItem item = intent.getParcelableExtra("item");
 
             tvItemName.setText(item.getName());
             Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
@@ -56,16 +56,23 @@ public class ItemActivity extends AppCompatActivity {
             ivItemImg.setImageDrawable(drawable);
             ivItemImg.setBackgroundDrawable(null);
             tvCurrentPrice.setText(String.valueOf(item.getPrice()));
+
+            tvBuyLimit.setText(item.getLimit() > 0 ? String.valueOf(item.getLimit()) : "N/A");
             tvHighAlch.setText(String.valueOf(item.getHighAlch()));
 
-
             ibFavorite.setImageResource(item.isFavorite ? android.R.drawable.star_big_on : android.R.drawable.star_big_off);
-            tvFavorite.setTextSize(12);
+            ibFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    item.isFavorite = !item.isFavorite;
+                    ibFavorite.setImageResource(item.isFavorite ? android.R.drawable.star_big_on : android.R.drawable.star_big_off);
+                    tvFavorite.setText(item.isFavorite ? "Remove from favorites" : "Add to favorites");
+                }
+            });
 
-            String toDisplay = (item.isFavorite ? this.getString(R.string.items_page_msg_part_1) :
-                                                this.getString(R.string.items_page_msg_part_2)) +
-                                                item.getName() +
-                                                this.getString(R.string.items_page_msg_part_3);
+            tvFavorite.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
+
+            String toDisplay = (item.isFavorite ? "Remove from favorites" : "Add to favorites");
             tvFavorite.setText(toDisplay);
         }
         else{

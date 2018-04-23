@@ -531,7 +531,6 @@ public class OsrsTable {
 
         hideIncompleteItems();
         editor.putBoolean(Osrs.strings.RELOAD_TABLE, false);
-//        editor.putBoolean()
         editor.apply();
     }
 

@@ -149,7 +149,7 @@
                     android:textAlignment="center"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/osrsOrange"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/rectangle_button_selector"
                     android:layout_weight="1"/>
             </TableRow>
 
@@ -167,7 +167,7 @@
                     android:textAlignment="center"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/osrsOrange"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/rectangle_button_selector"
                     android:layout_weight="1"/>
             </TableRow>
 
@@ -184,7 +184,7 @@
                     android:textAlignment="center"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/osrsOrange"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/rectangle_button_selector"
                     android:layout_weight="1"/>
             </TableRow>
 
@@ -201,7 +201,7 @@
                     android:textAlignment="center"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/osrsOrange"
-                    android:background="@drawable/rectangle_button"
+                    android:background="@drawable/rectangle_button_selector"
                     android:layout_weight="1"/>
             </TableRow>
 
