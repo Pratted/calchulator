@@ -17,7 +17,7 @@
     <string name="OsrsPrefs">osrs.prefs</string>
     <string name="reloadTable">ReloadTable</string>
     <string name="restoreDefs">RestoreDefault</string>
-    <string name="switch_show_mems">Show Member Items</string>
+    <string name="switch_hide_mems">Hide Member Items</string>
     <string name="switch_show_hidden_items">Show Hidden Items</string>
     <string name="Nat_rune">Nature Rune</string>
     <string name="btn_hidden_items">Hidden Items</string>
@@ -31,4 +31,7 @@
     <string name="items_page_msg_part_2">Add </string>
     <string name="items_page_msg_part_3"> from favorites</string>
     <string name="prefs_price_nat_rune">PriceNatRune</string>
+    <string name="settings_min_profit">Min Profit</string>
+    <string name="pref_min_profit">MinProf</string>
+    <string name="pref_min_profit_boolean">MinProfBoolean</string>
 </resources>

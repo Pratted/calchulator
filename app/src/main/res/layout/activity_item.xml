@@ -169,6 +169,7 @@
                                     android:text="Notify me when profit goes above: "/>
                             </LinearLayout>
                             <EditText android:layout_width="wrap_content"
+                                android:focusedByDefault="false"
                                 android:inputType="number"
                                 android:maxLength="3"
                                 android:text="100"/>

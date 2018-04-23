@@ -112,6 +112,7 @@ public class OsrsDB extends SQLiteOpenHelper {
         System.out.println("FectchAllItems");
         Cursor c = getInstance(context).getReadableDatabase().rawQuery("select * from Item", null);
         System.out.println("AFTER CURSOR");
+
         while(c.moveToNext()){
             OsrsItem item = OsrsDB.getItemFromCursor(c);
             items.put(item.getId(), item);
@@ -126,6 +127,10 @@ public class OsrsDB extends SQLiteOpenHelper {
         cv.put("isFavorite", item.getFavorite());
         cv.put("isBlocked", item.getBlocked());
         cv.put("isHidden", item.getHidden());
+
+        System.out.println("INSIDE SAVE");
+        System.out.println(item.getName() + " " + item.getHidden());
+        System.out.println(item.getName() + " " + item.getBlocked());
 
         getInstance(context).getWritableDatabase()
                 .update("Item", cv, "id = ?", new String[]{String.valueOf(item.getId())});

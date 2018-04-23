@@ -24,7 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ItemActivity" android:parentActivityName=".HomeActivity" />
+        <activity android:name=".ItemActivity" android:parentActivityName=".HomeActivity"
+                    android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".SettingsActivity" android:parentActivityName=".HomeActivity"></activity>
 
         <service

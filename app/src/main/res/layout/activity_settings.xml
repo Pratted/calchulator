@@ -21,7 +21,7 @@
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal">
 
             <TableRow
@@ -42,8 +42,8 @@
                         android:paddingLeft="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Min Profit"
-                        android:textSize="24dp"
+                        android:text="@string/settings_min_profit"
+                        android:textSize="24sp"
                         android:gravity="center"
                         android:textColor="@color/osrsOrange" />
 
@@ -118,10 +118,10 @@
                     android:layout_weight="1">
 
                     <Switch
-                        android:id="@+id/switch_show_mems"
+                        android:id="@+id/switch_hide_mems"
                         android:thumbTint="@color/osrsLightGreen"
                         android:trackTint="@color/osrsCharcoal"
-                        android:checked="true"
+                        android:checked="false"
                         android:textSize="24sp"
                         android:gravity="start|center_vertical"
                         android:paddingLeft="10dp"
@@ -132,7 +132,7 @@
                         android:background="@color/osrsBrown"
                         android:layout_gravity="bottom"
                         android:textColor="@color/osrsOrange"
-                        android:text="@string/switch_show_mems" />
+                        android:text="@string/switch_hide_mems" />
                 </LinearLayout>
             </TableRow>
 

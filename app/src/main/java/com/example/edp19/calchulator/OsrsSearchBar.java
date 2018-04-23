@@ -10,7 +10,7 @@ import android.widget.TextView;
  */
 
 public class OsrsSearchBar {
-    private EditText tvSearch;
+    private EditText etSearch;
     private TextView tvSearchLabel;
     private TextView tvStatus;
     private OsrsTable table;
@@ -19,7 +19,7 @@ public class OsrsSearchBar {
                          final EditText etSearch) {
 
         this.table = table;
-        this.tvSearch = etSearch;
+        this.etSearch = etSearch;
         this.tvSearchLabel = tvSearchLabel;
         this.tvStatus = tvStatus;
 
@@ -37,10 +37,18 @@ public class OsrsSearchBar {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 System.out.println("Current text: " + charSequence.toString());
 
-                String toSearch = charSequence.toString().toLowerCase();
+                if(charSequence.length() == 0) {
 
-                table.showApplicableItems();
-                table.filterItems(toSearch);
+                }
+
+                //etSearch.setText(etSearch.getText().toString().replace("*", "") + "*");
+
+                String toSearch = charSequence.toString().toLowerCase().replace("*", "");
+
+                table.setSearchString(toSearch);
+                table.filter();
+//                table.showApplicableItems();
+//                table.filterSearchString(toSearch);
             }
 
             @Override

@@ -31,8 +31,10 @@ public class Osrs {
 
     public static class strings {
         public static String MSG_PRICES_UPDATED;
+        public static String PREF_MIN_PROF_BOOL;
+        public static String PREF_MIN_PROFIT;
         public static String PREFS_PRICE_NATURE_RUNE;
-        public static String SWITCH_SHOW_MEMS_ITEMS;
+        public static String SWITCH_HIDE_MEMS_ITEMS;
         public static String PREFS_REMOVE_FAVS;
         public static String PREFS_PRICE_UPDATE;
         public static String RESTORE_DEFAULTS;
@@ -72,9 +74,11 @@ public class Osrs {
         strings.PREFS_PRICE_UPDATE = res.getString(R.string.prefsPriceUpdate);
         strings.RELOAD_TABLE = res.getString(R.string.reloadTable);
         strings.RESTORE_DEFAULTS = res.getString(R.string.restoreDefs);
-        strings.SWITCH_SHOW_MEMS_ITEMS = res.getString(R.string.swtich_show_mems_checked);
+        strings.SWITCH_HIDE_MEMS_ITEMS = res.getString(R.string.swtich_show_mems_checked);
         strings.PREFS_REMOVE_FAVS = res.getString(R.string.prefs_remove_favs);
         strings.PREFS_PRICE_NATURE_RUNE = res.getString(R.string.prefs_price_nat_rune);
+        strings.PREF_MIN_PROFIT = res.getString(R.string.pref_min_profit);
+        strings.PREF_MIN_PROF_BOOL = res.getString(R.string.pref_min_profit_boolean);
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);

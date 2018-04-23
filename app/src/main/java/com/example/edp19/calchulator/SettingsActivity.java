@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import java.util.HashMap;
 
@@ -17,7 +16,8 @@ public class SettingsActivity extends AppCompatActivity  {
     Button btnHiddenItems;
     Button btnBlockedItems;
     EditText etPriceNat;
-    Switch swShowMemsItems;
+    EditText etMinProfit;
+    Switch swHideMemsItems;
     HashMap<Integer, OsrsItem> osrsItems;
     SQLiteDatabase db;
     private SharedPreferences prefs;
@@ -50,9 +50,11 @@ public class SettingsActivity extends AppCompatActivity  {
 
         etPriceNat = findViewById(R.id.etPriceNat);
         etPriceNat.setHint(String.valueOf(Osrs.PRICE_NATURE_RUNE));
-
-        swShowMemsItems = findViewById(R.id.switch_show_mems);
-        swShowMemsItems.setChecked(prefs.getBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS, true));
+        etPriceNat.setText(String.valueOf(Osrs.PRICE_NATURE_RUNE));
+        etMinProfit = findViewById(R.id.etMinProfit);
+        etMinProfit.setText(String.valueOf(prefs.getInt(Osrs.strings.PREF_MIN_PROFIT, 0)));
+        swHideMemsItems = findViewById(R.id.switch_hide_mems);
+        swHideMemsItems.setChecked(prefs.getBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS, false));
     }
 
     @Override
@@ -81,9 +83,12 @@ public class SettingsActivity extends AppCompatActivity  {
         if(etPriceNat.getText().toString().length() > 0) {
             Osrs.PRICE_NATURE_RUNE = Integer.valueOf(etPriceNat.getText().toString());
         }
-        editor.putBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS,
-                swShowMemsItems.isChecked());
+        editor.putBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS,
+                swHideMemsItems.isChecked());
         editor.putInt(Osrs.strings.PREFS_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
+        editor.putInt(Osrs.strings.PREF_MIN_PROFIT,
+                etMinProfit.getText().length() > 0?
+                        Integer.valueOf(etMinProfit.getText().toString()) : 0);
         editor.commit();
     }
 }

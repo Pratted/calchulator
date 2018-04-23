@@ -1,7 +1,6 @@
 package com.example.edp19.calchulator;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
@@ -55,6 +54,7 @@ public class OsrsTableItem extends OsrsItem {
         setLimit(limit);
         setMembers(isMembers);
         setFavorite(isFavorite);
+        refreshProfit();
 
         formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvProfit);
 
@@ -82,7 +82,6 @@ public class OsrsTableItem extends OsrsItem {
             view.setTextColor(Color.WHITE);
         }
     }
-
 
     public Integer getId() {
         return id;
@@ -117,10 +116,12 @@ public class OsrsTableItem extends OsrsItem {
             tvPrice.setText(String.valueOf(price));
         }
 
+    }
+
+    public void refreshProfit() {
         if(tvProfit != null){
             tvProfit.setText(String.valueOf(getProfit()));
         }
-
     }
 
     public void setTvPrice(TextView tv){

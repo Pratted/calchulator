@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -65,6 +66,7 @@ public class OsrsTable {
     private PopupWindow window;
     private OsrsPriceFetch osrsPrices;
     private ImageButton scrollToTopButton;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public OsrsTable(Context context, TextView tvStatus, TableRow header, ScrollView svTable, TableLayout table){
@@ -302,8 +304,16 @@ public class OsrsTable {
                 System.out.println("Accepted!!!");
                 item.getTableRow().setVisibility(View.GONE);
 
+                if (((RadioButton)layout.findViewById(R.id.rbBlock)).isChecked()) {
+                    item.isBlocked = true;
+                    Toast.makeText(context, item.getName() + " is blocked", Toast.LENGTH_SHORT).show();
+                } else { // rbHide is checked
+                    item.isHidden = true;
+//                    notificationReceiver.setAlarm(context, item.getId(), 10);
+                }
+
                 OsrsTable.this.paint();
-                notificationReceiver.setAlarm(context, item.getId(), 10);
+                OsrsDB.save(context, item);
             }
         };
     }
@@ -330,8 +340,6 @@ public class OsrsTable {
             }
         };
     }
-
-
 
     private void hideIncompleteItems(){
         for(OsrsTableItem item: osrsItems.values()){
@@ -418,8 +426,6 @@ public class OsrsTable {
             row.getChildAt(i).setVisibility(View.GONE);
         }
     }
-
-
 
     private void setColumnWeights(TableRow row, TableRow.LayoutParams weights[]){
         for(int i = 0; i < weights.length; i++){
@@ -534,25 +540,44 @@ public class OsrsTable {
         editor.apply();
     }
 
+    private boolean hideMems;
+    private int hideProfitBelow;
+    private String searchString = "";
+    private boolean hideHiddenItems = true;
+
+
     public void refresh() {
-        boolean boolShowMems = prefs.getBoolean(Osrs.strings.SWITCH_SHOW_MEMS_ITEMS, true);
+        hideMems = prefs.getBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS, true);
+        hideProfitBelow = prefs.getInt(Osrs.strings.PREF_MIN_PROFIT, 0);
         boolean removeAllFavs = prefs.getBoolean(Osrs.strings.PREFS_REMOVE_FAVS, false);
-        System.out.println("Hiding mems items " + boolShowMems);
+        System.out.println("Hiding mems items " + hideMems);
 
-        showMemsItems(boolShowMems);
-
-        if(removeAllFavs) {
-            tvStatus.setText(context.getString(R.string.favs_removed));
-
-            for(OsrsTableItem item : osrsItems.values()) {
-                item.setFavorite(false);
-            }
-
-            editor.putBoolean(Osrs.strings.PREFS_REMOVE_FAVS, false);
-            editor.apply();
+        for(OsrsTableItem item : osrsItems.values()) {
+            item.refreshProfit();
         }
 
+        filter();
+    }
 
+    private void showAllItems() {
+        for(OsrsTableItem item : osrsItems.values()) {
+            item.show();
+        }
+    }
+
+    public void filter() {
+        showAllItems();
+
+        for(OsrsTableItem item : osrsItems.values()) {
+            if(item.getBlocked()) item.hide();
+            if(hideMems && item.isMembers()) item.hide();
+            if(item.getPrice() == 0 || item.getPrice() > 100000) item.hide();
+            if(hideProfitBelow > 0 && item.getProfit() < hideProfitBelow) item.hide();
+            if(searchString.length() > 0 && !item.getName().toLowerCase().contains(searchString)) item.hide();
+            if(hideHiddenItems && item.isHidden) item.hide();
+        }
+
+        paint();
     }
 
     // save information to shared prefs.
@@ -581,27 +606,10 @@ public class OsrsTable {
                 Osrs.PRICES_LAST_UPDATED == 0;
     }
 
-    public void filterItems(String toSearch) {
+    public void filterSearchString(String toSearch) {
         for (OsrsTableItem item : osrsItems.values()) {
             if(!item.getName().toLowerCase().contains(toSearch.toLowerCase().replace("*", ""))) {
                 item.hide();
-            }
-        }
-
-        paint();
-    }
-
-    public void showMemsItems(boolean showMems) {
-        for(OsrsTableItem item : osrsItems.values()){
-            if(!isItemApplicable(item)) continue;
-            if(!showMems) {
-                if(item.isMembers()){
-                    item.hide();
-                }
-            } else {
-                if(item.isMembers()) {
-                    item.show();
-                }
             }
         }
 
@@ -643,5 +651,9 @@ public class OsrsTable {
             osrsPrices = null;
             return true;
         }
+    }
+
+    public void setSearchString(String searchString) {
+        this.searchString = searchString;
     }
 }
