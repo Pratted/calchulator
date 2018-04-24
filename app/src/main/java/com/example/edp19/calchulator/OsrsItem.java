@@ -56,6 +56,14 @@ public class OsrsItem implements Parcelable{
         return 0;
     }
 
+    public void setHidden(boolean hidden){
+        this.isHidden = hidden;
+    }
+
+    public void setBlocked(boolean blocked){
+        this.isBlocked = blocked;
+    }
+
     public String getString(String name){
         if(name.compareTo(Osrs.strings.NAME_ITEM_COLUMN) == 0) return this.name;
 

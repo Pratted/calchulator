@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -18,7 +21,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity  {
     private Button btnHiddenItems;
@@ -113,15 +121,38 @@ public class SettingsActivity extends AppCompatActivity  {
                 System.out.println("Blocked -> " + blocked);
                 System.out.println("Loaded " + osrsItems.size() + " items");
 
-                for(OsrsItem item: osrsItems.values()){
+                int color = Osrs.colors.LIGHT_BROWN;
 
+                //sort these bitches alphabetically
+                ArrayList<OsrsItem> items = new ArrayList<>(osrsItems.values());
+                Collections.sort(items, new Comparator<OsrsItem>() {
+                    @Override
+                    public int compare(OsrsItem o1, OsrsItem o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                });
+
+                for(final OsrsItem item: items){
                     //blocked -> show blocked items in blocked list, otherwise show hidden items.
                     if(blocked ? item.getBlocked() : item.getHidden()){
                         System.out.println("Adding " + item.getName() + " to list");
                         CheckBox cb = new CheckBox(SettingsActivity.this);
                         llCheckBoxContainer.addView(cb);
-                        
+
+                        cb.setLayoutDirection(CheckBox.LAYOUT_DIRECTION_RTL);
+                        cb.setTypeface(Osrs.typefaces.FONT_REGULAR);
+                        cb.setTextColor(Color.WHITE);
+                        cb.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
+                        cb.setChecked(true);
+                        cb.setBackgroundColor(color);
+                        cb.setPadding(10,0,0,0);
                         cb.setText(item.getName());
+                        cb.setId(item.getId());
+
+                        if(color == Osrs.colors.LIGHT_BROWN)
+                            color = Osrs.colors.BROWN;
+                        else
+                            color = Osrs.colors.LIGHT_BROWN;
                     }
                 }
 
@@ -129,6 +160,19 @@ public class SettingsActivity extends AppCompatActivity  {
                     @Override
                     public void onClick(View v) {
                         System.out.println("Saving...");
+
+                        for(int i = 0; i < llCheckBoxContainer.getChildCount(); i++){
+                            CheckBox cb = (CheckBox) llCheckBoxContainer.getChildAt(i);
+                            int id = cb.getId();
+
+                            if(blocked)
+                                osrsItems.get(id).isBlocked = cb.isChecked();
+                            else
+                                osrsItems.get(id).isHidden = cb.isChecked();
+
+                            OsrsDB.save(osrsItems.get(id));
+                        }
+
                         llBlockList.setVisibility(View.GONE);
                         svSettings.setVisibility(View.VISIBLE);
                     }

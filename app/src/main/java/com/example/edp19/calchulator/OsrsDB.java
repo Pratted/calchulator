@@ -111,10 +111,10 @@ public class OsrsDB extends SQLiteOpenHelper {
         new OpenDbAsyncTask().execute(listener);
     }
 
-    public static HashMap<Integer, OsrsItem> fetchAllItems(Context context){
+    public static HashMap<Integer, OsrsItem> fetchAllItems(){
         HashMap<Integer, OsrsItem> items = new HashMap<>();
         System.out.println("FectchAllItems");
-        Cursor c = getInstance(context).getReadableDatabase().rawQuery("select * from Item", null);
+        Cursor c = db.getReadableDatabase().rawQuery("select * from Item", null);
         System.out.println("AFTER CURSOR");
 
         while(c.moveToNext()){
@@ -123,6 +123,22 @@ public class OsrsDB extends SQLiteOpenHelper {
         }
 
         return items;
+    }
+
+    public static void save(OsrsItem item){
+        ContentValues cv = new ContentValues();
+        cv.put("currentPrice", item.getPrice());
+        cv.put("isFavorite", item.getFavorite());
+        cv.put("isBlocked", item.getBlocked());
+        cv.put("isHidden", item.getHidden());
+
+        System.out.println("INSIDE SAVE");
+        System.out.println(item.getName() + " " + item.getHidden());
+        System.out.println(item.getName() + " " + item.getBlocked());
+
+
+        db.getWritableDatabase()
+                .update("Item", cv, "id = ?", new String[]{String.valueOf(item.getId())});
     }
 
     public static void save(Context context, OsrsItem item){
@@ -142,7 +158,22 @@ public class OsrsDB extends SQLiteOpenHelper {
 
     public static void save(Context context, HashMap<Integer, OsrsItem> items){
         for(OsrsItem item: items.values()){
-            save(context, item);
+            //save(context, item);
+        }
+    }
+
+    //refresh the current table from the DB without redrawing it.
+    public static void refreshOsrsTableItemsFromDB(HashMap<Integer, OsrsTableItem> items){
+        HashMap<Integer, OsrsItem> newItems = fetchAllItems();
+
+        for(OsrsTableItem old: items.values()){
+            int id = old.getId();
+            OsrsItem curr = newItems.get(id);
+
+            old.setFavorite(curr.getFavorite());
+            old.setHidden(curr.getHidden());
+            old.setBlocked(curr.getBlocked());
+            old.setPrice(curr.getPrice());
         }
     }
 

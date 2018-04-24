@@ -140,6 +140,16 @@ public class OsrsTableItem extends OsrsItem {
                 android.R.drawable.star_off);
     }
 
+    public void setHidden(boolean hidden){
+        this.isHidden = hidden;
+        row.setVisibility(hidden ? View.GONE : View.VISIBLE);
+    }
+
+    public void setBlocked(boolean blocked){
+        this.isBlocked = blocked;
+        row.setVisibility(blocked ? View.GONE : View.VISIBLE);
+    }
+
     public void setIbFavorite(ImageButton ib){
         ibFavorite = ib;
         setFavorite(isFavorite);
@@ -192,6 +202,10 @@ public class OsrsTableItem extends OsrsItem {
     public void setTvLimit(TextView tvLimit) {
         this.tvLimit = tvLimit;
         setLimit(limit);
+    }
+
+    public void setParent(OsrsItem parent){
+
     }
 
     public void hide(){

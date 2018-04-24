@@ -204,7 +204,7 @@ public class OsrsTable {
     private void loadOsrsItems(){
         System.out.println("Loading all items...");
 
-        for(OsrsItem parent: OsrsDB.fetchAllItems(context).values()){
+        for(OsrsItem parent: OsrsDB.fetchAllItems().values()){
             OsrsTableItem item = new OsrsTableItem(context, parent);
 
             item.getTvName().setOnClickListener(onItemNameClick(item));
@@ -313,7 +313,7 @@ public class OsrsTable {
                 }
 
                 OsrsTable.this.paint();
-                OsrsDB.save(context, item);
+                OsrsDB.save(item);
             }
         };
     }
@@ -333,7 +333,7 @@ public class OsrsTable {
             public void onClick(View v) {
                 item.toggleFavorite();
 
-                OsrsDB.save(context, item);
+                OsrsDB.save(item);
                 Toast.makeText(context,
                         item.getName() + (item.getFavorite() ? " added" : " removed") + " to favorites",
                         Toast.LENGTH_SHORT).show();
@@ -637,4 +637,10 @@ public class OsrsTable {
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
+
+
+    public boolean hasDataBeenModified(){
+        return false;
+    }
+
 }
