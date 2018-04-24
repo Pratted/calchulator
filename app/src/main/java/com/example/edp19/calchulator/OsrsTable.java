@@ -364,7 +364,7 @@ public class OsrsTable {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public void sortColumn(String columnName){
+    private void sortColumn(String columnName){
         final boolean sorted = sortedBy.get(columnName);
         sortDesc = !sorted;
 
@@ -522,10 +522,6 @@ public class OsrsTable {
         paint();
     }
 
-    public boolean needsUpdate(){
-        return  prefs.getBoolean(Osrs.strings.RELOAD_TABLE, true);
-    }
-
     //imports the data from the database back into the table.
     public void reload(){
         table.removeAllViews();
@@ -614,21 +610,6 @@ public class OsrsTable {
         }
 
         paint();
-    }
-
-    //shows all 'applicable' items. excludes blocked and hidden items.
-    public void showApplicableItems() {
-        for(OsrsTableItem item : osrsItems.values()){
-            if(isItemApplicable(item)){
-                item.show();
-            }
-        }
-
-        paint();
-    }
-
-    public boolean isItemApplicable(OsrsItem item) {
-        return !item.isBlocked && !item.isHidden && item.price != 0 && item.price < 100000;
     }
 
     public synchronized boolean fetchPrices() {

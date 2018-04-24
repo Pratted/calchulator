@@ -117,7 +117,5 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
 
         startActivity(intent);
-
-        getCacheDir();
     }
 }

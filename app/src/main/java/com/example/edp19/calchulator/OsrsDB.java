@@ -47,6 +47,10 @@ public class OsrsDB extends SQLiteOpenHelper {
         return getItemFromCursor(c);
     }
 
+    public static void removeAllFavorites(){
+        db.getWritableDatabase().execSQL("Update item set isFavorite = 0");
+    }
+
     public static OsrsItem getItemFromCursor(Cursor c){
         int id = c.getInt(0);
         final String name = c.getString(1);
