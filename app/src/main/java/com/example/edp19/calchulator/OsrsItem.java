@@ -20,9 +20,10 @@ public class OsrsItem implements Parcelable{
     protected boolean isFavorite;
     protected boolean isBlocked;
     protected boolean isHidden;
+    protected long timerStartTime;
 
     public OsrsItem(int id, String name, int highAlch, int price, int limit,
-                    boolean isMembers, boolean isFavorite, boolean isHidden, boolean isBlocked) {
+                    boolean isMembers, boolean isFavorite, boolean isHidden, boolean isBlocked, long timerStartTime) {
         this.id = id;
         this.name = name;
         this.highAlch = highAlch;
@@ -32,6 +33,7 @@ public class OsrsItem implements Parcelable{
         this.isFavorite = isFavorite;
         this.isHidden = isHidden;
         this.isBlocked = isBlocked;
+        this.timerStartTime = timerStartTime;
     }
 
     public OsrsItem(OsrsItem item){
@@ -44,6 +46,7 @@ public class OsrsItem implements Parcelable{
         this.isFavorite = item.isFavorite;
         this.isBlocked = item.isBlocked;
         this.isHidden = item.isHidden;
+        this.timerStartTime = item.timerStartTime;
     }
 
     public int getInt(String name){
@@ -54,6 +57,14 @@ public class OsrsItem implements Parcelable{
         if(name.compareTo(Osrs.strings.NAME_FAVORITE_COLUMN) == 0) return isFavorite ? 1 : 0;
 
         return 0;
+    }
+
+    public void setTimerStartTime(long time){
+        this.timerStartTime = time;
+    }
+
+    public long getTimerStartTime(){
+        return timerStartTime;
     }
 
     public void setHidden(boolean hidden){

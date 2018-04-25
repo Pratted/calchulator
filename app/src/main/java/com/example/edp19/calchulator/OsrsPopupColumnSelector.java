@@ -46,6 +46,8 @@ public class OsrsPopupColumnSelector {
         layout = (LinearLayout) layoutInflater.inflate(R.layout.popup_header, null);
 
         swShowHiddenItems = layout.findViewById(R.id.swShowHiddenItems);
+        swShowHiddenItems.setTypeface(Osrs.typefaces.FONT_REGULAR);
+        swShowHiddenItems.setTextColor(Osrs.colors.ORANGE);
 
         window = new PopupWindow(context);
         window.setContentView(layout);

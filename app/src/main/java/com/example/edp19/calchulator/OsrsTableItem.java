@@ -72,13 +72,20 @@ public class OsrsTableItem extends OsrsItem {
         row.setId(id);
     }
 
+    //restores an existing timer
+    public void restoreTimer(long timerStartTime){
+        timer.startTimer(timerStartTime);
+    }
+
     public void startTimer(){
-        timer.startTimer(5);
+        timer.startTimer();
     }
 
     public OsrsItemTimer getTimer() {
         return timer;
     }
+
+
 
     public TableRow getTableRow() {
         return row;

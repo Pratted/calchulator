@@ -314,7 +314,6 @@ public class OsrsTable {
         return new View.OnClickListener() {
             public void onClick(View view) {
                 window.dismiss();
-                System.out.println("Accepted!!!");
 
                 if (((RadioButton)layout.findViewById(R.id.rbBlock)).isChecked()) {
                     item.isBlocked = true;
@@ -323,11 +322,9 @@ public class OsrsTable {
                 } else { // rbHide is checked
                     item.isHidden = true;
                     item.startTimer();
-                    item.getTableRow().setVisibility(View.GONE);
                     OsrsTable.this.refresh();
 //                    notificationReceiver.setAlarm(context, item.getId(), 10);
                 }
-
 
                 OsrsTable.this.paint();
                 OsrsDB.save(item);
@@ -363,10 +360,13 @@ public class OsrsTable {
             @Override
             public void onItemTimerFinished(OsrsItem item) {
                 osrsItems.get(item.getId()).setHidden(false);
+                OsrsDB.save(osrsItems.get(item.getId()));
                 OsrsTable.this.filter();
             }
         };
     }
+
+
 
     private ImageButton createFavoriteHeader(String tag){
         ImageButton ib = new ImageButton(context);
@@ -560,6 +560,12 @@ public class OsrsTable {
 
         for(OsrsTableItem item : osrsItems.values()) {
             item.refreshProfit();
+
+            //start a timer if not already running..
+            if(item.getHidden() && !item.getTimer().isRunning()){
+                System.out.println("RESTORING THE TIMER HAHAHHHAHAHAHAHAHAHAHAH");
+                item.restoreTimer(item.getTimerStartTime());
+            }
         }
 
         filter();
@@ -580,7 +586,7 @@ public class OsrsTable {
             if(item.getPrice() == 0 || item.getPrice() > 100000) item.hide();
             if(hideProfitBelow > 0 && item.getProfit() < hideProfitBelow) item.hide();
             if(searchString.length() > 0 && !item.getName().toLowerCase().contains(searchString)) item.hide();
-            if(hideHiddenItems && item.isHidden) item.hide();
+            if(hideHiddenItems && item.getHidden()) item.hide();
         }
 
         paint();
@@ -591,8 +597,6 @@ public class OsrsTable {
         //save the selected columns
         for(int i = 0; i < headers.length; i++){
             String name = (String) headers[i].getTag();
-            System.out.println("Saving '" + name + "'");
-
             editor.putBoolean(name,LAYOUT_CURRENT[i]);
         }
 

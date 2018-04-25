@@ -67,8 +67,13 @@ public class OsrsDB extends SQLiteOpenHelper {
         boolean isFavorite = c.getInt(6) == 1;
         boolean isHidden = c.getInt(7) == 1;
         boolean isBlocked = c.getInt(8) == 1;
+        long timerStartTime = c.getLong(9);
 
-        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite, isHidden, isBlocked);
+        if(isHidden){
+            System.out.println("CURSOR: TimerStartTime -> " + timerStartTime);
+        }
+
+        return new OsrsItem(id, name, highAlch, currentPrice, buyLimit, isMembers, isFavorite, isHidden, isBlocked, timerStartTime);
     }
 
     @Override
@@ -139,11 +144,10 @@ public class OsrsDB extends SQLiteOpenHelper {
         cv.put("isFavorite", item.getFavorite());
         cv.put("isBlocked", item.getBlocked());
         cv.put("isHidden", item.getHidden());
+        cv.put("timerStartTime", item.getTimerStartTime());
 
-        System.out.println("INSIDE SAVE");
         System.out.println(item.getName() + " " + item.getHidden());
         System.out.println(item.getName() + " " + item.getBlocked());
-
 
         db.getWritableDatabase()
                 .update("Item", cv, "id = ?", new String[]{String.valueOf(item.getId())});
@@ -161,6 +165,10 @@ public class OsrsDB extends SQLiteOpenHelper {
             old.setHidden(curr.getHidden());
             old.setBlocked(curr.getBlocked());
             old.setPrice(curr.getPrice());
+            old.setTimerStartTime(curr.getTimerStartTime());
+
+            if(old.getHidden())
+                System.out.println("THE TIMER SHOULD BE STARTED AT " + curr.getTimerStartTime());
         }
     }
 

@@ -59,7 +59,6 @@ public class SettingsActivity extends AppCompatActivity  {
         builder = new AlertDialog.Builder(SettingsActivity.this);
         builder.setCancelable(true);
 
-
         //use the osrs items from the Home activity if they're available, otherwise load from db.
         if(incoming != null && incoming.hasExtra("osrsItems")){
             osrsItems = (HashMap<Integer, OsrsItem>) incoming.getSerializableExtra("osrsItems");

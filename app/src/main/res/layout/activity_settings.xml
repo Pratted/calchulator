@@ -222,24 +222,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
+                <Button
+                    android:id="@+id/btnBlockedItems"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="50dp"
+                    android:text="@string/btn_blocked_items"
+                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/osrsOrange"
+                    android:background="@drawable/rectangle_button_selector" />
 
-                    <Button
-                        android:id="@+id/btnBlockedItems"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:text="@string/btn_blocked_items"
-                        android:textSize="20sp"
-                        android:textAlignment="center"
-                        android:layout_weight="1"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@color/osrsOrange"
-                        android:background="@drawable/rectangle_button_selector" />
-
-                </LinearLayout>
             </TableRow>
 
             <TableRow

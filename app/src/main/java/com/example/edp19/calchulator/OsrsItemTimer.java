@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
 
 /**
  * Created by eric on 4/24/18.
@@ -23,8 +24,11 @@ public class OsrsItemTimer extends OsrsItem{
     private ProgressBar progressBar;
     private ConstraintLayout layout;
     private Drawable background;
-    private int ticks = 0;
-    private int totalTicks = 0;
+    private long ticks = 0;
+    private long totalTicks = 20000 / 100;
+    private long totalTime = 20000;
+
+    private boolean isRunning = false;
 
     private WeakReference<OsrsTableItem> item;
 
@@ -57,12 +61,26 @@ public class OsrsItemTimer extends OsrsItem{
         this.listener = listener;
     }
 
-    public void startTimer(final int duration){
-        tvName.setGravity(Gravity.CENTER);
-        totalTicks = 20000 / 100;
+    public void startTimer(long timerStartTime){
+        System.out.println("Timer start time: " + timerStartTime);
+        long timeElapsed = new Date().getTime() - timerStartTime;
 
+        System.out.println(timeElapsed + " millseconds have elapsed");
+        long percentageTimeElapsed = (timeElapsed / totalTime);
+
+        System.out.println("Percent: " + percentageTimeElapsed);
+        ticks = totalTicks - (percentageTimeElapsed * totalTicks / 100);
+
+        System.out.println("THE STARTING TICKS IS: " + ticks);
+
+        startTimer();
+    }
+
+    public void startTimer(){
+        tvName.setGravity(Gravity.CENTER);
+        isRunning = true;
         this.show();
-        timer = new CountDownTimer(20000, 100) {
+        timer = new CountDownTimer(totalTime, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
                 int progress = (int) (((float) ++ticks / (float) totalTicks) * 100);
@@ -73,6 +91,7 @@ public class OsrsItemTimer extends OsrsItem{
             @Override
             public void onFinish() {
                 ticks = 0;
+                isRunning = false;
                 progressBar.setProgress(100);
                 OsrsItemTimer.this.hide();
                 tvName.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
@@ -93,6 +112,10 @@ public class OsrsItemTimer extends OsrsItem{
     public void show(){
         layout.setBackgroundDrawable(background);
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
 
