@@ -31,6 +31,7 @@ public class Osrs {
 
     public static class strings {
         public static String MSG_PRICES_UPDATED;
+        public static String PREFS_HIDE_ITEMS;
         public static String PREF_MIN_PROF_BOOL;
         public static String PREF_MIN_PROFIT;
         public static String PREFS_PRICE_NATURE_RUNE;
@@ -79,6 +80,7 @@ public class Osrs {
         strings.PREFS_PRICE_NATURE_RUNE = res.getString(R.string.prefs_price_nat_rune);
         strings.PREF_MIN_PROFIT = res.getString(R.string.pref_min_profit);
         strings.PREF_MIN_PROF_BOOL = res.getString(R.string.pref_min_profit_boolean);
+        strings.PREFS_HIDE_ITEMS = res.getString(R.string.pref_hide_items);
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);

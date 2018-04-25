@@ -79,6 +79,7 @@
             android:text="@string/name_limit_column"/>
 
         <Switch
+            android:id="@+id/swHiddenItems"
             android:thumbTint="@color/osrsLightGreen"
             android:trackTint="@color/osrsCharcoal"
             android:checked="false"

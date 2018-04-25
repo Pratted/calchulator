@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -19,6 +20,8 @@ import android.widget.TextView;
 public class OsrsPopupColumnSelector {
     private PopupWindow window;
     private LinearLayout layout;
+    private Switch swHiddenItems;
+    private boolean isSwitchChecked;
 
     private int OFFSET_X = -20;
     private int OFFSET_Y = 50;
@@ -43,11 +46,15 @@ public class OsrsPopupColumnSelector {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layout = (LinearLayout) layoutInflater.inflate(R.layout.popup_header, null);
 
+        swHiddenItems = layout.findViewById(R.id.swHiddenItems);
+        isSwitchChecked = swHiddenItems.isChecked();
+
         window = new PopupWindow(context);
         window.setContentView(layout);
         window.setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
         window.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
         window.setFocusable(true);
+
 
         ((TextView) layout.getChildAt(0)).setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
         ((TextView) layout.getChildAt(0)).setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
@@ -85,9 +92,8 @@ public class OsrsPopupColumnSelector {
         });
     }
 
-
     public interface OnDismissListener {
-        void onDismiss();
+        void onDismiss(boolean switchChecked);
     }
 
     private OnDismissListener onDismissListener;
@@ -98,8 +104,12 @@ public class OsrsPopupColumnSelector {
 
     public void dismiss(){
         if(onDismissListener != null){
-            onDismissListener.onDismiss();
+            onDismissListener.onDismiss(isSwitchChecked);
         }
+    }
+
+    public boolean getIsSwitchChecked() {
+        return isSwitchChecked;
     }
 
     public boolean[] getSelectedColumns(){
