@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -23,16 +24,15 @@ public class OsrsDB extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "osrs.db";
 
-    public static String SQL_CREATE_DB = "";
     private static String SQL_DESTROY_DB = "DROP TABLE IF EXISTS Item;";
-
     private static OsrsDB db;
-    private static Context context;
 
-    private OsrsDB(Context context) {
-        super(context.getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
+    //only ever needed when onCreate() is called
+    private static WeakReference<Context> context;
 
-        OsrsDB.context = context;
+    private OsrsDB(Context c) {
+        super(c.getApplicationContext(),DATABASE_NAME,null,DATABASE_VERSION);
+        context = new WeakReference<>(c);
     }
 
     public static synchronized OsrsDB getInstance(Context context) {
@@ -42,8 +42,14 @@ public class OsrsDB extends SQLiteOpenHelper {
         return db;
     }
 
-    public OsrsItem getItem(int id){
-        Cursor c = getWritableDatabase().rawQuery("select * from Item where id = " + id, null);
+    public static void initialize(Context context){
+        if(db == null){
+            db = new OsrsDB(context);
+        }
+    }
+
+    public static OsrsItem getItem(int id){
+        Cursor c = db.getReadableDatabase().rawQuery("select * from Item where id = " + id, null);
         return getItemFromCursor(c);
     }
 
@@ -70,17 +76,18 @@ public class OsrsDB extends SQLiteOpenHelper {
         System.out.println("Initializing Database...");
 
         try{
-            Scanner s = new Scanner(context.getAssets().open("setup.sql"));
+            Scanner s = new Scanner(context.get().getAssets().open("setup.sql"));
+            String script = "";
 
             //load SQL script into string
             while(s.hasNext()){
-                SQL_CREATE_DB += s.nextLine() + "\n";
+                script += s.nextLine() + "\n";
             }
 
             int i = 0;
 
             //tokenize SQL script. Can only execute one SQL statement at a time
-            for(String cmd: SQL_CREATE_DB.split(";")){
+            for(String cmd: script.split(";")){
                 i++;
 
                 //only execute non-empty commands.
@@ -94,6 +101,7 @@ public class OsrsDB extends SQLiteOpenHelper {
         } catch (Exception e){
             System.out.println("Failed to read file!");
         }
+
     }
 
     @Override
@@ -139,27 +147,6 @@ public class OsrsDB extends SQLiteOpenHelper {
 
         db.getWritableDatabase()
                 .update("Item", cv, "id = ?", new String[]{String.valueOf(item.getId())});
-    }
-
-    public static void save(Context context, OsrsItem item){
-        ContentValues cv = new ContentValues();
-        cv.put("currentPrice", item.getPrice());
-        cv.put("isFavorite", item.getFavorite());
-        cv.put("isBlocked", item.getBlocked());
-        cv.put("isHidden", item.getHidden());
-
-        System.out.println("INSIDE SAVE");
-        System.out.println(item.getName() + " " + item.getHidden());
-        System.out.println(item.getName() + " " + item.getBlocked());
-
-        getInstance(context).getWritableDatabase()
-                .update("Item", cv, "id = ?", new String[]{String.valueOf(item.getId())});
-    }
-
-    public static void save(Context context, HashMap<Integer, OsrsItem> items){
-        for(OsrsItem item: items.values()){
-            //save(context, item);
-        }
     }
 
     //refresh the current table from the DB without redrawing it.

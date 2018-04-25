@@ -54,7 +54,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:background="#CCBC97"
-                        android:editable="true"
                         android:gravity="bottom"
                         android:paddingBottom="4dp"
                         android:paddingLeft="10dp"
@@ -128,6 +127,7 @@
 
         <TableRow
             android:id="@+id/headerRow"
+            android:minHeight="50dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

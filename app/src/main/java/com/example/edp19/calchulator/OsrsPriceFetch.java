@@ -22,6 +22,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -97,13 +98,12 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
                             public void onDBReady(SQLiteDatabase db) {
                                 db.execSQL(updatePrices.toString());
 
-                                //db.execSQL("update item set currentPrice = null where currentPrice = 0");
-
                                 //mark time last updated for future runs..
-                                Osrs.PRICES_LAST_UPDATED = Instant.now().toEpochMilli();
+                                Osrs.PRICES_LAST_UPDATED = new Date().getTime();
                                 SharedPreferences sp = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sp.edit();
-                                editor.putLong(Osrs.strings.PREFS_PRICE_UPDATE, Osrs.PRICES_LAST_UPDATED);
+                                editor.putLong(Osrs.strings.KEY_PRICES_LAST_UPDATED, Osrs.PRICES_LAST_UPDATED);
+                                editor.commit();
 
                                 System.out.println("Finished updating the database..");
                                 listner.onPricesReady();

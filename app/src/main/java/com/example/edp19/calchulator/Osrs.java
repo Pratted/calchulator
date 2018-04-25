@@ -10,6 +10,8 @@ import android.graphics.Typeface;
  * Created by eric on 3/28/18.
  */
 
+
+//A global namespace to access resources from strings, colors, etc.
 public class Osrs {
 
     public static class typefaces {
@@ -36,7 +38,6 @@ public class Osrs {
         public static String PREFS_PRICE_NATURE_RUNE;
         public static String SWITCH_HIDE_MEMS_ITEMS;
         public static String PREFS_REMOVE_FAVS;
-        public static String PREFS_PRICE_UPDATE;
         public static String RESTORE_DEFAULTS;
         public static String RELOAD_TABLE;
         public static String PROMPT_SELECT_COLUMNS;
@@ -48,6 +49,15 @@ public class Osrs {
         public static String NAME_LIMIT_COLUMN;
         public static String URL_CURRENT_PRICES;
         public static String PREFS_FILE;
+
+        public static String KEY_PRICES_LAST_UPDATED;
+        public static String KEY_PRICE_UPDATE_INTERVAL;
+        public static String KEY_RESTORE_DEFAULTS;
+        public static String KEY_RELOAD_TABLE;
+        public static String KEY_REMOVE_ALL_FAVORITES;
+        public static String KEY_HIDE_MEMBERS_ITEMS;
+        public static String KEY_MIN_PROFIT;
+
     }
 
     public Osrs(Context context){
@@ -69,9 +79,9 @@ public class Osrs {
         strings.NAME_PROFIT_COLUMN = res.getString(R.string.name_profit_column);
         strings.NAME_LIMIT_COLUMN = res.getString(R.string.name_limit_column);
         strings.URL_CURRENT_PRICES = res.getString(R.string.url_current_prices);
-        strings.PREFS_FILE = res.getString(R.string.OsrsPrefs);
+        strings.PREFS_FILE = res.getString(R.string.file_prefs);
         strings.MSG_PRICES_UPDATED = context.getString(R.string.pricesUpdated);
-        strings.PREFS_PRICE_UPDATE = res.getString(R.string.prefsPriceUpdate);
+        strings.KEY_PRICES_LAST_UPDATED = res.getString(R.string.key_price_last_updated);
         strings.RELOAD_TABLE = res.getString(R.string.reloadTable);
         strings.RESTORE_DEFAULTS = res.getString(R.string.restoreDefs);
         strings.SWITCH_HIDE_MEMS_ITEMS = res.getString(R.string.swtich_show_mems_checked);
@@ -79,14 +89,25 @@ public class Osrs {
         strings.PREFS_PRICE_NATURE_RUNE = res.getString(R.string.prefs_price_nat_rune);
         strings.PREF_MIN_PROFIT = res.getString(R.string.pref_min_profit);
         strings.PREF_MIN_PROF_BOOL = res.getString(R.string.pref_min_profit_boolean);
+        strings.KEY_PRICE_UPDATE_INTERVAL = res.getString(R.string.key_price_update_interval);
 
         fonts.FONT_SIZE_SMALL = res.getInteger(R.integer.font_size_small);
         fonts.FONT_SIZE_MEDIUM = res.getInteger(R.integer.font_size_medium);
         fonts.FONT_SIZE_LARGE = res.getInteger(R.integer.font_size_large);
     }
 
+    private static boolean initialized  = false;
+
     public static long PRICES_LAST_UPDATED = 0;
     public static Integer PRICE_NATURE_RUNE = 210;
+    public static Integer PRICE_UPDATE_INTERVAL = 240;
     final public static Integer ID_NATURE_RUNE = 561;
+
+    public static void initialize(Context context){
+        if(!initialized)
+            new Osrs(context);
+
+        initialized = true;
+    }
 
 }

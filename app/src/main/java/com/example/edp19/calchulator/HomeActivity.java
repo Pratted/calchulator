@@ -1,7 +1,6 @@
 package com.example.edp19.calchulator;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 
 
 public class HomeActivity extends AppCompatActivity {
-    private SQLiteDatabase db;
     private OsrsSearchBar searchBar;
     private OsrsTable table;
 
@@ -26,7 +24,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //initialize resources (strings, fonts, colors, etc)
-        new Osrs(this);
+        Osrs.initialize(this);
+        OsrsDB.initialize(this);
 
         setContentView(R.layout.activity_home);
 
@@ -55,6 +54,7 @@ public class HomeActivity extends AppCompatActivity {
             table.restoreDefaults();
         }
 
+        //apply new filters, changes, etc.
         table.refresh();
     }
 

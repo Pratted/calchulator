@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -22,6 +23,7 @@ public class OsrsPopupColumnSelector {
 
     private int OFFSET_X = -20;
     private int OFFSET_Y = 50;
+    private Switch swShowHiddenItems;
 
     CheckBox checkboxes[];
 
@@ -42,6 +44,8 @@ public class OsrsPopupColumnSelector {
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layout = (LinearLayout) layoutInflater.inflate(R.layout.popup_header, null);
+
+        swShowHiddenItems = layout.findViewById(R.id.swShowHiddenItems);
 
         window = new PopupWindow(context);
         window.setContentView(layout);
@@ -83,6 +87,10 @@ public class OsrsPopupColumnSelector {
                 dismiss();
             }
         });
+    }
+
+    public boolean showHiddenItems(){
+        return swShowHiddenItems.isChecked();
     }
 
 

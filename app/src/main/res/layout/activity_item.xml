@@ -301,6 +301,7 @@
                     android:orientation="horizontal"
                     android:gravity="center">
                     <Button
+                        android:id="@+id/btnHide"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:text="Hide"
@@ -308,6 +309,7 @@
                         android:background="@drawable/rectangle_button_selector"/>
 
                     <Button
+                        android:id="@+id/btnBlock"
                         android:layout_marginLeft="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"

@@ -22,20 +22,24 @@ public class OsrsTableItem extends OsrsItem {
     private TextView tvProfit;
     private TableRow row;
 
+    private OsrsItemTimer timer;
+
     public OsrsTableItem(Context context, OsrsItem parent){
-        //super(OsrsDB.getItemFromCursor(c));
         super(parent);
 
         row = new TableRow(context);
-        row.setMinimumHeight(60);
+        row.setMinimumHeight(100);
 
-        tvName = new TextView(context);
+        //tvName = new TextView(context);
         tvPrice = new TextView(context);
         tvHighAlch = new TextView(context);
         tvLimit = new TextView(context);
         tvProfit = new TextView(context);
         ibFavorite = new ImageButton(context);
         tvProfit = new TextView(context);
+
+        timer = new OsrsItemTimer(context, this);
+        tvName = timer.getTextView();
 
         tvName.setMaxLines(2);
 
@@ -47,6 +51,7 @@ public class OsrsTableItem extends OsrsItem {
         ibFavorite.setBackgroundDrawable(null);
         ibFavorite.setPadding(0,-8,0,0);
         tvName.setTextSize(18);
+        tvName.setPadding(4,4,2,2);
 
         setName(name);
         setHighAlch(highAlch);
@@ -59,7 +64,7 @@ public class OsrsTableItem extends OsrsItem {
         formatTextViews(tvName, tvPrice, tvHighAlch, tvLimit, tvProfit);
 
         row.addView(ibFavorite);
-        row.addView(tvName);
+        row.addView(timer.getLayout());
         row.addView(tvHighAlch);
         row.addView(tvPrice);
         row.addView(tvProfit);
@@ -67,12 +72,16 @@ public class OsrsTableItem extends OsrsItem {
         row.setId(id);
     }
 
-    public TableRow getTableRow() {
-        return row;
+    public void startTimer(){
+        timer.startTimer(5);
     }
 
-    public void setTableRow(TableRow row){
-        this.row = row;
+    public OsrsItemTimer getTimer() {
+        return timer;
+    }
+
+    public TableRow getTableRow() {
+        return row;
     }
 
     private void formatTextViews(TextView... views){
@@ -100,10 +109,6 @@ public class OsrsTableItem extends OsrsItem {
         tvName.setText(name);
     }
 
-    public void setTvName(TextView tv){
-        tvName = tv;
-        setName(name);
-    }
 
     public TextView getTvName(){
         return tvName;
@@ -111,26 +116,11 @@ public class OsrsTableItem extends OsrsItem {
 
     public void setPrice(int price){
         this.price = price;
-
-        if(tvPrice != null){
-            tvPrice.setText(String.valueOf(price));
-        }
-
+        tvPrice.setText(String.valueOf(price));
     }
 
     public void refreshProfit() {
-        if(tvProfit != null){
-            tvProfit.setText(String.valueOf(getProfit()));
-        }
-    }
-
-    public void setTvPrice(TextView tv){
-        tvPrice = tv;
-        tv.setText(String.valueOf(price));
-    }
-
-    public TextView getTvPrice(){
-        return tvPrice;
+        tvProfit.setText(String.valueOf(getProfit()));
     }
 
     public void setFavorite(boolean isFavorite){
@@ -148,11 +138,6 @@ public class OsrsTableItem extends OsrsItem {
     public void setBlocked(boolean blocked){
         this.isBlocked = blocked;
         row.setVisibility(blocked ? View.GONE : View.VISIBLE);
-    }
-
-    public void setIbFavorite(ImageButton ib){
-        ibFavorite = ib;
-        setFavorite(isFavorite);
     }
 
     public void toggleFavorite(){
@@ -173,17 +158,7 @@ public class OsrsTableItem extends OsrsItem {
 
     public void setHighAlch(int highAlch) {
         this.highAlch = highAlch;
-
         tvHighAlch.setText(String.valueOf(highAlch));
-    }
-
-    public TextView getTvHighAlch() {
-        return tvHighAlch;
-    }
-
-    public void setTvHighAlch(TextView tvHighAlch) {
-        this.tvHighAlch = tvHighAlch;
-        setHighAlch(highAlch);
     }
 
     public int getLimit() {
@@ -193,19 +168,6 @@ public class OsrsTableItem extends OsrsItem {
     public void setLimit(int limit) {
         this.limit = limit;
         tvLimit.setText(String.valueOf(limit == -1 ? "N/A": limit));
-    }
-
-    public TextView getTvLimit() {
-        return tvLimit;
-    }
-
-    public void setTvLimit(TextView tvLimit) {
-        this.tvLimit = tvLimit;
-        setLimit(limit);
-    }
-
-    public void setParent(OsrsItem parent){
-
     }
 
     public void hide(){

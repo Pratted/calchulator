@@ -9,11 +9,30 @@
     <string name="name_price_column">Price</string>
     <string name="name_profit_column">Profit</string>
     <string name="name_limit_column">Limit</string>
+
+    <!-- Font Sizes -->
     <integer name="font_size_small">18</integer>
     <integer name="font_size_medium">20</integer>
     <integer name="font_size_large">24</integer>
+
+
     <string name="pricesUpdated">The prices have been updated</string>
     <string name="prefsPriceUpdate">PriceUpdate</string>
+
+
+    <string name="file_prefs">osrs.prefs</string>
+
+    <!-- Keys for shared preferences -->
+    <string name="key_reload_table">ReloadTable</string>
+    <string name="key_restore_defaults">RestoreDefault</string>
+    <string name="key_favorites_removed">ReloadTable</string>
+    <string name="key_remove_favorites">RemoveFavs</string>
+    <string name="key_price_nat">PriceNatRune</string>
+    <string name="key_min_profit">MinProf</string>
+    <string name="key_price_last_updated">PricesLastUpdated</string>
+    <string name="key_price_update_interval">PriceUpdateInterval></string>
+
+
     <string name="OsrsPrefs">osrs.prefs</string>
     <string name="reloadTable">ReloadTable</string>
     <string name="restoreDefs">RestoreDefault</string>

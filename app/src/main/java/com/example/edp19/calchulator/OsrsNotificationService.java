@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -37,8 +36,11 @@ public class OsrsNotificationService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         System.out.println("Handling the intent in this service...");
 
+        Osrs.initialize(this);
+        OsrsDB.initialize(this);
+
         int id = intent.getIntExtra("item", 0);
-        boolean hasPriceUpdate = intent.getBooleanExtra(Osrs.strings.PREFS_PRICE_UPDATE, false);
+        boolean hasPriceUpdate = intent.getBooleanExtra(Osrs.strings.KEY_PRICES_LAST_UPDATED, false);
         String category = "Price update";
         String channelId;
         String message;
@@ -58,7 +60,7 @@ public class OsrsNotificationService extends IntentService {
         else{
             category = "Item available";
             channelId = String.valueOf(id);
-            OsrsItem item = OsrsDB.getInstance(this).getItem(id);
+            OsrsItem item = OsrsDB.getItem(id);
 
             title = item.getName() + " is available again.";
             message = "The current market price is: " + item.getPrice();

@@ -52,6 +52,9 @@ public class SettingsActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        Osrs.initialize(this);
+        OsrsDB.initialize(this);
+
         Intent incoming = getIntent();
         builder = new AlertDialog.Builder(SettingsActivity.this);
         builder.setCancelable(true);
@@ -63,7 +66,7 @@ public class SettingsActivity extends AppCompatActivity  {
         }
         else{
             System.out.println("Using DB items...");
-            osrsItems = OsrsDB.fetchAllItems(this);
+            osrsItems = OsrsDB.fetchAllItems();
         }
 
         btnHiddenItems = findViewById(R.id.btnHiddenItems);
@@ -109,8 +112,8 @@ public class SettingsActivity extends AppCompatActivity  {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                llBlockList.setVisibility(View.VISIBLE);
                 svSettings.setVisibility(View.GONE);
+                llBlockList.setVisibility(View.VISIBLE);
 
                 ((TextView)llBlockList.findViewById(R.id.tvBlockListHeader))
                         .setText((blocked ? "Blocked " : "Hidden ") + " items");
@@ -121,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity  {
                 System.out.println("Blocked -> " + blocked);
                 System.out.println("Loaded " + osrsItems.size() + " items");
 
-                int color = Osrs.colors.LIGHT_BROWN;
+                int color = Osrs.colors.BROWN;
 
                 //sort these bitches alphabetically
                 ArrayList<OsrsItem> items = new ArrayList<>(osrsItems.values());
@@ -175,6 +178,7 @@ public class SettingsActivity extends AppCompatActivity  {
 
                         llBlockList.setVisibility(View.GONE);
                         svSettings.setVisibility(View.VISIBLE);
+                        editor.putBoolean("DataModified", true);
                     }
                 });
             }
@@ -230,6 +234,8 @@ public class SettingsActivity extends AppCompatActivity  {
         editor.putInt(Osrs.strings.PREF_MIN_PROFIT,
                 etMinProfit.getText().length() > 0?
                         Integer.valueOf(etMinProfit.getText().toString()) : 0);
+
+        //commit because activity is about to be destroyed and HomeActivty needs this info ASAP
         editor.commit();
     }
 }
