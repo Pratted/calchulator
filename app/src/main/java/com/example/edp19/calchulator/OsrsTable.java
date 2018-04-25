@@ -45,6 +45,10 @@ public class OsrsTable {
     private HashMap<Integer, OsrsTableItem> osrsItems;
     private String lastSortedBy;
     private boolean sortDesc;
+    private boolean hideMems;
+    private int hideProfitBelow;
+    private String searchString = "";
+    private boolean hideHiddenItems = true;
 
     final public static int COLUMN_FAVORITE = 0;
     final public static int COLUMN_ITEM = 1;
@@ -81,6 +85,8 @@ public class OsrsTable {
         editor = prefs.edit(); //cant use prefs.edit().putString()
 
         tvStatus.setText(R.string.pricesUpdated);
+
+        hideHiddenItems = prefs.getBoolean(Osrs.strings.PREFS_HIDE_ITEMS, false);
 
         Osrs.PRICES_LAST_UPDATED = prefs.getLong(Osrs.strings.PREFS_PRICE_UPDATE, 0);
         Osrs.PRICE_NATURE_RUNE = prefs.getInt(Osrs.strings.PREFS_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
@@ -224,6 +230,8 @@ public class OsrsTable {
             public void onDismiss() {
                 System.out.println("MY DISMISS CALLED!!!!!!");
                 OsrsTable.this.showSelectedColumns(columnSelector.getSelectedColumns());
+                hideHiddenItems = !columnSelector.getIsSwitchChecked();
+                OsrsTable.this.filter();
             }
         };
     }
@@ -536,11 +544,6 @@ public class OsrsTable {
         editor.apply();
     }
 
-    private boolean hideMems;
-    private int hideProfitBelow;
-    private String searchString = "";
-    private boolean hideHiddenItems = true;
-
 
     public void refresh() {
         hideMems = prefs.getBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS, true);
@@ -589,6 +592,7 @@ public class OsrsTable {
         editor.putLong(Osrs.strings.PREFS_PRICE_UPDATE, Osrs.PRICES_LAST_UPDATED);
         editor.putString("SortBy", lastSortedBy);
         editor.putBoolean("SortDesc", sortDesc);
+        editor.putBoolean(Osrs.strings.PREFS_HIDE_ITEMS, hideHiddenItems);
 
         //use commit since this is called in onPause() and needs to be done immediately
         editor.commit();
@@ -637,4 +641,5 @@ public class OsrsTable {
     public void setSearchString(String searchString) {
         this.searchString = searchString;
     }
+
 }
