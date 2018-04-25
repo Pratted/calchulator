@@ -89,8 +89,8 @@ public class OsrsPopupColumnSelector {
         });
     }
 
-    public boolean showHiddenItems(){
-        return swShowHiddenItems.isChecked();
+    public boolean hideHiddenItems(){
+        return !swShowHiddenItems.isChecked();
     }
 
 

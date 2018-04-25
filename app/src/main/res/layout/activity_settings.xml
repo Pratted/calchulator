@@ -239,9 +239,6 @@
                         android:textColor="@color/osrsOrange"
                         android:background="@drawable/rectangle_button_selector" />
 
-
-
-
                 </LinearLayout>
             </TableRow>
 

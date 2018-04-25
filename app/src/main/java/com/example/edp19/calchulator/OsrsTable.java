@@ -105,24 +105,7 @@ public class OsrsTable {
         window.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
         window.setFocusable(true);
 
-        /*
-        scrollToTopButton = new ImageButton(context);
-        scrollToTopButton.setVisibility(View.GONE);
-
-        scrollView.setOnScrollChangeListener(new ScrollView.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(scrollY < oldScrollY){
-                    System.out.println("Scrolled downward!!!");
-                    scrollToTopButton.setVisibility(View.VISIBLE);
-                }
-                else{
-                    System.out.println("Scrolled Upward...");
-                    scrollToTopButton.setVisibility(View.GONE);
-                }
-            }
-        });
-        */
+        scrollView.fullScroll(ScrollView.FOCUS_UP);
 
         //initialize onClickListeners for all headers.
         for(View v: headers){
@@ -140,8 +123,6 @@ public class OsrsTable {
 
         //pre-select the visible columns in column selector
         columnSelector.selectColumns(LAYOUT_CURRENT);
-
-
 
         //all columns to the right of Alch are numeric and shall be right aligned.
         for(int i = COLUMN_ALCH; i < headers.length; i++){
@@ -205,8 +186,12 @@ public class OsrsTable {
         editor.putBoolean(Osrs.strings.RESTORE_DEFAULTS, false);
         editor.apply();
 
-        this.loadOsrsItems();
-        this.showSelectedColumns(LAYOUT_DEFAULT);
+        LAYOUT_CURRENT = LAYOUT_DEFAULT.clone();
+
+        this.reload();
+
+        //this.loadOsrsItems();
+        //this.showSelectedColumns(LAYOUT_DEFAULT);
     }
 
     private TextView createTextView(String text){
@@ -247,9 +232,11 @@ public class OsrsTable {
                 System.out.println("MY DISMISS CALLED!!!!!!");
                 OsrsTable.this.showSelectedColumns(columnSelector.getSelectedColumns());
 
-                hideHiddenItems = columnSelector.showHiddenItems();
+                hideHiddenItems = columnSelector.hideHiddenItems();
 
-                if(hideHiddenItems) filter();
+                System.out.println("We are " + (hideHiddenItems ? "" : "not") + " hiding hiddem items.");
+                System.out.println("HIDE HIDDEN ITEMS -> " + hideHiddenItems);
+                filter();
             }
         };
     }
@@ -594,9 +581,6 @@ public class OsrsTable {
             if(hideProfitBelow > 0 && item.getProfit() < hideProfitBelow) item.hide();
             if(searchString.length() > 0 && !item.getName().toLowerCase().contains(searchString)) item.hide();
             if(hideHiddenItems && item.isHidden) item.hide();
-            else{
-                System.out.println("SHOWING HIDDEN ITEMS");
-            }
         }
 
         paint();

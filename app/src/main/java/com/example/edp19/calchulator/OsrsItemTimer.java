@@ -57,13 +57,12 @@ public class OsrsItemTimer extends OsrsItem{
         this.listener = listener;
     }
 
-
     public void startTimer(final int duration){
         tvName.setGravity(Gravity.CENTER);
-        totalTicks = 7000 / 100;
+        totalTicks = 20000 / 100;
 
         this.show();
-        timer = new CountDownTimer(7000, 100) {
+        timer = new CountDownTimer(20000, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
                 int progress = (int) (((float) ++ticks / (float) totalTicks) * 100);
@@ -84,11 +83,13 @@ public class OsrsItemTimer extends OsrsItem{
         }.start();
     }
 
+    //hides the progress bar and background
     public void hide(){
         progressBar.setVisibility(View.INVISIBLE);
         layout.setBackgroundDrawable(null);
     }
 
+    //shows the progress bar and background
     public void show(){
         layout.setBackgroundDrawable(background);
         progressBar.setVisibility(View.VISIBLE);
