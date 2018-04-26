@@ -19,8 +19,6 @@
     <!-- Misc -->
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="added">added</string>
-    <string name="removed">removed</string>
     <string name="na">N/A</string>
 
     <!-- Font Sizes -->
@@ -96,9 +94,6 @@
     <string name="btn_hidden_items">Hidden Items</string>
     <string name="btn_blocked_items">Blocked Items</string>
     <string name="btn_rem_favorites">Remove All Favorites</string>
-    <string name="btn_restore_defs">Restore To Default</string>
-    <string name="items_page_msg_part_1">Remove </string>
-    <string name="items_page_msg_part_2">Add </string>
-    <string name="items_page_msg_part_3"> from favorites</string>
+    <string name="btn_restore_defs">Restore To Defaults</string>
     <string name="prefs_price_nat_rune">PriceNatRune</string>
 </resources>

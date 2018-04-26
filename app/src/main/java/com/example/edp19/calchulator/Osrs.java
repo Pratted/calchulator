@@ -201,12 +201,10 @@ public class Osrs {
         initialized = true;
     }
 
-
     public static void printPrefKeys(SharedPreferences prefs){
         System.out.println("-------------------- Shared Prefs --------------------");
         for(Map.Entry<String,?>  entry : prefs.getAll().entrySet()){
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
     }
-
 }
