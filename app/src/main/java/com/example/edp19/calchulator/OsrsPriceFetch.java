@@ -100,7 +100,7 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
 
                                 //mark time last updated for future runs..
                                 Osrs.PRICES_LAST_UPDATED = new Date().getTime();
-                                SharedPreferences sp = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
+                                SharedPreferences sp = context.getSharedPreferences(Osrs.files.SHARED_PREFERENCES, Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sp.edit();
                                 editor.putLong(Osrs.strings.KEY_PRICES_LAST_UPDATED, Osrs.PRICES_LAST_UPDATED);
                                 editor.commit();
@@ -109,8 +109,6 @@ public class OsrsPriceFetch extends AsyncTask<String, Void, JSONObject> {
                                 listner.onPricesReady();
                             }
                         });
-
-
 
                     } catch (Exception e) {
                         e.printStackTrace();

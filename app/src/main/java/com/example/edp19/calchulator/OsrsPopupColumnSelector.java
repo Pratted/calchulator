@@ -48,6 +48,7 @@ public class OsrsPopupColumnSelector {
         swShowHiddenItems = layout.findViewById(R.id.swShowHiddenItems);
         swShowHiddenItems.setTypeface(Osrs.typefaces.FONT_REGULAR);
         swShowHiddenItems.setTextColor(Osrs.colors.ORANGE);
+        swShowHiddenItems.setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
 
         window = new PopupWindow(context);
         window.setContentView(layout);
@@ -131,6 +132,10 @@ public class OsrsPopupColumnSelector {
         }
 
         return n;
+    }
+
+    public void setShowHiddens(boolean showHiddens){
+        swShowHiddenItems.setChecked(showHiddens);
     }
 
     public void selectColumns(boolean[] cols){

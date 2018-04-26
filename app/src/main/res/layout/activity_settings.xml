@@ -194,7 +194,7 @@
                         android:background="@color/osrsBrown"
                         android:layout_gravity="bottom"
                         android:textColor="@color/osrsOrange"
-                        android:text="@string/switch_hide_mems" />
+                        android:text="@string/label_sw_hide_member_items" />
                 </LinearLayout>
             </TableRow>
 
@@ -245,6 +245,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:text="@string/btn_rem_favorites"
+                    android:onClick="onRemoveFavoritesButtonClick"
                     android:textSize="20dp"
                     android:textAlignment="center"
                     android:layout_gravity="center_vertical"
@@ -263,6 +264,7 @@
                     android:layout_height="50dp"
                     android:text="@string/btn_restore_defs"
                     android:textSize="20dp"
+                    android:onClick="onRestoreDefaultsButtonClick"
                     android:textAlignment="center"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/osrsOrange"

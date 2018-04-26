@@ -94,7 +94,7 @@
                             android:inputType="text"
                             android:paddingLeft="4dp"
                             android:layout_gravity="left"
-                            android:text="*"
+                            android:text=""
                             android:textColor="#2562c4" />
 
                     </LinearLayout>

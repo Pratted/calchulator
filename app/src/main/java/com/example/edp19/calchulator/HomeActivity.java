@@ -69,45 +69,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRestart(){
-        super.onRestart();
-
-        System.out.println("ONRESTARTED CALLED!!!");
-    }
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-
-        System.out.println("ON HOMEACTIVITY_ONSTART CALLED!!!!");
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle state){
-        super.onSaveInstanceState(state);
-
-        System.out.println("ON HOMEACTIVITY_SAVEINSTANCESTATE CALLED!!!!");
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
-
-        System.out.println("HOME ONSTOP CALLED!!!");
-    }
-
-    @Override
     public void onDestroy(){
         super.onDestroy();
 
         System.out.println("DESTROYEDDDD!!!!");
     }
 
-
-
     public void onButtonSettingsClick(View v){
-        Intent intent = new Intent(HomeActivity.this, SettingsActivity.class);
-
-        startActivity(intent);
+        startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
     }
 }

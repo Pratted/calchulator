@@ -39,21 +39,21 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
         } else {
             System.out.println("Recieved a " + item);
 
-            outgoing.putExtra("item", item);
+            outgoing.putExtra(Osrs.strings.KEY_ITEM, item);
             context.startService(outgoing);
         }
     }
 
-    public void setAlarm(Context context, int id, int seconds){
+    public void setAlarm(Context context, int id){
         context.registerReceiver( this, new IntentFilter("com.example.edp19.calchulator.OsrsNotificationService"));
 
         Intent i = new Intent("com.example.edp19.calchulator.OsrsNotificationService");
-        i.putExtra("item", id);
+        i.putExtra(Osrs.strings.KEY_ITEM, id);
 
         PendingIntent pintent = PendingIntent.getBroadcast( context, id, i, 0);
         AlarmManager manager = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
 
-        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000* seconds, pintent);
+        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + Osrs.DEFAULT_TIMER, pintent);
     }
 
     public void setPriceUpdateAlarm(Context context, int seconds) {
@@ -67,7 +67,7 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
 
         System.out.println("PRICE UPDATE ALARM SET");
 
-        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000* seconds, pintent);
+        manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + Osrs.DEFAULT_TIMER, pintent);
     }
 
 

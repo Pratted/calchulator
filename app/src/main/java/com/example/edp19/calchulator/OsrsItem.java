@@ -67,6 +67,7 @@ public class OsrsItem implements Parcelable{
         return timerStartTime;
     }
 
+
     public void setHidden(boolean hidden){
         this.isHidden = hidden;
     }
@@ -142,6 +143,8 @@ public class OsrsItem implements Parcelable{
         limit = in.readInt();
         isMembers = in.readInt() == 1;
         isFavorite = in.readInt() == 1;
+        isHidden = in.readInt() == 1;
+        isBlocked = in.readInt() == 1;
     }
 
     @Override
@@ -158,6 +161,8 @@ public class OsrsItem implements Parcelable{
         parcel.writeInt(limit);
         parcel.writeInt(isMembers ? 1 : 0);
         parcel.writeInt(isFavorite ? 1 : 0);
+        parcel.writeInt(isHidden ? 1 : 0);
+        parcel.writeInt(isBlocked ? 1 : 0);
     }
 
     public static final Parcelable.Creator<OsrsItem> CREATOR = new Parcelable.Creator<OsrsItem>(){

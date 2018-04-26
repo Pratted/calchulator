@@ -71,15 +71,16 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:id="@+id/ibFavorite"
+                        android:onClick="onFavoriteButtonClick"
                         android:background="@android:drawable/star_big_on" />
 
                     <TextView
                         android:id="@+id/tvFavorite"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginStart="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
-                        android:text="Remove from favorites"/>
+                        android:text="@string/label_tv_remove_from_favorites"/>
 
                 </LinearLayout>
 
@@ -93,7 +94,7 @@
                     <TableLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="right">
+                        android:gravity="end">
 
                         <TableRow>
                             <LinearLayout android:orientation="horizontal">
@@ -101,12 +102,12 @@
                                     android:layout_width="100dp"
                                     android:textSize="16sp"
                                     android:layout_height="wrap_content"
-                                    android:text="Members?"/>
+                                    android:text="@string/label_tv_members"/>
                                 <TextView
                                     android:textSize="16sp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="No"/>
+                                    android:text="@string/no"/>
                             </LinearLayout>
                         </TableRow>
                         <TableRow>
@@ -115,7 +116,7 @@
                                     android:layout_width="100dp"
                                     android:textSize="16sp"
                                     android:layout_height="wrap_content"
-                                    android:text="Alch"/>
+                                    android:text="@string/label_tv_alch"/>
                                 <TextView
                                     android:id="@+id/tvHighAlch"
                                     android:textSize="16sp"
@@ -130,7 +131,7 @@
                                     android:layout_width="100dp"
                                     android:layout_height="wrap_content"
                                     android:textSize="16sp"
-                                    android:text="Price"/>
+                                    android:text="@string/label_tv_price"/>
                                 <TextView
                                     android:id="@+id/tvCurrentPrice"
                                     android:textSize="16sp"
@@ -145,7 +146,7 @@
                                     android:layout_width="100dp"
                                     android:textSize="16sp"
                                     android:layout_height="wrap_content"
-                                    android:text="Limit"/>
+                                    android:text="@string/label_tv_price"/>
                                 <TextView
                                     android:id="@+id/tvLimit"
                                     android:textSize="16sp"
@@ -155,7 +156,9 @@
                             </LinearLayout>
                         </TableRow>
 
+                        <!--
                         <TableRow
+                            android:visibility="gone"
                             android:layout_marginTop="20dp"
                             android:layout_width="match_parent">
                             <LinearLayout android:orientation="horizontal"
@@ -174,6 +177,7 @@
                                 android:maxLength="3"
                                 android:text="100"/>
                         </TableRow>
+                        -->
                     </TableLayout>
 
                     <LinearLayout
@@ -193,7 +197,6 @@
                             android:layout_marginBottom="4dp"
                             android:layout_marginLeft="4dp"
                             android:layout_marginRight="4dp"
-
                             android:background="@color/osrsLightBrown"
                             android:gravity="right">
 
@@ -223,10 +226,11 @@
                                     android:background="@drawable/p561"/>
 
                                 <TextView
+                                    android:id="@+id/tvProfit"
                                     android:layout_width="wrap_content"
-                                    android:text="Profit"
+                                    android:text="@string/label_tv_profit"
                                     android:textSize="16sp"
-                                    android:textColor="@color/osrsLightGreen"
+                                    android:textColor="#ffffff"
                                     android:gravity="center_vertical"
                                     android:layout_height="30dp" />
 
@@ -241,6 +245,7 @@
                                 android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/tvEquationHighAlch"
                                     android:layout_marginTop="5dp"
                                     android:layout_width="wrap_content"
                                     android:text="30000"
@@ -250,6 +255,7 @@
                                     android:layout_height="30dp" />
 
                                 <TextView
+                                    android:id="@+id/tvEquationPrice"
                                     android:layout_marginTop="5dp"
                                     android:layout_width="wrap_content"
                                     android:text="-30435"
@@ -259,6 +265,7 @@
                                     android:layout_height="30dp" />
 
                                 <TextView
+                                    android:id="@+id/tvEquationNat"
                                     android:layout_marginTop="5dp"
                                     android:layout_width="wrap_content"
                                     android:text="-210"
@@ -273,25 +280,17 @@
                                     android:background="@color/osrsCharcoal"/>
 
                                 <TextView
+                                    android:id="@+id/tvEquationProfit"
                                     android:layout_width="wrap_content"
                                     android:text="55"
                                     android:textSize="16sp"
                                     android:textColor="@color/osrsLightGreen"
                                     android:gravity="center_vertical"
                                     android:layout_height="30dp" />
-
-
                             </LinearLayout>
-
-
-
                         </LinearLayout>
-
-
                     </LinearLayout>
                     </LinearLayout>
-
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -304,7 +303,8 @@
                         android:id="@+id/btnHide"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
-                        android:text="Hide"
+                        android:text="@string/label_btn_hide"
+                        android:onClick="onHideButtonClick"
                         android:textColor="@color/osrsOrange"
                         android:background="@drawable/rectangle_button_selector"/>
 
@@ -313,7 +313,8 @@
                         android:layout_marginLeft="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
-                        android:text="Block"
+                        android:text="@string/label_btn_block"
+                        android:onClick="onBlockButtonClick"
                         android:textColor="@color/osrsOrange"
                         android:background="@drawable/rectangle_button_selector"/>
                 </LinearLayout>
@@ -327,8 +328,5 @@
             android:background="@drawable/backdrop_765_bottom" />
 
     </LinearLayout>
-
-
-
 
 </android.support.constraint.ConstraintLayout>

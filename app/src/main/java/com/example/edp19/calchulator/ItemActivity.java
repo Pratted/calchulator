@@ -27,11 +27,13 @@ public class ItemActivity extends AppCompatActivity {
     private ImageButton ibFavorite;
     private TextView tvFavorite;
 
+    private TextView tvEquationAlch;
+    private TextView tvEquationPrice;
+    private TextView tvEquationNat;
+    private TextView tvEquationProfit;
     private Button btnHide;
-    private Button btnBlock;
 
     private OsrsItem item;
-    private OsrsItem orignalItem;
 
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
@@ -48,7 +50,7 @@ public class ItemActivity extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
 
-        prefs = this.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
+        prefs = this.getSharedPreferences(Osrs.files.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         editor = prefs.edit();
 
         System.out.println("onCreate called for ItemActivity!!!!");
@@ -60,90 +62,65 @@ public class ItemActivity extends AppCompatActivity {
         ibFavorite = findViewById(R.id.ibFavorite);
         tvFavorite = findViewById(R.id.tvFavorite);
         tvBuyLimit = findViewById(R.id.tvLimit);
+        tvEquationAlch = findViewById(R.id.tvEquationHighAlch);
+        tvEquationNat = findViewById(R.id.tvEquationNat);
+        tvEquationPrice = findViewById(R.id.tvEquationPrice);
+        tvEquationProfit = findViewById(R.id.tvEquationProfit);
         btnHide = findViewById(R.id.btnHide);
-        btnBlock = findViewById(R.id.btnBlock);
 
         Intent intent = getIntent();
 
         if(intent != null) {
             System.out.println("UPDATING THE ITEMNAME FIELD!");
 
-            final OsrsItem item = intent.getParcelableExtra("item");
+            final OsrsItem item = intent.getParcelableExtra(Osrs.strings.KEY_ITEM);
             this.item = item;
         }
 
-            orignalItem = new OsrsItem(item);
+        tvItemName.setText(item.getName());
+        tvCurrentPrice.setText(String.valueOf(item.getPrice()));
+        tvBuyLimit.setText(item.getLimit() > 0 ? String.valueOf(item.getLimit()) : Osrs.strings.NA);
+        tvHighAlch.setText(String.valueOf(item.getHighAlch()));
+        tvEquationPrice.setText(String.valueOf(item.getPrice()));
+        tvEquationAlch.setText(String.valueOf(item.getHighAlch()));
+        tvEquationNat.setText(String.valueOf(Osrs.PRICE_NATURE_RUNE));
+        tvEquationProfit.setText(String.valueOf(item.getProfit()));
+        tvEquationProfit.setTextColor(item.getProfit() > 0 ? Osrs.colors.LIGHT_GREEN : Osrs.colors.RED);
+        btnHide.setText(item.getHidden() ?  Osrs.strings.LABEL_BTN_UNHIDE : Osrs.strings.LABEL_BTN_HIDE);
 
-            tvItemName.setText(item.getName());
-            Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
+        tvFavorite.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
+        String toDisplay = (item.isFavorite ? Osrs.strings.LABEL_TV_REMOVE_FROM_FAVORITES : Osrs.strings.LABEL_TV_ADD_TO_FAVORITES);
+        tvFavorite.setText(toDisplay);
 
-            ivItemImg.setImageDrawable(drawable);
-            ivItemImg.setBackgroundDrawable(null);
-            tvCurrentPrice.setText(String.valueOf(item.getPrice()));
+        Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
 
-            tvBuyLimit.setText(item.getLimit() > 0 ? String.valueOf(item.getLimit()) : "N/A");
-            tvHighAlch.setText(String.valueOf(item.getHighAlch()));
+        ivItemImg.setImageDrawable(drawable);
+        ivItemImg.setBackgroundDrawable(null);
 
-            ibFavorite.setImageResource(item.isFavorite ? android.R.drawable.star_big_on : android.R.drawable.star_big_off);
-            ibFavorite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    item.isFavorite = !item.isFavorite;
-                    ibFavorite.setImageResource(item.isFavorite ? android.R.drawable.star_big_on : android.R.drawable.star_big_off);
-                    tvFavorite.setText(item.isFavorite ? "Remove from favorites" : "Add to favorites");
-                    editor.apply();
-                }
-            });
-
-            btnBlock.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    blockItem();
-                }
-            });
-
-            btnHide.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    item.setHidden(true);
-                    long t = new Date().getTime();
-                    System.out.println("STARTING THE TIMER AT: " + t);
-                    item.setTimerStartTime(t);
-                }
-            });
-
-            tvFavorite.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-
-            String toDisplay = (item.isFavorite ? "Remove from favorites" : "Add to favorites");
-            tvFavorite.setText(toDisplay);
+        ibFavorite.setImageResource(item.isFavorite ? android.R.drawable.star_big_on : android.R.drawable.star_big_off);
     }
 
-    @Override
-    protected void onStart(){
-        super.onStart();
-
-    }
 
     @Override
     protected void onPause(){
         super.onPause();
-
         OsrsDB.save(item);
-        editor.putBoolean("DataModified", true);
 
+        //just assume data has been modified to make our life easier
+        editor.putBoolean(Osrs.strings.KEY_HAS_DATA_BEEN_MODIFIED, true);
         editor.commit();
     }
 
-    private void blockItem(){
-        builder.setTitle("Are you sure you want to block this item?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    public void onBlockButtonClick(View view) {
+        builder.setTitle(Osrs.strings.PROMPT_BLOCK_ITEM)
+                .setPositiveButton(Osrs.strings.YES, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         item.setBlocked(true);
-                        Toast.makeText(ItemActivity.this, item.getName() + " has been blocked", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ItemActivity.this, item.getName() + Osrs.strings.TOAST_BLOCK_ITEM, Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton(Osrs.strings.NO, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //gotta overload override this. -> do nothing and close dialog.
@@ -152,5 +129,30 @@ public class ItemActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void onHideButtonClick(View view) {
+
+        //item is not hidden, they clicked 'hide'
+        if(!item.getHidden()){
+            System.out.println("HIDE CLICKED");
+            item.setTimerStartTime(new Date().getTime());
+            Toast.makeText(this, item.getName() + Osrs.strings.TOAST_HIDE_ITEM, Toast.LENGTH_SHORT).show();
+        }
+
+        item.setHidden(!item.getHidden());
+        btnHide.setText(item.getHidden() ?  Osrs.strings.LABEL_BTN_UNHIDE : Osrs.strings.LABEL_BTN_HIDE);
+    }
+
+    public void onFavoriteButtonClick(View view) {
+        item.isFavorite = !item.isFavorite;
+        ibFavorite.setImageResource(item.isFavorite ?
+                android.R.drawable.star_big_on :
+                android.R.drawable.star_big_off);
+
+        tvFavorite.setText(item.isFavorite ?
+                Osrs.strings.LABEL_TV_ADD_TO_FAVORITES :
+                Osrs.strings.LABEL_TV_REMOVE_FROM_FAVORITES);
+        editor.apply();
     }
 }

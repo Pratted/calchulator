@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -13,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -22,11 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity  {
     private Button btnHiddenItems;
@@ -59,9 +54,12 @@ public class SettingsActivity extends AppCompatActivity  {
         builder = new AlertDialog.Builder(SettingsActivity.this);
         builder.setCancelable(true);
 
+        prefs = this.getSharedPreferences(Osrs.files.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        editor = prefs.edit();
+
         //use the osrs items from the Home activity if they're available, otherwise load from db.
-        if(incoming != null && incoming.hasExtra("osrsItems")){
-            osrsItems = (HashMap<Integer, OsrsItem>) incoming.getSerializableExtra("osrsItems");
+        if(incoming != null && incoming.hasExtra(Osrs.strings.KEY_OSRS_ITEMS)){
+            osrsItems = (HashMap<Integer, OsrsItem>) incoming.getSerializableExtra(Osrs.strings.KEY_OSRS_ITEMS);
         }
         else{
             System.out.println("Using DB items...");
@@ -70,21 +68,6 @@ public class SettingsActivity extends AppCompatActivity  {
 
         btnHiddenItems = findViewById(R.id.btnHiddenItems);
         btnBlockedItems = findViewById(R.id.btnBlockedItems);
-        prefs = this.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
-        editor = prefs.edit();
-
-        findViewById(R.id.btnRemoveFavs).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeAllFavorites();
-            }
-        });
-        findViewById(R.id.btnRestoreDefaults).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                restoreToDefault();
-            }
-        });
 
         llBlockList = findViewById(R.id.llBlockList);
         llCheckBoxContainer = findViewById(R.id.llCheckboxContainer);
@@ -95,10 +78,10 @@ public class SettingsActivity extends AppCompatActivity  {
         etPriceNat.setText(String.valueOf(Osrs.PRICE_NATURE_RUNE));
 
         etMinProfit = findViewById(R.id.etMinProfit);
-        etMinProfit.setText(String.valueOf(prefs.getInt(Osrs.strings.PREF_MIN_PROFIT, 0)));
+        etMinProfit.setText(String.valueOf(prefs.getInt(Osrs.strings.KEY_MIN_PROFIT, 0)));
 
         swHideMemsItems = findViewById(R.id.switch_hide_mems);
-        swHideMemsItems.setChecked(prefs.getBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS, false));
+        swHideMemsItems.setChecked(prefs.getBoolean(Osrs.strings.KEY_HIDE_MEMBERS_ITEMS, false));
 
         btnBlockedItems.setOnClickListener(onBlockedOrHiddenItemsClick(BLOCKED));
         btnHiddenItems.setOnClickListener(onBlockedOrHiddenItemsClick(HIDDEN));
@@ -177,7 +160,7 @@ public class SettingsActivity extends AppCompatActivity  {
 
                         llBlockList.setVisibility(View.GONE);
                         svSettings.setVisibility(View.VISIBLE);
-                        editor.putBoolean("DataModified", true);
+                        editor.putBoolean(Osrs.strings.KEY_HAS_DATA_BEEN_MODIFIED, true);
                     }
                 });
             }
@@ -190,36 +173,6 @@ public class SettingsActivity extends AppCompatActivity  {
         etPriceNat.setHint(String.valueOf(Osrs.PRICE_NATURE_RUNE));
     }
 
-    private void removeAllFavorites() {
-        builder.setTitle("Are you sure you want to remove all favorites?")
-            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    for (Integer id : osrsItems.keySet()) {
-                        osrsItems.get(id).setFavorite(false);
-                    }
-                    OsrsDB.removeAllFavorites();
-                    editor.putBoolean(Osrs.strings.PREFS_REMOVE_FAVS, true);
-
-                    Toast.makeText(SettingsActivity.this, "Removed all favorites", Toast.LENGTH_SHORT).show();
-                }
-            })
-            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //gotta overload override this. -> do nothing and close dialog.
-                }
-            });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void restoreToDefault() {
-        editor.putBoolean(Osrs.strings.RESTORE_DEFAULTS, true);
-        editor.commit();
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -227,14 +180,47 @@ public class SettingsActivity extends AppCompatActivity  {
         if(etPriceNat.getText().toString().length() > 0) {
             Osrs.PRICE_NATURE_RUNE = Integer.valueOf(etPriceNat.getText().toString());
         }
-        editor.putBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS,
+
+        editor.putBoolean(Osrs.strings.KEY_REMOVE_ALL_FAVORITES, true);
+        editor.putBoolean(Osrs.strings.KEY_HIDE_MEMBERS_ITEMS,
                 swHideMemsItems.isChecked());
-        editor.putInt(Osrs.strings.PREFS_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
-        editor.putInt(Osrs.strings.PREF_MIN_PROFIT,
+        editor.putInt(Osrs.strings.KEY_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
+        editor.putInt(Osrs.strings.KEY_MIN_PROFIT,
                 etMinProfit.getText().length() > 0?
                         Integer.valueOf(etMinProfit.getText().toString()) : 0);
 
         //commit because activity is about to be destroyed and HomeActivty needs this info ASAP
         editor.commit();
+    }
+
+    public void onRemoveFavoritesButtonClick(View view) {
+        builder.setTitle(Osrs.strings.PROMPT_REMOVE_ALL_FAVORITES)
+                .setPositiveButton(Osrs.strings.YES, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        for (Integer id : osrsItems.keySet()) {
+                            osrsItems.get(id).setFavorite(false);
+                        }
+                        OsrsDB.removeAllFavorites();
+                        editor.putBoolean(Osrs.strings.KEY_REMOVE_ALL_FAVORITES, true);
+                        editor.putBoolean(Osrs.strings.KEY_HAS_DATA_BEEN_MODIFIED, true);
+
+                        Toast.makeText(SettingsActivity.this, Osrs.strings.TOAST_REMOVE_ALL_FAVORITES, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton(Osrs.strings.NO, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //gotta overload override this. -> do nothing and close dialog.
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void onRestoreDefaultsButtonClick(View view){
+        editor.putBoolean(Osrs.strings.KEY_RESTORE_DEFAULTS, true);
+        editor.apply();
     }
 }

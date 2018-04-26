@@ -91,6 +91,6 @@
             android:background="@color/osrsBrown"
             android:layout_gravity="bottom"
             android:textColor="@color/osrsOrange"
-            android:text="@string/switch_show_hidden_items" />
+            android:text="@string/label_sw_show_hidden_items" />
 
 </LinearLayout>

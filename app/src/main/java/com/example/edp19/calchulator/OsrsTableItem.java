@@ -174,7 +174,7 @@ public class OsrsTableItem extends OsrsItem {
 
     public void setLimit(int limit) {
         this.limit = limit;
-        tvLimit.setText(String.valueOf(limit == -1 ? "N/A": limit));
+        tvLimit.setText(String.valueOf(limit == -1 ? Osrs.strings.NA: limit));
     }
 
     public void hide(){

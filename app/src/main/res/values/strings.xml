@@ -2,7 +2,13 @@
     <string name="app_name">calchulator</string>
     <string name="labelCurrentPrice">Current Price</string>
     <string name="url_current_prices">https://rsbuddy.com/exchange/summary.json</string>
+
+
+    <!--Prompts & questions for the user-->
     <string name="prompt_select_columns">Select up to 3 columns</string>
+    <string name="prompt_remove_all_favorites">Are you sure you want to remove all favorites?</string>
+    <string name="prompt_block_item">Are you sure you want to block this item?</string>
+
     <string name="name_favorite_column">Favorites</string>
     <string name="name_item_column">Item</string>
     <string name="name_alch_column">Alch</string>
@@ -10,17 +16,24 @@
     <string name="name_profit_column">Profit</string>
     <string name="name_limit_column">Limit</string>
 
+    <!-- Misc -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="added">added</string>
+    <string name="removed">removed</string>
+    <string name="na">N/A</string>
+
     <!-- Font Sizes -->
     <integer name="font_size_small">18</integer>
     <integer name="font_size_medium">20</integer>
     <integer name="font_size_large">24</integer>
 
-
-    <string name="pricesUpdated">The prices have been updated</string>
-    <string name="prefsPriceUpdate">PriceUpdate</string>
-
-
+    <!-- Filenames -->
     <string name="file_prefs">osrs.prefs</string>
+    <string name="file_database">osrs.db</string>
+    <string name="file_init_database">setup.sql</string>
+    <string name="file_font_regular">fonts/osrs.ttf</string>
+    <string name="file_font_regular_bold">fonts/osrs_bold.ttf</string>
 
     <!-- Keys for shared preferences -->
     <string name="key_reload_table">ReloadTable</string>
@@ -31,11 +44,52 @@
     <string name="key_min_profit">MinProf</string>
     <string name="key_price_last_updated">PricesLastUpdated</string>
     <string name="key_price_update_interval">PriceUpdateInterval></string>
+    <string name="key_sort_by">SortBy</string>
+    <string name="key_sort_descending">SortDesc</string>
+    <string name="key_has_data_been_modified">DataModified</string>
+    <string name="key_item">item</string>
+    <string name="key_osrs_items">osrsItems</string>
+    <string name="key_hide_members_items">ShowMemsChecked</string>
+    <string name="key_price_nature_rune">PriceNat</string>
+    <string name="key_hide_hidden_items">HideHiddenItems</string>
 
+    <!-- database attribute names -->
+    <string name="db_table_item">Item</string>
+    <string name="db_attribute_id">id</string>
+    <string name="db_attribute_name">name</string>
+    <string name="db_attribute_alch">highAlch</string>
+    <string name="db_attribute_price">currentPrice</string>
+    <string name="db_attribute_is_hidden">isHidden</string>
+    <string name="db_attribute_is_blocked">isBlocked</string>
+    <string name="db_attribute_is_favorite">isFavorite</string>
+    <string name="db_attribute_is_members">isMembers</string>
+    <string name="db_attribute_buy_limit">buyLimit</string>
+    <string name="db_attribute_timer_start_time">timerStartTime</string>
 
-    <string name="OsrsPrefs">osrs.prefs</string>
-    <string name="reloadTable">ReloadTable</string>
-    <string name="restoreDefs">RestoreDefault</string>
+    <!--Labels (any text that appears on a view)-->
+    <string name="label_sw_hide_member_items">Hide Member Items</string>
+    <string name="label_sw_show_hidden_items">Show Hidden Items</string>
+    <string name="label_btn_hidden_items">Hidden Items</string>
+    <string name="label_btn_blocked_items">Blocked Items</string>
+    <string name="label_tv_remove_from_favorites">Remove from favorites</string>
+    <string name="label_tv_add_to_favorites">Remove from favorites</string>
+    <string name="label_tv_members">Members</string>
+    <string name="label_tv_alch">Alch</string>
+    <string name="label_tv_price">Price</string>
+    <string name="label_tv_limit">Limit</string>
+    <string name="label_tv_profit">Profit</string>
+    <string name="label_btn_block">Block</string>
+    <string name="label_btn_hide">Hide</string>
+    <string name="label_btn_unhide">Unhide</string>
+
+    <string name="toast_remove_all_favorites">"Removed all favorites</string>
+    <string name="toast_block_item"> has been blocked</string>
+    <string name="toast_added_to_favorites"> added to favorites</string>
+    <string name="toast_removed_from_favorites"> removed from favorites</string>
+    <string name="toast_hide_item"> is now hidden</string>
+    <string name="toast_unhide_item"> is no longer hidden</string>
+
+    <!--Clean up these...-->
     <string name="switch_hide_mems">Hide Member Items</string>
     <string name="switch_show_hidden_items">Show Hidden Items</string>
     <string name="Nat_rune">Nature Rune</string>
@@ -43,14 +97,8 @@
     <string name="btn_blocked_items">Blocked Items</string>
     <string name="btn_rem_favorites">Remove All Favorites</string>
     <string name="btn_restore_defs">Restore To Default</string>
-    <string name="swtich_show_mems_checked">ShowMemsChecked</string>
-    <string name="prefs_remove_favs">RemoveFavs</string>
-    <string name="favs_removed">Favorites removed</string>
     <string name="items_page_msg_part_1">Remove </string>
     <string name="items_page_msg_part_2">Add </string>
     <string name="items_page_msg_part_3"> from favorites</string>
     <string name="prefs_price_nat_rune">PriceNatRune</string>
-    <string name="settings_min_profit">Min Profit</string>
-    <string name="pref_min_profit">MinProf</string>
-    <string name="pref_min_profit_boolean">MinProfBoolean</string>
 </resources>

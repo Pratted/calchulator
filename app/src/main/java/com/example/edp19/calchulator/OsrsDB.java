@@ -22,10 +22,21 @@ public class OsrsDB extends SQLiteOpenHelper {
     }
 
     public static final int DATABASE_VERSION = 2;
-    public static final String DATABASE_NAME = "osrs.db";
+    public static String DATABASE_NAME = "osrs.db";
 
     private static String SQL_DESTROY_DB = "DROP TABLE IF EXISTS Item;";
     private static OsrsDB db;
+
+    public static String ATTRIBUTE_ID;
+    public static String ATTRIBUTE_NAME;
+    public static String ATTRIBUTE_ALCH;
+    public static String ATTRIBUTE_PRICE;
+    public static String ATTRIBUTE_IS_HIDDEN;
+    public static String ATTRIBUTE_IS_BLOCKED;
+    public static String ATTRIBUTE_IS_FAVORITE;
+    public static String ATTRIBUTE_IS_MEMBERS;
+    public static String ATTRIBUTE_BUY_LIMIT;
+    public static String ATTRIBUTE_TIMER_START_TIME;
 
     //only ever needed when onCreate() is called
     private static WeakReference<Context> context;
@@ -36,10 +47,26 @@ public class OsrsDB extends SQLiteOpenHelper {
     }
 
     public static synchronized OsrsDB getInstance(Context context) {
+        Osrs.initialize(context);
+
+
         if (db == null) {
             db = new OsrsDB(context);
         }
         return db;
+    }
+
+    private static void assignGlobals(){
+        ATTRIBUTE_ID = Osrs.strings.DB_ATTRIBUTE_ID;
+        ATTRIBUTE_NAME = Osrs.strings.DB_ATTRIBUTE_NAME;
+        ATTRIBUTE_ALCH = Osrs.strings.DB_ATTRIBUTE_ALCH;
+        ATTRIBUTE_PRICE = Osrs.strings.DB_ATTRIBUTE_PRICE;
+        ATTRIBUTE_IS_HIDDEN = Osrs.strings.DB_ATTRIBUTE_IS_HIDDEN;
+        ATTRIBUTE_IS_BLOCKED = Osrs.strings.DB_ATTRIBUTE_IS_BLOCKED;
+        ATTRIBUTE_IS_FAVORITE = Osrs.strings.DB_ATTRIBUTE_IS_FAVORITE;
+        ATTRIBUTE_IS_MEMBERS = Osrs.strings.DB_ATTRIBUTE_IS_MEMBERS;
+        ATTRIBUTE_BUY_LIMIT = Osrs.strings.DB_ATTRIBUTE_BUY_LIMIT;
+        ATTRIBUTE_TIMER_START_TIME = Osrs.strings.DB_ATTRIBUTE_TIMER_START_TIME;
     }
 
     public static void initialize(Context context){
@@ -50,6 +77,7 @@ public class OsrsDB extends SQLiteOpenHelper {
 
     public static OsrsItem getItem(int id){
         Cursor c = db.getReadableDatabase().rawQuery("select * from Item where id = " + id, null);
+        c.moveToNext();
         return getItemFromCursor(c);
     }
 
@@ -139,12 +167,14 @@ public class OsrsDB extends SQLiteOpenHelper {
     }
 
     public static void save(OsrsItem item){
+        assignGlobals();
+
         ContentValues cv = new ContentValues();
-        cv.put("currentPrice", item.getPrice());
-        cv.put("isFavorite", item.getFavorite());
-        cv.put("isBlocked", item.getBlocked());
-        cv.put("isHidden", item.getHidden());
-        cv.put("timerStartTime", item.getTimerStartTime());
+        cv.put(ATTRIBUTE_PRICE, item.getPrice());
+        cv.put(ATTRIBUTE_IS_FAVORITE, item.getFavorite());
+        cv.put(ATTRIBUTE_IS_BLOCKED, item.getBlocked());
+        cv.put(ATTRIBUTE_IS_HIDDEN, item.getHidden());
+        cv.put(ATTRIBUTE_TIMER_START_TIME, item.getTimerStartTime());
 
         System.out.println(item.getName() + " " + item.getHidden());
         System.out.println(item.getName() + " " + item.getBlocked());

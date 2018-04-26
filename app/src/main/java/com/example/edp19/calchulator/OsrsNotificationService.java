@@ -39,7 +39,7 @@ public class OsrsNotificationService extends IntentService {
         Osrs.initialize(this);
         OsrsDB.initialize(this);
 
-        int id = intent.getIntExtra("item", 0);
+        int id = intent.getIntExtra(Osrs.strings.KEY_ITEM, 0);
         boolean hasPriceUpdate = intent.getBooleanExtra(Osrs.strings.KEY_PRICES_LAST_UPDATED, false);
         String category = "Price update";
         String channelId;
@@ -64,6 +64,8 @@ public class OsrsNotificationService extends IntentService {
 
             title = item.getName() + " is available again.";
             message = "The current market price is: " + item.getPrice();
+            item.setHidden(false);
+            OsrsDB.save(item);
         }
 
         displayNotification(category, channelId, title, message);

@@ -64,9 +64,8 @@ public class OsrsTable {
     private LinearLayout layout;
     private PopupWindow window;
     private OsrsPriceFetch osrsPrices;
-    private ImageButton scrollToTopButton;
 
-    private boolean hideMems;
+    private boolean hideMems = false;
     private int hideProfitBelow;
     private String searchString = "";
     private boolean hideHiddenItems = true;
@@ -80,12 +79,11 @@ public class OsrsTable {
         this.scrollView = svTable;
         this.osrsItems = new HashMap<>();
 
-        prefs = context.getSharedPreferences(Osrs.strings.PREFS_FILE, Context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences(Osrs.files.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         editor = prefs.edit(); //cant use prefs.edit().putString()
 
-        Osrs.PRICES_LAST_UPDATED = prefs.getLong(Osrs.strings.KEY_PRICES_LAST_UPDATED, 0);
-        System.out.println("LOADED TIME....");
-        Osrs.PRICE_NATURE_RUNE = prefs.getInt(Osrs.strings.PREFS_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
+        loadSharedPreferences();
+        Osrs.printPrefKeys(prefs);
 
         headers[COLUMN_FAVORITE] = createFavoriteHeader(Osrs.strings.NAME_FAVORITE_COLUMN);
         headers[COLUMN_ITEM] = createTextView(Osrs.strings.NAME_ITEM_COLUMN);
@@ -123,6 +121,9 @@ public class OsrsTable {
 
         //pre-select the visible columns in column selector
         columnSelector.selectColumns(LAYOUT_CURRENT);
+        columnSelector.setShowHiddens(!hideHiddenItems);
+
+        loadExistingTable();
 
         //all columns to the right of Alch are numeric and shall be right aligned.
         for(int i = COLUMN_ALCH; i < headers.length; i++){
@@ -142,14 +143,24 @@ public class OsrsTable {
             System.out.println("Table does not need a price update.");
         }
 
-        loadExistingTable();
+
         reload();
     }
 
     private void loadSharedPreferences(){
         Osrs.PRICES_LAST_UPDATED = prefs.getLong(Osrs.strings.KEY_PRICES_LAST_UPDATED, 0);
-        Osrs.PRICE_NATURE_RUNE = prefs.getInt(Osrs.strings.PREFS_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
+        Osrs.PRICE_NATURE_RUNE = prefs.getInt(Osrs.strings.KEY_PRICE_NATURE_RUNE, Osrs.PRICE_NATURE_RUNE);
         Osrs.PRICE_UPDATE_INTERVAL = prefs.getInt(Osrs.strings.KEY_PRICE_UPDATE_INTERVAL, Osrs.PRICE_UPDATE_INTERVAL);
+
+        reloadFilters();
+    }
+
+
+    //reload filter criteria from shared prefs
+    private void reloadFilters(){
+        hideMems = prefs.getBoolean(Osrs.strings.KEY_HIDE_MEMBERS_ITEMS, true);
+        hideProfitBelow = prefs.getInt(Osrs.strings.KEY_MIN_PROFIT, 0);
+        hideHiddenItems = prefs.getBoolean(Osrs.strings.KEY_HIDE_HIDDEN_ITEMS, true);
     }
 
     private TableRow row(int index){
@@ -170,7 +181,9 @@ public class OsrsTable {
         System.out.println("Last time: " + last.toLocaleString());
         tvStatus.setText(last.toLocaleString());
 
-        int hours = (last.getHours() % 12) + 12;
+        int hours = (last.getHours() % 12);
+        if(hours == 0) hours = 12;
+
         int min = last.getMinutes();
         boolean am = last.getHours() < 12;
 
@@ -179,19 +192,16 @@ public class OsrsTable {
 
     //SettingsActivity may request settings to be restored, check prefs for answer.
     public boolean needsRestoreDefaults() {
-        return prefs.getBoolean(Osrs.strings.RESTORE_DEFAULTS, false);
+        return prefs.getBoolean(Osrs.strings.KEY_RESTORE_DEFAULTS, false);
     }
 
     public void restoreDefaults(){
-        editor.putBoolean(Osrs.strings.RESTORE_DEFAULTS, false);
+        editor.putBoolean(Osrs.strings.KEY_RESTORE_DEFAULTS, false);
         editor.apply();
 
         LAYOUT_CURRENT = LAYOUT_DEFAULT.clone();
 
         this.reload();
-
-        //this.loadOsrsItems();
-        //this.showSelectedColumns(LAYOUT_DEFAULT);
     }
 
     private TextView createTextView(String text){
@@ -248,7 +258,7 @@ public class OsrsTable {
                 System.out.println(((TextView) view).getText().toString() + " clicked!");
                 Intent intent = new Intent(context, ItemActivity.class);
 
-                intent.putExtra("item", item);
+                intent.putExtra(Osrs.strings.KEY_ITEM, item);
                 context.startActivity(intent);
             }
         };
@@ -316,18 +326,25 @@ public class OsrsTable {
                 window.dismiss();
 
                 if (((RadioButton)layout.findViewById(R.id.rbBlock)).isChecked()) {
-                    item.isBlocked = true;
+                    System.out.println("BLOCKING ITEM " + item.getName());
+                    item.setBlocked(true);
                     item.getTableRow().setVisibility(View.GONE);
                     Toast.makeText(context, item.getName() + " is blocked", Toast.LENGTH_SHORT).show();
                 } else { // rbHide is checked
-                    item.isHidden = true;
+                    System.out.println("HIDING ITEM " + item.getName());
+
+                    System.out.println("Hide hidden items? " + hideHiddenItems);
+
+                    item.setHidden(true);
+                    item.setTimerStartTime(new Date().getTime());
                     item.startTimer();
-                    OsrsTable.this.refresh();
-//                    notificationReceiver.setAlarm(context, item.getId(), 10);
+                    notificationReceiver.setAlarm(context, item.getId());
                 }
+                OsrsDB.save(item);
+                filter();
 
                 OsrsTable.this.paint();
-                OsrsDB.save(item);
+
             }
         };
     }
@@ -349,7 +366,9 @@ public class OsrsTable {
 
                 OsrsDB.save(item);
                 Toast.makeText(context,
-                        item.getName() + (item.getFavorite() ? " added" : " removed") + " to favorites",
+                        item.getName() + (item.getFavorite() ?
+                                Osrs.strings.TOAST_ADDED_TO_FAVORITES :
+                                Osrs.strings.TOAST_REMOVED_FROM_FAVORITES),
                         Toast.LENGTH_SHORT).show();
             }
         };
@@ -365,8 +384,6 @@ public class OsrsTable {
             }
         };
     }
-
-
 
     private ImageButton createFavoriteHeader(String tag){
         ImageButton ib = new ImageButton(context);
@@ -397,7 +414,7 @@ public class OsrsTable {
         for(int i = 0; i < table.getChildCount(); i++){
             int id = table.getChildAt(i).getId();
 
-            if(columnName.compareTo("Item") == 0)
+            if(columnName.compareTo(Osrs.strings.NAME_ITEM_COLUMN) == 0)
                 a1.add(new Pair<>(osrsItems.get(id).getString(columnName), id));
             else
                 a2.add(new Pair<>(osrsItems.get(id).getInt(columnName), id));
@@ -470,7 +487,7 @@ public class OsrsTable {
         return weights;
     }
 
-    public void showSelectedColumns(boolean[] cols){
+    private void showSelectedColumns(boolean[] cols){
         TableRow.LayoutParams weights[] = getColumnWeights(cols);
 
         hideAllColumns(this.header);
@@ -491,7 +508,7 @@ public class OsrsTable {
     }
 
 
-    public void paint(){
+    private void paint(){
         for(int i = 0; i < size(); i++){
             row(i).setBackgroundColor(Osrs.colors.BROWN);
         }
@@ -522,8 +539,8 @@ public class OsrsTable {
             LAYOUT_CURRENT[i] = prefs.getBoolean(name, LAYOUT_DEFAULT[i]);
         }
 
-        lastSortedBy = prefs.getString("SortBy", "Profit");
-        sortDesc = prefs.getBoolean("SortDesc", false);
+        lastSortedBy = prefs.getString(Osrs.strings.KEY_SORT_BY, Osrs.strings.NAME_PROFIT_COLUMN);
+        sortDesc = prefs.getBoolean(Osrs.strings.KEY_SORT_DESCENDING, false);
 
         //mark as already sorted if necessary so sortColumn() sorts in descending order.
         sortedBy.put(lastSortedBy, sortDesc);
@@ -532,8 +549,8 @@ public class OsrsTable {
         showSelectedColumns(LAYOUT_CURRENT);
     }
 
-    //imports the data from the database back into the table.
-    public void reload() {
+    //imports the data from the database back into the table, sorts and filters it.
+    private void reload() {
         table.removeAllViews();
         osrsItems.clear();
 
@@ -542,20 +559,18 @@ public class OsrsTable {
         showSelectedColumns(LAYOUT_CURRENT);
         filter();
 
-        editor.putBoolean(Osrs.strings.RELOAD_TABLE, false);
         editor.apply();
     }
 
     public void refresh() {
-        hideMems = prefs.getBoolean(Osrs.strings.SWITCH_HIDE_MEMS_ITEMS, true);
-        hideProfitBelow = prefs.getInt(Osrs.strings.PREF_MIN_PROFIT, 0);
-        boolean removeAllFavs = prefs.getBoolean(Osrs.strings.PREFS_REMOVE_FAVS, false);
+        reloadFilters();
 
         //settings/item activity changed data. Reload it from DB but keep current table layout.
         if(hasDataBeenModified()){
             System.out.println("REFRESHED THE DATA FROM THE DB");
             OsrsDB.refreshOsrsTableItemsFromDB(osrsItems);
-            editor.putBoolean("DataModified", false);
+            editor.putBoolean(Osrs.strings.KEY_HAS_DATA_BEEN_MODIFIED, false);
+            editor.apply();
         }
 
         for(OsrsTableItem item : osrsItems.values()) {
@@ -565,6 +580,11 @@ public class OsrsTable {
             if(item.getHidden() && !item.getTimer().isRunning()){
                 System.out.println("RESTORING THE TIMER HAHAHHHAHAHAHAHAHAHAHAH");
                 item.restoreTimer(item.getTimerStartTime());
+            }
+
+            //hide timers for non-hidden items (in case item was recently unhidden)
+            else if(!item.getHidden()){
+                item.getTimer().hide();
             }
         }
 
@@ -589,8 +609,33 @@ public class OsrsTable {
             if(hideHiddenItems && item.getHidden()) item.hide();
         }
 
+        getFilterStatistics();
         paint();
     }
+
+    //displays how many items fall under each filter criteria.
+    private void getFilterStatistics(){
+        int counts[] = new int[6];
+
+        for(OsrsTableItem item : osrsItems.values()) {
+            if(item.getBlocked()) counts[0]++;
+            if(hideMems && item.isMembers()) counts[1]++;
+            if(item.getPrice() == 0 || item.getPrice() > 100000) counts[2]++;
+            if(hideProfitBelow > 0 && item.getProfit() < hideProfitBelow) counts[3]++;
+            if(searchString.length() > 0 && !item.getName().toLowerCase().contains(searchString)) counts[4]++;
+            if(hideHiddenItems && item.getHidden()) counts[5]++;
+        }
+
+        //Osrs.printPrefKeys(prefs);
+        System.out.println("\n\n-----------------------\n\n");
+        System.out.println("Hiding " + counts[0] + " blocked items");
+        System.out.println("Hiding " + counts[1] + " members items");
+        System.out.println("Hiding " + counts[2] + " price items");
+        System.out.println("Hiding " + counts[3] + " profit items");
+        System.out.println("Hiding " + counts[4] + " string items");
+        System.out.println("Hiding " + counts[5] + " hidden items");
+    }
+
 
     // save information to shared prefs.
     public void save(){
@@ -601,11 +646,14 @@ public class OsrsTable {
         }
 
         editor.putLong(Osrs.strings.KEY_PRICES_LAST_UPDATED, Osrs.PRICES_LAST_UPDATED);
-        editor.putString("SortBy", lastSortedBy);
-        editor.putBoolean("SortDesc", sortDesc);
+        editor.putString(Osrs.strings.KEY_SORT_BY, lastSortedBy);
+        editor.putBoolean(Osrs.strings.KEY_SORT_DESCENDING, sortDesc);
+        editor.putBoolean(Osrs.strings.KEY_HIDE_HIDDEN_ITEMS, hideHiddenItems);
 
         //use commit since this is called in onPause() and needs to be done immediately
         editor.commit();
+
+        Osrs.printPrefKeys(prefs);
     }
 
     public boolean needsPriceUpdate(){
@@ -641,6 +689,6 @@ public class OsrsTable {
     }
 
     public boolean hasDataBeenModified(){
-        return prefs.getBoolean("DataModified", false);
+        return prefs.getBoolean(Osrs.strings.KEY_HAS_DATA_BEEN_MODIFIED, false);
     }
 }
