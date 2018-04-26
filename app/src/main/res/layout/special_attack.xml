@@ -30,7 +30,7 @@
             android:textSize="30sp"
             android:gravity="center_vertical"
             android:paddingLeft="4dp"
-            android:text="Fuck"/>
+            android:text="Hello"/>
 
     </RelativeLayout>
 

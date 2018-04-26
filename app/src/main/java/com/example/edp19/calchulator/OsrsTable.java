@@ -273,10 +273,18 @@ public class OsrsTable {
                 TextView prompt = layout.findViewById(R.id.tvHideItemPrompt);
                 TextView accept = layout.findViewById(R.id.tvHideItemAccept);
                 TextView decline = layout.findViewById(R.id.tvHideItemDecline);
+                RadioButton rbHide = layout.findViewById(R.id.rbHide);
+                RadioButton rbBlock = layout.findViewById(R.id.rbBlock);
 
                 prompt.setTypeface(Osrs.typefaces.FONT_REGULAR_BOLD);
                 prompt.setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
                 prompt.setText("Hide/block " + item.getName() + "?");
+
+                rbHide.setTypeface(Osrs.typefaces.FONT_REGULAR);
+                rbHide.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
+
+                rbBlock.setTypeface(Osrs.typefaces.FONT_REGULAR);
+                rbBlock.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
 
                 accept.setTypeface(Osrs.typefaces.FONT_REGULAR);
                 accept.setTextSize(Osrs.fonts.FONT_SIZE_LARGE);
@@ -578,7 +586,7 @@ public class OsrsTable {
 
             //start a timer if not already running..
             if(item.getHidden() && !item.getTimer().isRunning()){
-                System.out.println("RESTORING THE TIMER HAHAHHHAHAHAHAHAHAHAHAH");
+                System.out.println("RESTORING THE TIMER");
                 item.restoreTimer(item.getTimerStartTime());
             }
 

@@ -132,7 +132,7 @@ public class OsrsItem implements Parcelable{
     }
 
     public Integer getProfit(){
-        return Osrs.PRICE_NATURE_RUNE + price - highAlch;
+        return highAlch - Osrs.PRICE_NATURE_RUNE - price;
     }
 
     public OsrsItem(Parcel in){

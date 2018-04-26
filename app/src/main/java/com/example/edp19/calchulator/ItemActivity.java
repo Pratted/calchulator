@@ -81,15 +81,21 @@ public class ItemActivity extends AppCompatActivity {
         tvCurrentPrice.setText(String.valueOf(item.getPrice()));
         tvBuyLimit.setText(item.getLimit() > 0 ? String.valueOf(item.getLimit()) : Osrs.strings.NA);
         tvHighAlch.setText(String.valueOf(item.getHighAlch()));
-        tvEquationPrice.setText(String.valueOf(item.getPrice()));
+
+        //prepend minus sign
+        tvEquationPrice.setText(String.valueOf("-" + item.getPrice()));
         tvEquationAlch.setText(String.valueOf(item.getHighAlch()));
-        tvEquationNat.setText(String.valueOf(Osrs.PRICE_NATURE_RUNE));
+
+        System.out.println("IsFav: " + item.getFavorite());
+
+        tvEquationNat.setText("-" + String.valueOf(Osrs.PRICE_NATURE_RUNE));
+        System.out.println("Profit " + item.getProfit());
         tvEquationProfit.setText(String.valueOf(item.getProfit()));
         tvEquationProfit.setTextColor(item.getProfit() > 0 ? Osrs.colors.LIGHT_GREEN : Osrs.colors.RED);
         btnHide.setText(item.getHidden() ?  Osrs.strings.LABEL_BTN_UNHIDE : Osrs.strings.LABEL_BTN_HIDE);
 
         tvFavorite.setTextSize(Osrs.fonts.FONT_SIZE_MEDIUM);
-        String toDisplay = (item.isFavorite ? Osrs.strings.LABEL_TV_REMOVE_FROM_FAVORITES : Osrs.strings.LABEL_TV_ADD_TO_FAVORITES);
+        String toDisplay = (item.getFavorite() ? Osrs.strings.LABEL_TV_REMOVE_FROM_FAVORITES : Osrs.strings.LABEL_TV_ADD_TO_FAVORITES);
         tvFavorite.setText(toDisplay);
 
         Drawable drawable = getResources().getDrawable(getResources().getIdentifier( "p" + item.getId() , "drawable", getPackageName()));
@@ -151,8 +157,8 @@ public class ItemActivity extends AppCompatActivity {
                 android.R.drawable.star_big_off);
 
         tvFavorite.setText(item.isFavorite ?
-                Osrs.strings.LABEL_TV_ADD_TO_FAVORITES :
-                Osrs.strings.LABEL_TV_REMOVE_FROM_FAVORITES);
+                Osrs.strings.LABEL_TV_REMOVE_FROM_FAVORITES :
+                Osrs.strings.LABEL_TV_ADD_TO_FAVORITES);
         editor.apply();
     }
 }

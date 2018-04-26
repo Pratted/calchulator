@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.widget.Toast;
 
 /**
  * Created by eric on 4/19/18.
@@ -28,8 +27,6 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
         boolean priceUpdate = intent.getBooleanExtra(Osrs.strings.KEY_PRICES_LAST_UPDATED, false);
 
         Intent outgoing = new Intent(context, OsrsNotificationService.class);
-
-        Toast.makeText(context, "ON RECEIVE CALLED", Toast.LENGTH_LONG).show();
 
         if(priceUpdate) {
             System.out.println("We are going to update the prices...");
@@ -69,6 +66,4 @@ public class OsrsNotificationReceiver extends WakefulBroadcastReceiver {
 
         manager.set( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + Osrs.DEFAULT_TIMER, pintent);
     }
-
-
 }

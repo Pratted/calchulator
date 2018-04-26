@@ -47,24 +47,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Hide for 4 hours"
-                        android:textSize="18dp"
                         android:paddingLeft="10dp"
                         android:checked="true"
                         android:buttonTint="@color/osrsLightGreen"
                         android:gravity="center_vertical"
                         android:layoutDirection="rtl"
-                        android:textColor="@color/osrsOrange"/>
+                        android:textColor="#ffffff"/>
                     <RadioButton
                         android:id="@+id/rbBlock"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Block"
-                        android:textSize="18dp"
                         android:buttonTint="@color/osrsLightGreen"
                         android:paddingLeft="10dp"
                         android:gravity="center_vertical"
                         android:layoutDirection="rtl"
-                        android:textColor="@color/osrsOrange"/>
+                        android:textColor="#ffffff"/>
             </RadioGroup>
 
 
