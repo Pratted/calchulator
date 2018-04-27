@@ -220,7 +220,25 @@ public class SettingsActivity extends AppCompatActivity  {
     }
 
     public void onRestoreDefaultsButtonClick(View view){
-        editor.putBoolean(Osrs.strings.KEY_RESTORE_DEFAULTS, true);
-        editor.apply();
+        builder.setTitle(Osrs.strings.PROMPT_RESTORE_DEFAULTS)
+                .setPositiveButton(Osrs.strings.YES, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editor.putBoolean(Osrs.strings.KEY_RESTORE_DEFAULTS, true);
+                        editor.apply();
+
+                        Toast.makeText(SettingsActivity.this, Osrs.strings.TOAST_RESTORE_DEFAULTS, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton(Osrs.strings.NO, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //gotta overload override this. -> do nothing and close dialog.
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 }

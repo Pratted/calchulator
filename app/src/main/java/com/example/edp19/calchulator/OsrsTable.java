@@ -65,7 +65,7 @@ public class OsrsTable {
     private PopupWindow window;
     private OsrsPriceFetch osrsPrices;
 
-    private boolean hideMems = false;
+    private boolean hideMems = true;
     private int hideProfitBelow;
     private String searchString = "";
     private boolean hideHiddenItems = true;
@@ -200,8 +200,21 @@ public class OsrsTable {
         editor.apply();
 
         LAYOUT_CURRENT = LAYOUT_DEFAULT.clone();
+        OsrsDB.removeAllFavorites();
+        hideMems = true;
+        ((ImageButton) headers[COLUMN_FAVORITE]).setImageResource(android.R.drawable.star_off);
+
+        columnSelector = new OsrsPopupColumnSelector(context);
+        columnSelector.setOnDismissListener(onColumnSelectorDismiss());
+
+        //pre-select the visible columns in column selector
+        columnSelector.selectColumns(LAYOUT_CURRENT);
+        columnSelector.setShowHiddens(!hideHiddenItems);
 
         this.reload();
+        sortedBy.put(Osrs.strings.NAME_ITEM_COLUMN, true);
+        sortColumn(Osrs.strings.NAME_ITEM_COLUMN);
+        paint();
     }
 
     private TextView createTextView(String text){
@@ -460,6 +473,7 @@ public class OsrsTable {
         sortedBy.put(columnName, !sorted);
         lastSortedBy = columnName;
 
+        filter();
         paint();
     }
 
@@ -547,7 +561,7 @@ public class OsrsTable {
             LAYOUT_CURRENT[i] = prefs.getBoolean(name, LAYOUT_DEFAULT[i]);
         }
 
-        lastSortedBy = prefs.getString(Osrs.strings.KEY_SORT_BY, Osrs.strings.NAME_PROFIT_COLUMN);
+        lastSortedBy = prefs.getString(Osrs.strings.KEY_SORT_BY, Osrs.strings.NAME_ITEM_COLUMN);
         sortDesc = prefs.getBoolean(Osrs.strings.KEY_SORT_DESCENDING, false);
 
         //mark as already sorted if necessary so sortColumn() sorts in descending order.

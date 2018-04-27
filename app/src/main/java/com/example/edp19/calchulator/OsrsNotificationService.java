@@ -48,9 +48,7 @@ public class OsrsNotificationService extends IntentService {
 
         if(hasPriceUpdate) {
             try {
-                System.out.println("BEFORE THE SHIT");
                 JSONObject n = new OsrsPriceFetch(this).execute(getString(R.string.url_current_prices)).get();
-                System.out.println("AFTER THE SHIT");
             } catch (Exception e) {}
 
             title = "Price update Complete.";

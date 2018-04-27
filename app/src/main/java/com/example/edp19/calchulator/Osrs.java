@@ -41,6 +41,7 @@ public class Osrs {
         public static String PROMPT_SELECT_COLUMNS;
         public static String PROMPT_REMOVE_ALL_FAVORITES;
         public static String PROMPT_BLOCK_ITEM;
+        public static String PROMPT_RESTORE_DEFAULTS;
 
         public static String NAME_FAVORITE_COLUMN;
         public static String NAME_ITEM_COLUMN;
@@ -86,6 +87,8 @@ public class Osrs {
         public static String TOAST_REMOVED_FROM_FAVORITES;
         public static String TOAST_HIDE_ITEM;
         public static String TOAST_UNHIDE_ITEM;
+        public static String TOAST_RESTORE_DEFAULTS;
+
 
         public static String LABEL_TV_REMOVE_FROM_FAVORITES;
         public static String LABEL_TV_ADD_TO_FAVORITES;
@@ -117,6 +120,7 @@ public class Osrs {
         strings.PROMPT_SELECT_COLUMNS = res.getString(R.string.prompt_select_columns);
         strings.PROMPT_REMOVE_ALL_FAVORITES = res.getString(R.string.prompt_remove_all_favorites);
         strings.PROMPT_BLOCK_ITEM = res.getString(R.string.prompt_block_item);
+        strings.PROMPT_RESTORE_DEFAULTS = res.getString(R.string.prompt_restore_defaults);
 
         strings.NAME_FAVORITE_COLUMN = res.getString(R.string.name_favorite_column);
         strings.NAME_ITEM_COLUMN = res.getString(R.string.name_item_column);
@@ -158,6 +162,7 @@ public class Osrs {
         strings.TOAST_REMOVE_ALL_FAVORITES = res.getString(R.string.toast_remove_all_favorites);
         strings.TOAST_HIDE_ITEM = res.getString(R.string.toast_hide_item);
         strings.TOAST_UNHIDE_ITEM = res.getString(R.string.toast_unhide_item);
+        strings.TOAST_RESTORE_DEFAULTS = res.getString(R.string.toast_restore_defaults);
 
         strings.LABEL_TV_ADD_TO_FAVORITES = res.getString(R.string.label_tv_add_to_favorites);
         strings.LABEL_TV_REMOVE_FROM_FAVORITES = res.getString(R.string.label_tv_remove_from_favorites);
@@ -189,7 +194,7 @@ public class Osrs {
 
 
     public static Integer DEFAULT_TIMER = 30000;
-    public static Integer PRICE_UPDATE_INTERVAL = 240;
+    public static Integer PRICE_UPDATE_INTERVAL = 5;
     final public static Integer ID_NATURE_RUNE = 561;
 
 
@@ -201,6 +206,7 @@ public class Osrs {
         initialized = true;
     }
 
+    //print out the contents of shared prefs for debugging...
     public static void printPrefKeys(SharedPreferences prefs){
         System.out.println("-------------------- Shared Prefs --------------------");
         for(Map.Entry<String,?>  entry : prefs.getAll().entrySet()){

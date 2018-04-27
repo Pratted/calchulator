@@ -8,6 +8,7 @@
     <string name="prompt_select_columns">Select up to 3 columns</string>
     <string name="prompt_remove_all_favorites">Are you sure you want to remove all favorites?</string>
     <string name="prompt_block_item">Are you sure you want to block this item?</string>
+    <string name="prompt_restore_defaults">Are you sure you want to restore defaults?</string>
 
     <string name="name_favorite_column">Favorites</string>
     <string name="name_item_column">Item</string>
@@ -86,6 +87,7 @@
     <string name="toast_removed_from_favorites"> removed from favorites</string>
     <string name="toast_hide_item"> is now hidden</string>
     <string name="toast_unhide_item"> is no longer hidden</string>
+    <string name="toast_restore_defaults">Restoring defaults...</string>
 
     <!--Clean up these...-->
     <string name="switch_hide_mems">Hide Member Items</string>

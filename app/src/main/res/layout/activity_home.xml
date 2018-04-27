@@ -52,7 +52,7 @@
                     <TextView
                         android:id="@+id/tvStatus"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_height="33dp"
                         android:background="#CCBC97"
                         android:gravity="bottom"
                         android:paddingBottom="4dp"
@@ -67,7 +67,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="29dp"
+                        android:layout_height="27dp"
                         android:orientation="horizontal">
 
                         <TextView

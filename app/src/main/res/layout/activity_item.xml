@@ -301,7 +301,7 @@
                     android:gravity="center">
                     <Button
                         android:id="@+id/btnHide"
-                        android:layout_width="wrap_content"
+                        android:layout_width="120dp"
                         android:layout_height="30dp"
                         android:text="@string/label_btn_hide"
                         android:onClick="onHideButtonClick"
@@ -311,7 +311,7 @@
                     <Button
                         android:id="@+id/btnBlock"
                         android:layout_marginLeft="10dp"
-                        android:layout_width="wrap_content"
+                        android:layout_width="120dp"
                         android:layout_height="30dp"
                         android:text="@string/label_btn_block"
                         android:onClick="onBlockButtonClick"
